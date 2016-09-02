@@ -38,7 +38,7 @@ touch ~/.local/etc/cron/environ.bash
 
 crontab -l > "${BACKUPDIR}/crontab"
 tmpcrontab=$(mktemp)
-grep -v ~/.cron/ "${BACKUPDIR}/crontab" > "${tmpcrontab}"
+grep -v ~/.local/etc/cron/ "${BACKUPDIR}/crontab" > "${tmpcrontab}"
 echo "0 * * * *" ~/.local/bin/runcron ~/.local/etc/cron/hourly  >> "${tmpcrontab}"
 echo "0 0 * * *" ~/.local/bin/runcron ~/.local/etc/cron/daily   >> "${tmpcrontab}"
 echo "0 4 * * *" ~/.local/bin/runcron ~/.local/etc/cron/daily-4 >> "${tmpcrontab}"
