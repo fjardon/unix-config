@@ -11,7 +11,7 @@ if [ -f "${HOME}/.bashrc" ] ; then
   source "${HOME}/.bashrc"
 fi
 
-XTRAPATHS="/opt /opt/local ${HOME}/opt ${HOME}/local"
+XTRAPATHS="/opt /opt/local ${HOME}/.local"
 for xtrad in ${XTRAPATHS};
 do
   # Set PATH so it includes user's private bin if it exists
@@ -22,6 +22,7 @@ do
   # Set PATH so it includes user's private lib if it exists
   if [ -d "${xtrad}/lib" ]; then
     PATH="${xtrad}/lib:${PATH}"
+    LD_LIBRARY_PATH="${xtrad}/lib:${LD_LIBRARY_PATH}"
   fi
  
   # Set PKG_CONFIG_PATH so it includes user's private if it exists
@@ -48,10 +49,11 @@ do
   fi
 done
 export PATH
+export LD_LIBRARY_PATH
 
 # Prompt customization
 SETXTERMTITLE='\[\e]0;\h - \w\a\]\n'
-PS1='\[\e[32m\](chroot) \u@\h \[\e[35m\]\t \[\e[33m\]\w\[\e[0m\]\n\$ '
+PS1='\[\e[32m\]\u@\h \[\e[35m\]\t \[\e[33m\]\w\[\e[0m\]\n\$ '
 if [[ "$TERM" == *"xterm"* ]]; then
     PS1="${SETXTERMTITLE}${PS1}"
 fi
@@ -64,5 +66,6 @@ export XLIB_SKIP_ARGB_VISUALS=1
 export PULSE_SERVER=tcp:localhost:4713
 export SDL_AUDIODRIVER=pulse
 
+# Custom alias
 alias xterm='xterm -rv -sb -rightbar +fbx'
 

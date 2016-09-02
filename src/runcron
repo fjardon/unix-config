@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+
+# Exit on any errors
+set -e
+
+# A function to output on stderr
+function echoerr() { echo "$@" 1>&2; }
+
+# Get this script name
+script="$0"
+
+# Sanity check
+scriptdir="$1"
+shift
+if [[ -z "${scriptdir}" ]]; then
+    echoerr "Usage: ${script} <directory>"
+    echoerr ""
+    echoerr "Run all scripts inside a directory."
+    exit 1
+fi
+
+# Load custom cron environment if present
+if [[ -e "${HOME}/.cron/environ.bash" ]]; then
+    source "${HOME}/.cron/environ.bash"
+fi
+
+# Run the commands
+for script in "${scriptdir}"/*
+do
+    if [[ -f "${script}" -a -x "${script}" ]]; then
+        echo "Running script: '${script}' ..."
+        echo "---------------"
+        ( "${script}" )
+        echo -e "\f"
+    fi
+done
+
+
