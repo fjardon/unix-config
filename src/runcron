@@ -6,6 +6,9 @@ set -e
 # A function to output on stderr
 function echoerr() { echo "$@" 1>&2; }
 
+# Configuration
+CRONDIR=~/.local/etc/cron
+
 # Get this script name
 script="$0"
 
@@ -18,13 +21,20 @@ if [ -z "${scriptdir}" ]; then
     exit 1
 fi
 
+SCRIPTDIR="${CRONDIR}/${scriptdir}"
+if [ ! -d "${SCRIPTDIR}" ]; then
+    echoerr "Directory: '${SCRIPTDIR}' doesn't exist. ABORTING!"
+    exit 1
+fi
+
+
 # Load custom cron environment if present
-if [ -e "${HOME}/.cron/environ.bash" ]; then
-    source "${HOME}/.cron/environ.bash"
+if [ -e "${CRONDIR}/environ.bash" ]; then
+    source "${CRONDIR}/environ.bash"
 fi
 
 # Run the commands
-for script in "${scriptdir}"/*
+for script in "${SCRIPTDIR}"/*
 do
     if [ -f "${script}" -a -x "${script}" ]; then
         echo "Running script: '${script}' ..."
