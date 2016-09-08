@@ -50,6 +50,8 @@ install -m 0700 -d ${BACKUPDIR}
 
 # Backup files
 echo "shell ..."
+touch ~/.bash_profile
+touch ~/.bashrc
 cp -f ~/.bash_profile ${BACKUPDIR}
 cp -f ~/.bashrc       ${BACKUPDIR}
 install -m 0644 dot_profile ~/.bash_profile
@@ -104,6 +106,7 @@ fi
 
 # emacs
 echo "emacs ..."
+touch ~/.emacs
 cp -f ~/.emacs ${BACKUPDIR}
 install -m 0644 emacs ~/.emacs
 CEDETDIR=cedet-git
