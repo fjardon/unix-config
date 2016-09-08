@@ -112,7 +112,7 @@ install -m 0644 emacs ~/.emacs
 CEDETDIR=cedet-git
 if [ ! -e "${DATAROOTDIR}/${CEDETDIR}" ]; then
     git -C "${DATAROOTDIR}" clone \
-	'http://git.code.sf.net/p/cedet/git' ${CEDET_DIR}
+	'http://git.code.sf.net/p/cedet/git' ${CEDETDIR}
     make -C "${DATAROOTDIR}/${CEDETDIR}" EMACS=emacs
 fi
 
