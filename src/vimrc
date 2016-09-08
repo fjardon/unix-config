@@ -1,0 +1,48 @@
+" In case usual windows move command doesn't work
+" :nmap <silent> <A-Up> :wincmd k<CR>
+" :nmap <silent> <A-Down> :wincmd j<CR>
+" :nmap <silent> <A-Left> :wincmd h<CR>
+" :nmap <silent> <A-Right> :wincmd l<CR>
+ 
+" Highligth characters after 80th columns
+:set colorcolumn=80
+:highlight ColorColumn ctermbg=lightgrey guibg=lightgrey
+ 
+" Use the dark background theme
+:set background=dark
+ 
+" Use explorer in tree mode
+:let g:netrw_liststyle=3
+ 
+" Use soft tabs, size 4
+:set tabstop=4 shiftwidth=4 expandtab
+ 
+" Syntax highlighting
+:syntax on
+ 
+" Auto indent file
+:autocmd FileType *      set formatoptions=tcql nocindent comments&
+:autocmd FileType c,cpp  set formatoptions=croql cindent comments=sr:/*,mb:*,ex:*/,://
+:set autoindent
+:filetype plugin indent on
+ 
+" Highlight searched targets
+:set hlsearch
+ 
+" Show line numbers
+:set number
+ 
+" Show cursor position
+:set ruler
+ 
+" Block cursor
+:let &t_SI.="\e[1 q"
+:let &t_EI.="\e[0 q"
+:let &t_ti.="\e[5 q"
+:let &t_te.="\e[0 q"
+ 
+" Show cursor line
+:hi CursorLine cterm=NONE ctermbg=darkred ctermfg=white
+:hi CursorColumn cterm=NONE ctermbg=darkred ctermfg=white
+:set cursorline
+:nnoremap <Leader>c :set cursorcolumn!

@@ -104,6 +104,12 @@ if command -v crontab > /dev/null 2>&1; then
     rm -f "${tmpcrontab}"
 fi
 
+# vim
+echo "vim ..."
+touch ~/.vimrc
+cp -f ~/.vimrc ${BACKUPDIR}
+install -m 0644 vimrc ~/.vimrc
+
 # emacs
 echo "emacs ..."
 touch ~/.emacs
