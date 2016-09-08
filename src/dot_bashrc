@@ -1,0 +1,71 @@
+# If not running interactively, don't do anything
+[[ "$-" != *i* ]] && return
+
+# Prompt customization
+TPUT=$(which tput)
+if [ -t 1 -a -n "${TPUT}" ]; then
+    NCOLORS=$(tput colors)
+    if [ -n "${NCOLORS}" -a "${NCOLORS}" -ge 8 ]; then
+        BLACK_FG=$(tput setaf 0)
+        RED_FG=$(tput setaf 1)
+        GREEN_FG=$(tput setaf 2)
+        YELLOW_FG=$(tput setaf 3)
+        BLUE_FG=$(tput setaf 4)
+        MAGENTA_FG=$(tput setaf 5)
+        CYAN_FG=$(tput setaf 6)
+        WHITE_FG=$(tput setaf 7)
+        DEFAULT_FG=$(tput setaf 9)
+        PS1="${GREEN_FG}\\u@\\h ${MAGENTA_FG}\\t ${YELLOW_FG}\\w${DEFAULT_FG}\n\$ "
+    else
+        PS1='\u@\h \t \w\n\$ '
+    fi
+fi
+
+SETXTERMTITLE='\[\e]0;\h - \w\a\]\n'
+if [[ "$TERM" == *"xterm"* ]]; then
+    PS1="${SETXTERMTITLE}${PS1}"
+fi
+export PS1
+
+# Make bash append rather than overwrite the history on disk
+shopt -s histappend
+
+# Don't put duplicate lines in the history.
+export HISTCONTROL=$HISTCONTROL${HISTCONTROL+,}ignoredups
+
+# Whenever displaying the prompt, write the previous line to disk
+export PROMPT_COMMAND="history -a"
+
+# Aliases
+#
+# Some people use a different file for aliases
+if [ -f "${HOME}/.bash_aliases" ]; then
+    source "${HOME}/.bash_aliases"
+fi
+alias grep='grep --color'                     # show differences in colour
+alias egrep='egrep --color=auto'              # show differences in colour
+alias fgrep='fgrep --color=auto'              # show differences in colour
+
+# Some shortcuts for different directory listings
+alias ls='ls -hF --color=tty'                 # classify files in colour
+alias dir='ls --color=auto --format=vertical'
+alias vdir='ls --color=auto --format=long'
+alias ll='ls -l'                              # long list
+alias la='ls -A'                              # all but . and ..
+alias l='ls -CF'                              #
+
+# Functions
+#
+# Some people use a different file for functions
+if [ -f "${HOME}/.bash_functions" ]; then
+    source "${HOME}/.bash_functions"
+fi
+
+# Some example functions:
+#
+# a) function settitle
+settitle ()
+{
+    echo -ne "\e]2;$@\a\e]1;$@\a";
+}
+

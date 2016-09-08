@@ -65,14 +65,6 @@ done
 export PATH
 export LD_LIBRARY_PATH
 
-# Prompt customization
-SETXTERMTITLE='\[\e]0;\h - \w\a\]\n'
-PS1='\[\e[32m\]\u@\h \[\e[35m\]\t \[\e[33m\]\w\[\e[0m\]\n\$ '
-if [[ "$TERM" == *"xterm"* ]]; then
-    PS1="${SETXTERMTITLE}${PS1}"
-fi
-export PS1
-
 # For nedit bug...
 export XLIB_SKIP_ARGB_VISUALS=1
 
