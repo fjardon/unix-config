@@ -1,3 +1,7 @@
+;; Enable column display in status bar
+;; -----------------------------------
+(column-number-mode t)
+
 ;; highlight .h file as c++ (doesn't do any harm to pure C files)
 ;; --------------------------------------------------------------
 (require 'cc-mode)
