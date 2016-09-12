@@ -6,23 +6,23 @@ TPUT=$(which tput)
 if [ -t 1 -a -n "${TPUT}" ]; then
     NCOLORS=$(tput colors)
     if [ -n "${NCOLORS}" -a "${NCOLORS}" -ge 8 ]; then
-        BLACK_FG=$(tput setaf 0)
-        RED_FG=$(tput setaf 1)
+        #BLACK_FG=$(tput setaf 0)
+        #RED_FG=$(tput setaf 1)
         GREEN_FG=$(tput setaf 2)
         YELLOW_FG=$(tput setaf 3)
-        BLUE_FG=$(tput setaf 4)
+        #BLUE_FG=$(tput setaf 4)
         MAGENTA_FG=$(tput setaf 5)
-        CYAN_FG=$(tput setaf 6)
+        #CYAN_FG=$(tput setaf 6)
         WHITE_FG=$(tput setaf 7)
-        DEFAULT_FG=$(tput setaf 9)
-        PS1="${GREEN_FG}\\u@\\h ${MAGENTA_FG}\\t ${YELLOW_FG}\\w${DEFAULT_FG}\n\$ "
+        DEFAULT_FG=$(tput setaf $(expr ${NCOLORS} + 1))
+        PS1="${GREEN_FG}\\u@\\h ${MAGENTA_FG}\\t ${YELLOW_FG}\\w${WHITE_FG}\n\$ "
     else
         PS1='\u@\h \t \w\n\$ '
     fi
 fi
 
-SETXTERMTITLE='\[\e]0;\h - \w\a\]\n'
-if [[ "$TERM" == *"xterm"* ]]; then
+if [[ "${TERM}" == *xterm* ]]; then
+    SETXTERMTITLE='\[\e]0;\h - \w\a\]\n'
     PS1="${SETXTERMTITLE}${PS1}"
 fi
 export PS1
@@ -54,6 +54,9 @@ alias ll='ls -l'                              # long list
 alias la='ls -A'                              # all but . and ..
 alias l='ls -CF'                              #
 
+# XTerm alias
+alias xterm='xterm -rv -sb -rightbar -tn xterm-256color'
+
 # Functions
 #
 # Some people use a different file for functions
@@ -69,3 +72,23 @@ settitle ()
     echo -ne "\e]2;$@\a\e]1;$@\a";
 }
 
+# b) function is_ssh_agent_running
+is_ssh_agent_running()
+{
+    ps -ef | grep "$1" | grep 'ssh-agent$' > /dev/null
+    return $?
+}
+
+# Remote PulseAudio
+# -----------------
+# export PULSE_SERVER=tcp:localhost:4713
+# export SDL_AUDIODRIVER=pulse
+
+# SSH-AGENT sourcing
+if [ -e ~/.ssh/ssh-agent.pid ]; then
+    source ~/.ssh/ssh-agent.pid > /dev/null 2>&1
+fi
+if ! is_ssh_agent_running "${SSH_AGENT_PID}"; then
+    ssh-agent > ~/.ssh/ssh-agent.pid 2> /dev/null
+    source ~/.ssh/ssh-agent.pid > /dev/null 2>&1
+fi

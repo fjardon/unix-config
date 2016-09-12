@@ -1,0 +1,14 @@
+xterm*backarrowKeyIsErase: true
+xterm*utf8: 2
+xterm*utf8Fonts: true
+xterm*utf8Title: true
+xterm*reverseVideo: true
+xterm*rightScrollBar: true
+xterm*scrollBar: true
+xterm*termName: xterm-256color
+xterm*toolBar: false
+xterm*eightBitInput: true
+xterm*faceName: Liberation Mono
+xterm*renderFont: true
+;;xterm*vt100.initialFont: 3
+;;xterm*dynamicColors: true

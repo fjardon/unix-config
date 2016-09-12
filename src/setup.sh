@@ -57,6 +57,17 @@ cp -f ~/.bashrc       ${BACKUPDIR}
 install -m 0644 dot_profile ~/.bash_profile
 install -m 0644 dot_bashrc  ~/.bashrc
 
+# XWinrc for Cygwin
+echo "XWindow ..."
+if [ -e ~/.Xresources ]; then
+    cp -f ~/.Xresources ${BACKUPDIR}
+fi
+if [ -e ~/.XWinrc ]; then
+    cp -f ~/.XWinrc ${BACKUPDIR}
+fi
+install -m 0644 Xresources ~/.Xresources
+install -m 0644 XWinrc ~/.XWinrc
+
 # .local setup
 echo "local ..."
 install -m 0755 -d ~/.local/bin
