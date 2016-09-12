@@ -1,14 +1,23 @@
-xterm*backarrowKeyIsErase: true
-xterm*utf8: 2
-xterm*utf8Fonts: true
-xterm*utf8Title: true
-xterm*reverseVideo: true
-xterm*rightScrollBar: true
-xterm*scrollBar: true
-xterm*termName: xterm-256color
-xterm*toolBar: false
-xterm*eightBitInput: true
-xterm*faceName: Liberation Mono
-xterm*renderFont: true
-;;xterm*vt100.initialFont: 3
-;;xterm*dynamicColors: true
+XTerm*utf8: 2
+XTerm*utf8Fonts: true
+XTerm*utf8Title: true
+XTerm*reverseVideo: true
+XTerm*rightScrollBar: true
+XTerm*scrollBar: true
+XTerm*termName: XTerm-256color
+XTerm*toolBar: false
+XTerm*eightBitInput: true
+XTerm*faceName: Liberation Mono
+XTerm*renderFont: true
+
+! Fix for the infamous Ctrl+H issue
+! see: http://www.hypexr.org/linux_ruboff.php
+XTerm*ttyModes:         erase ^?
+XTerm*VT100.Translations: \
+  #override <Key>BackSpace: string(0x7f) \n\
+            <Key>Delete:    string(0x1b) string("[3~")
+
+!XTerm*vt100.initialFont: 3
+!XTerm*dynamicColors: true
+!XTerm*backarrowKey: false
+!XTerm*backarrowKeyIsErase: true
