@@ -75,7 +75,7 @@ settitle ()
 # b) function is_ssh_agent_running
 is_ssh_agent_running()
 {
-    ps -ef | grep "$1" | grep 'ssh-agent$' > /dev/null
+    ps -p "$1" | grep 'ssh-agent$' 2>&1 /dev/null
     return $?
 }
 
@@ -88,7 +88,7 @@ is_ssh_agent_running()
 if [ -e ~/.ssh/ssh-agent.pid ]; then
     source ~/.ssh/ssh-agent.pid > /dev/null 2>&1
 fi
-if ! is_ssh_agent_running "${SSH_AGENT_PID}"; then
+if ! is_ssh_agent_running "${SSH_AGENT_PID:-0}"; then
     ssh-agent > ~/.ssh/ssh-agent.pid 2> /dev/null
     source ~/.ssh/ssh-agent.pid > /dev/null 2>&1
 fi
