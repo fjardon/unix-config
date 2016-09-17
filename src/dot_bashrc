@@ -54,9 +54,6 @@ alias ll='ls -l'                              # long list
 alias la='ls -A'                              # all but . and ..
 alias l='ls -CF'                              #
 
-# XTerm alias
-alias xterm='xterm -rv -sb -rightbar -tn xterm-256color'
-
 # Functions
 #
 # Some people use a different file for functions
