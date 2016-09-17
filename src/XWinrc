@@ -111,7 +111,8 @@ menu aot {
 }
 
 menu xtermspecial {
-	"Emacs"		exec	"emacs -nw"
+        "XTerm" exec "xterm"
+	"Emacs"		exec	"xterm -e emacs -nw"
 	"Always on Top"	alwaysontop
 	SepArAtor
 }
