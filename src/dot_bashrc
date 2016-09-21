@@ -72,7 +72,7 @@ settitle ()
 # b) function is_ssh_agent_running
 is_ssh_agent_running()
 {
-    ps -p "$1" | grep 'ssh-agent$' 2>&1 /dev/null
+    ps -p "$1" | grep 'ssh-agent$' > /dev/null 2>&1
     return $?
 }
 
