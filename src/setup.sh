@@ -2,45 +2,17 @@
 
 # Exit on any errors
 set -e
+function echoerr() { echo "$@" 1>&2; }
+
+# Sanity checks
+has_errors=""
+if ! hash git; then
+    has_errors='x'
+    echoerr "This script requires 'git' !"
+fi
 
 # Save current directory
 RUNCWD=$(pwd)
-
-# Detect terminal
-# See: http://wiki.bash-hackers.org/scripting/terminalcodes
-TPUT=$(which tput)
-if [ -t 1 -a -n "${TPUT}" ]; then
-    NCOLORS=$(tput colors)
-    if [ -n "${NCOLORS}" -a "${NCOLORS}" -ge 8 ]; then
-        NORMAL_AT=$(tput sgr0)
-        BOLD_AT=$(tput bold)
-        DIM_AT=$(tput dim)
-        STRONG_AT=$(tput smso)
-        ULINE_AT=$(tput smul)
-        BLINK_AT=$(tput blink)
-        REVERSE_AT=$(tput rev)
-        
-        BLACK_FG=$(tput setaf 0)
-        RED_FG=$(tput setaf 1)
-        GREEN_FG=$(tput setaf 2)
-        YELLOW_FG=$(tput setaf 3)
-        BLUE_FG=$(tput setaf 4)
-        MAGENTA_FG=$(tput setaf 5)
-        CYAN_FG=$(tput setaf 6)
-        WHITE_FG=$(tput setaf 7)
-        DEFAULT_FG=$(tput setaf 9)
-        
-        BLACK_BG=$(tput setab 0)
-        RED_BG=$(tput setab 1)
-        GREEN_BG=$(tput setab 2)
-        YELLOW_BG=$(tput setab 3)
-        BLUE_BG=$(tput setab 4)
-        MAGENTA_BG=$(tput setab 5)
-        CYAN_BG=$(tput setab 6)
-        WHITE_BG=$(tput setab 7)
-        DEFAULT_BG=$(tput setab 9)
-    fi
-fi
 
 # Prepare backups directory
 DATE=$(date '+%Y%m%d')
@@ -126,11 +98,20 @@ echo "emacs ..."
 touch ~/.emacs
 cp -f ~/.emacs ${BACKUPDIR}
 install -m 0644 emacs ~/.emacs
+
+echo "emacs cedet ..."
 CEDETDIR=cedet-git
 if [ ! -e "${DATAROOTDIR}/${CEDETDIR}" ]; then
     git -C "${DATAROOTDIR}" clone \
 	'http://git.code.sf.net/p/cedet/git' ${CEDETDIR}
     make -C "${DATAROOTDIR}/${CEDETDIR}" EMACS=emacs
+fi
+
+echo "emacs ecb ..."
+ECBDIR=ecb-git
+if [ ! -e "${DATAROOTDIR}/${ECBDIR}" ]; then
+    git -C "${DATAROOTDIR}" clone \
+	'https://github.com/alexott/ecb.git' ${ECBDIR}
 fi
 
 # gnu global / idutils

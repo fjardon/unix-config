@@ -89,3 +89,8 @@
 ;; Enable EDE (Project Management) features
 (global-ede-mode 1)
 (ede-enable-generic-projects)
+
+;; Enable ECB
+(add-to-list 'load-path "~/.local/share/ecb-git")
+(require 'ecb)
+
