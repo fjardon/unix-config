@@ -22,12 +22,12 @@
 (defun my-c++-mode-hook ()
   (c-set-style "my-style")
   (auto-fill-mode)         
-  (c-toggle-auto-hungry-state 1))
+  (c-toggle-auto-hungry-state t))
 (add-hook 'c++-mode-hook 'my-c++-mode-hook)
 
 ;; Typing while selecting overwrite the selection
 ;; ----------------------------------------------
-(delete-selection-mode 1)
+(delete-selection-mode t)
 
 
 ;; CEDET activation
@@ -72,7 +72,7 @@
 (defun custom-c-mode-cedet-hook ()
   (local-set-key "\C-ct" 'eassist-switch-h-cpp)
   (local-set-key "\C-xt" 'eassist-switch-h-cpp)
-  (local-set-key "\C-ce" 'eassist-list-methods)    
+  (local-set-key "\C-ce" 'eassist-list-methods)
   (local-set-key "\C-c\C-r" 'semantic-symref)
   )
 (add-hook 'c-mode-common-hook 'custom-c-mode-cedet-hook)
@@ -84,10 +84,10 @@
   (semantic-load-enable-primary-ectags-support))
 
 ;; SRecode
-(global-srecode-minor-mode 1)
+(global-srecode-minor-mode t)
 
 ;; Enable EDE (Project Management) features
-(global-ede-mode 1)
+;;(global-ede-mode t)
 (ede-enable-generic-projects)
 
 ;; Enable ECB

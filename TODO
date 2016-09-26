@@ -1,5 +1,31 @@
 TODO
 ====
+[ ] Better detection of prerequisites
+  [ ] gcc (for gnu global)
+  [ ] perl (for substitution and templating)
+  [ ] make
+[/] Add emacs setups...
+  [/] cedet
+    [ ] Fix touch makefile issues
+  [/] ecb
+    [ ] Enable bytecode compilation
+[ ] Better UI
+  [ ] Use dialog to let user choose what he wants to install (similar to linux
+      kernel build system)
+      see: http://invisible-island.net/dialog/manpage/dialog.html
+  [ ] Many options in UI may refer to the same configuration file (for
+      instance bashrc), the setup will use a template and subtitute parts of
+      the file accordingly. For instance one could enable alias and history,
+      but not ssh-agent launch part of the .bashrc)
+[ ] Possibility to run setup.sh directly from a curl pipe (as is the current
+   fashion ...)
+[ ] Better cygwin support
+  [ ] Create a cygwin package with all good tools for developers (as requires)
+  [ ] Configure XWinrc only if cygwin is detected
+[ ] Better SSH support
+  [ ] Help user setup its ssh keys (through GUI)
 
-[ ] Add ssh-agent stuff...
-[ ] Add emacs setups...
+
+DONE
+====
+[x] Add ssh-agent stuff...

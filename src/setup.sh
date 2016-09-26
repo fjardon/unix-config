@@ -4,11 +4,65 @@
 set -e
 function echoerr() { echo "$@" 1>&2; }
 
-# Sanity checks
-has_errors=""
-if ! hash git; then
-    has_errors='x'
-    echoerr "This script requires 'git' !"
+# Configure some shell variables
+PATH=${PATH}:${HOME}/.local/bin
+LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${HOME}/.local/lib
+DATAROOTDIR="${HOME}/.local/share"
+
+# Autodetect current install capabilities
+hash crontab > /dev/null 2>&1
+has_crontab=$?
+hash curl > /dev/null 2>&1
+has_curl=$?
+hash dialog > /dev/null 2>&1
+has_dialog=$?
+hash gcc > /dev/null 2>&1
+has_gcc=$?
+hash git > /dev/null 2>&1
+has_git=$?
+hash global > /dev/null 2>&1
+has_global=$?
+hash grep > /dev/null 2>&1
+has_grep=$?
+hash install > /dev/null 2>&1
+has_install=$?
+hash make > /dev/null 2>&1
+has_make=$?
+hash mkid > /dev/null 2>&1
+has_mkid=$?
+hash mktemp > /dev/null 2>&1
+has_mktemp=$?
+hash sed > /dev/null 2>&1
+has_sed=$?
+hash tar > /dev/null 2>&1
+has_tar=$?
+hash uname > /dev/null 2>&1
+has_uname=$?
+hash unshar > /dev/null 2>&1
+has_unshar=$?
+
+# Install error reporting
+[[ 0 == $has_git     ]] || echoerr "This script requires 'git' !"
+[[ 0 == $has_grep    ]] || echoerr "This script requires 'grep' !"
+[[ 0 == $has_install ]] || echoerr "This script requires 'install' !"
+[[ 0 == $has_mktemp  ]] || echoerr "This script requires 'mktemp' !"
+[[ 0 == $has_sed     ]] || echoerr "This script requires 'sed' !"
+[[ 0 == $has_unshar  ]] || echoerr "This script requires 'unshar' !"
+[[ 0 == $has_git && 0 == $has_install && 0 == $has_mktemp && 0 == $has_sed && 0 == $has_unshar ]] || exit 1
+
+build_idutils=
+if [[ 0 != $has_mkid && 0 == $has_curl && 0 == $has_gcc && 0 == $has_make && 0 == $has_tar ]]; then
+    build_idutils=Yes
+fi
+
+build_global=
+if [[ 0 != $has_global && 0 == $has_curl && 0 == $has_gcc && 0 == $has_make && 0 == $has_tar ]]; then
+    build_global=Yes
+fi
+
+os_name=
+if [[ 0 == $has_uname ]]; then
+    os_name=$(uname -o)
 fi
 
 # Save current directory
@@ -50,11 +104,10 @@ install -m 0755 -d ~/.local/var/log
 install -m 0755 -d ~/.local/var/run
 install -m 0755 -d ~/.local/etc/cron
 install -m 0755 runcron ~/.local/bin
-DATAROOTDIR="${HOME}/.local/share"
 
 # Cron setup
 echo "cron ..."
-if command -v crontab > /dev/null 2>&1; then
+if [[ 0 == $has_crontab ]]; then
     install -m 0755 -d ~/.local/etc/cron
     install -m 0755 -d ~/.local/etc/cron/hourly
     install -m 0755 -d ~/.local/etc/cron/daily
@@ -116,7 +169,7 @@ fi
 
 # gnu global / idutils
 echo "dev tools ..."
-if ! command -v mkid > /dev/null 2>&1; then
+if [[ -n "$build_idutils" ]]; then
     echo "Building idutils ..."
     TMPDIR=$(mktemp -d)
     RELEASE="idutils-4.5"
@@ -134,7 +187,7 @@ if ! command -v mkid > /dev/null 2>&1; then
     cd "${RUNCWD}"
 fi
 
-if ! command -v global > /dev/null 2>&1; then
+if [[ -n "$build_global" ]]; then
     echo "Building GNU global ..."
     TMPDIR=$(mktemp -d)
     RELEASE="global-6.5.4"
