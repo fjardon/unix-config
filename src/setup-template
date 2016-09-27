@@ -1,21 +1,26 @@
 #!/usr/bin/env bash
 
+# =============================================================================
 # Exit on any errors
 set -e
 function echoerr() { echo "$@" 1>&2; }
+# =============================================================================
 
+# =============================================================================
 # Configure some shell variables
 PATH=${PATH}:${HOME}/.local/bin
 LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${HOME}/.local/lib
 DATAROOTDIR="${HOME}/.local/share"
+# =============================================================================
 
+# =============================================================================
 # Autodetect current install capabilities
 function has_prog() {
     hash "$1" > /dev/null 2>&1
     return $?
 }
 
-REQUIRED_PROGS=(git grep install mktemp sed unshar)
+REQUIRED_PROGS=(git grep install mktemp sed)
 has_errors=
 for p in ${REQUIRED_PROGS[@]};
 do
@@ -40,9 +45,18 @@ os_name=
 if has_prog uname; then
     os_name=$(uname -o)
 fi
+# =============================================================================
 
-# Save current directory
-RUNCWD=$(pwd)
+# =============================================================================
+# Prepare temporary directory to unarchive files
+# ----------------------------------------------
+RUN_CWD=$(pwd)
+SHAR_TMPDIR=$(mktemp -d)
+cd "${SHAR_TMPDIR}"
+@SHAR_ARCHIVE@
+cd "${RUN_CWD}"
+# =============================================================================
+
 
 # Prepare backups directory
 DATE=$(date '+%Y%m%d')
@@ -64,13 +78,13 @@ echo "XWindow ..."
 if [ -e ~/.Xresources ]; then
     cp -f ~/.Xresources ${BACKUPDIR}
 fi
-install -m 0644 Xresources ~/.Xresources
+install -m 0644 dot_Xresources ~/.Xresources
 
 if [ "Cygwin" == "${os_name}" ]; then
     if [ -e ~/.XWinrc ]; then
 	cp -f ~/.XWinrc ${BACKUPDIR}
     fi
-    install -m 0644 XWinrc ~/.XWinrc
+    install -m 0644 dot_XWinrc ~/.XWinrc
 fi
 
 # .local setup
@@ -123,13 +137,13 @@ fi
 echo "vim ..."
 touch ~/.vimrc
 cp -f ~/.vimrc ${BACKUPDIR}
-install -m 0644 vimrc ~/.vimrc
+install -m 0644 dot_vimrc ~/.vimrc
 
 # emacs
 echo "emacs ..."
 touch ~/.emacs
 cp -f ~/.emacs ${BACKUPDIR}
-install -m 0644 emacs ~/.emacs
+install -m 0644 dot_emacs ~/.emacs
 
 if has_prog emacs && has_prog git && has_prog make; then
     echo "emacs cedet ..."
@@ -187,3 +201,4 @@ if [[ -n "$build_global" ]]; then
     make install
     cd "${RUNCWD}"
 fi
+
