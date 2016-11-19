@@ -36,6 +36,11 @@ export HISTCONTROL=$HISTCONTROL${HISTCONTROL+,}ignoredups
 # Whenever displaying the prompt, write the previous line to disk
 export PROMPT_COMMAND="history -a"
 
+# Load bash-completion if available
+if [ -f /usr/share/bash-completion/bash_completion ]; then
+    source /usr/share/bash-completion/bash_completion
+fi
+
 # Aliases
 #
 # Some people use a different file for aliases

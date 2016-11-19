@@ -24,7 +24,7 @@ REQUIRED_PROGS=(git grep install mktemp sed)
 has_errors=
 for p in ${REQUIRED_PROGS[@]};
 do
-    if has_prog "${p}"; then
+    if ! has_prog "${p}"; then
        echoerr " - ${p} required"
        has_errors=Yes
     fi
@@ -53,8 +53,7 @@ fi
 RUN_CWD=$(pwd)
 SHAR_TMPDIR=$(mktemp -d)
 cd "${SHAR_TMPDIR}"
-@SHAR_ARCHIVE@
-cd "${RUN_CWD}"
+# @SHAR_ARCHIVE@
 # =============================================================================
 
 
@@ -181,7 +180,7 @@ if [[ -n "$build_idutils" ]]; then
     "${SRCDIR}/configure" "--prefix=${HOME}/.local"
     make
     make install
-    cd "${RUNCWD}"
+    cd "${SHAR_TMPDIR}"
 fi
 
 if [[ -n "$build_global" ]]; then
@@ -199,6 +198,6 @@ if [[ -n "$build_global" ]]; then
     "${SRCDIR}/configure" "--prefix=${HOME}/.local"
     make
     make install
-    cd "${RUNCWD}"
+    cd "${SHAR_TMPDIR}"
 fi
 
