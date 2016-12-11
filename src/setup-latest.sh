@@ -59,9 +59,9 @@ cd "${SHAR_TMPDIR}"
 # To extract the files from this archive, save it to some FILE, remove
 # everything before the '#!/bin/sh' line above, then type 'sh FILE'.
 #
-lock_dir=_sh06028
-# Made on 2016-12-10 20:17 CET by <fjardon@yoda>.
-# Source directory was '/home/fjardon/workspace/unix-config/src'.
+lock_dir=_sh00996
+# Made on 2016-12-11 20:26 CET by <fjardon@darthvader>.
+# Source directory was '/home/fjardon/Documents/Projects/unix-config/src'.
 #
 # Existing files will *not* be overwritten, unless '-c' is specified.
 #
@@ -258,7 +258,7 @@ if [[ -f "${HOME}/.bashrc" ]]; then
 X    source "${HOME}/.bashrc"
 fi
 SHAR_EOF
-  (set 20 16 12 10 20 00 23 'dot_profile'
+  (set 20 16 12 11 11 53 11 'dot_profile'
    eval "${shar_touch}") && \
   chmod 0644 'dot_profile'
 if test $? -ne 0
@@ -381,7 +381,7 @@ X    ssh-agent > ~/.ssh/ssh-agent.pid 2> /dev/null
 X    source ~/.ssh/ssh-agent.pid > /dev/null 2>&1
 fi
 SHAR_EOF
-  (set 20 16 12 10 20 16 43 'dot_bashrc'
+  (set 20 16 12 11 11 53 11 'dot_bashrc'
    eval "${shar_touch}") && \
   chmod 0644 'dot_bashrc'
 if test $? -ne 0
@@ -504,7 +504,7 @@ X
 (require 'ecb)
 X
 SHAR_EOF
-  (set 20 16 12 10 20 00 23 'dot_emacs'
+  (set 20 16 12 11 11 53 11 'dot_emacs'
    eval "${shar_touch}") && \
   chmod 0644 'dot_emacs'
 if test $? -ne 0
@@ -578,7 +578,7 @@ done
 X
 X
 SHAR_EOF
-  (set 20 16 12 10 20 00 23 'runcron'
+  (set 20 16 12 11 11 53 11 'runcron'
    eval "${shar_touch}") && \
   chmod 0755 'runcron'
 if test $? -ne 0
@@ -653,7 +653,7 @@ X
 :set cursorline
 :nnoremap <Leader>c :set cursorcolumn!
 SHAR_EOF
-  (set 20 16 12 10 20 00 23 'dot_vimrc'
+  (set 20 16 12 11 11 53 11 'dot_vimrc'
    eval "${shar_touch}") && \
   chmod 0644 'dot_vimrc'
 if test $? -ne 0
@@ -685,7 +685,7 @@ XXTerm*renderFont: true
 XXTerm*reverseVideo: true
 XXTerm*rightScrollBar: true
 XXTerm*scrollBar: true
-XXTerm*termName: XTerm-256color
+XXTerm*termName: xterm-256color
 XXTerm*toolBar: false
 XXTerm*utf8: 2
 XXTerm*utf8Fonts: true
@@ -702,7 +702,7 @@ X
 !XTerm*backarrowKey: false
 !XTerm*backarrowKeyIsErase: true
 SHAR_EOF
-  (set 20 16 12 10 20 00 23 'dot_Xresources'
+  (set 20 16 12 11 20 21 44 'dot_Xresources'
    eval "${shar_touch}") && \
   chmod 0644 'dot_Xresources'
 if test $? -ne 0
@@ -712,7 +712,7 @@ fi
   then (
        ${MD5SUM} -c >/dev/null 2>&1 || ${echo} 'dot_Xresources': 'MD5 check failed'
        ) << \SHAR_EOF
-794ac59f35438d8a89b133c29363eca9  dot_Xresources
+a97af76d31b05bab918b49820a964551  dot_Xresources
 SHAR_EOF
 
 else
@@ -868,7 +868,7 @@ X
 DEBUG "Done parsing the configuration file..."
 X
 SHAR_EOF
-  (set 20 16 12 10 20 00 23 'dot_XWinrc'
+  (set 20 16 12 11 11 53 11 'dot_XWinrc'
    eval "${shar_touch}") && \
   chmod 0644 'dot_XWinrc'
 if test $? -ne 0

@@ -119,4 +119,10 @@ It is possible to have specific menus in taskbar based on WM_NAME.
 
   o $HOME/.xsession
   o $HOME/.Xclients
-  
+ 
+
+How to check if terminal has got 256 colors ?
+
+    msgcat --color=test
+
+ 
