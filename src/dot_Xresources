@@ -4,7 +4,7 @@ XTerm*renderFont: true
 XTerm*reverseVideo: true
 XTerm*rightScrollBar: true
 XTerm*scrollBar: true
-XTerm*termName: XTerm-256color
+XTerm*termName: xterm-256color
 XTerm*toolBar: false
 XTerm*utf8: 2
 XTerm*utf8Fonts: true
