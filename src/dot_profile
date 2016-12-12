@@ -62,6 +62,14 @@ do
  
     unset pl5
 done
+
+if [[ -f ~/.paths ]]; then
+   while read path
+   do
+	PATH="${PATH}:${path}"
+   done < ~/.paths
+fi
+
 export PATH
 export LD_LIBRARY_PATH
 
