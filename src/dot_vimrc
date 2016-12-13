@@ -5,47 +5,38 @@
 " :nmap <silent> <A-Right> :wincmd l<CR>
  
 " Highligth characters after 80th columns
-:set colorcolumn=80
-:highlight ColorColumn ctermbg=lightgrey guibg=lightgrey
- 
-" Use the dark background theme
-:set background=dark
+set colorcolumn=80
+highlight ColorColumn ctermbg=lightgrey guibg=lightgrey
  
 " Use explorer in tree mode
-:let g:netrw_liststyle=3
+let g:netrw_liststyle=3
  
 " Use soft tabs, size 4
-:set tabstop=4 shiftwidth=4 expandtab
- 
-" Syntax highlighting
-:syntax on
+set tabstop=4 shiftwidth=4 expandtab
  
 " Auto indent file
-:autocmd FileType *      set formatoptions=tcql nocindent comments&
-:autocmd FileType c,cpp  set formatoptions=croql cindent comments=sr:/*,mb:*,ex:*/,://
-:set autoindent
-:filetype plugin indent on
+autocmd FileType *      set formatoptions=tcql nocindent comments&
+autocmd FileType c,cpp  set formatoptions=croql cindent comments=sr:/*,mb:*,ex:*/,://
+set autoindent
+filetype plugin indent on
  
 " Highlight searched targets
-:set hlsearch
+set hlsearch
  
 " Show line numbers
-:set number
- 
-" Show cursor position
-:set ruler
+set number
  
 " Block cursor
-:let &t_SI.="\e[1 q"
-:let &t_EI.="\e[0 q"
-:let &t_ti.="\e[5 q"
-:let &t_te.="\e[0 q"
+let &t_SI.="\e[1 q"
+let &t_EI.="\e[0 q"
+let &t_ti.="\e[5 q"
+let &t_te.="\e[0 q"
  
 " Show cursor line
-:hi CursorLine cterm=NONE ctermbg=darkred ctermfg=white
-:hi CursorColumn cterm=NONE ctermbg=darkred ctermfg=white
-:set cursorline
-:nnoremap <Leader>c :set cursorcolumn!
+hi CursorLine cterm=NONE ctermbg=darkred ctermfg=white
+hi CursorColumn cterm=NONE ctermbg=darkred ctermfg=white
+set cursorline
+nnoremap <Leader>c :set cursorcolumn!
 
 set nocompatible              " be iMproved, required
 filetype off                  " required
@@ -74,10 +65,15 @@ Plugin 'ctags.vim'
 " language support
 Plugin 'elixir-lang/vim-elixir'
 
+" solarized color theme
+Plugin 'altercation/vim-colors-solarized'
+
+" Git support
+Plugin 'tpope/vim-fugitive'
+
 " The following are examples of different formats supported.
 " Keep Plugin commands between vundle#begin/end.
 " plugin on GitHub repo
-" Plugin 'tpope/vim-fugitive'
 " plugin from http://vim-scripts.org/vim/scripts.html
 " Plugin 'L9'
 " Git plugin not hosted on GitHub
@@ -112,7 +108,10 @@ set ruler
 " autocmd vimenter * NERDTree
 " autocmd vimenter * if !argc() | NERDTree | endif
 
-colorscheme desert
+" Set solarized color theme
+let g:solarized_termcolors=256
+set background=light
+colorscheme solarized
 
 set nu
 set nobackup
@@ -121,13 +120,14 @@ set tabstop=2
 
 set laststatus=2
 let g:airline_powerline_fonts = 1
+let g:airline#extensions#branch#enabled = 1
 let g:airline_theme='bubblegum'
 let g:airline#extensions#tabline#enabled = 1
 let g:airline#extensions#tabline#formatter = 'unique_tail'
+set ttimeoutlen=10
 
 map <F4> :TagbarToggle<CR>
 let g:tagbar_autofocus = 0
 
 map <F3> :NERDTreeToggle<CR>
-
 map <F2> :TaskList<CR>

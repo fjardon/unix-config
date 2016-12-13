@@ -1,5 +1,5 @@
 XTerm*eightBitInput: true
-XTerm*faceName: Liberation Mono
+XTerm*faceName: Liberation Mono for Powerline,Literation Mono Powerline
 XTerm*renderFont: true
 XTerm*reverseVideo: true
 XTerm*rightScrollBar: true
