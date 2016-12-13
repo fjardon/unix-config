@@ -64,7 +64,8 @@ Plugin 'scrooloose/nerdtree' 	    	" Project and file navigation
 Plugin 'majutsushi/tagbar'          	" Class/module browser
 
 " others
-Plugin 'bling/vim-airline'   	    	" Lean & mean status/tabline for vim
+Plugin 'vim-airline/vim-airline'   	" Lean & mean status/tabline for vim
+Plugin 'vim-airline/vim-airline-themes'
 Plugin 'fisadev/FixedTaskList.vim'  	" Pending tasks list
 Plugin 'rosenfeld/conque-term'      	" Consoles as buffers
 Plugin 'tpope/vim-surround'	   	" Parentheses, brackets, quotes, XML tags, and more
@@ -119,7 +120,8 @@ set smarttab
 set tabstop=2
 
 set laststatus=2
-let g:airline_theme='badwolf'
+let g:airline_powerline_fonts = 1
+let g:airline_theme='bubblegum'
 let g:airline#extensions#tabline#enabled = 1
 let g:airline#extensions#tabline#formatter = 'unique_tail'
 
