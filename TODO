@@ -9,6 +9,9 @@ TODO
     [ ] Fix touch makefile issues
   [/] ecb
     [ ] Enable bytecode compilation
+[/] Vim
+  [ ] Extract as much knowledge as possible from:
+  http://stevelosh.com/blog/2010/09/coming-home-to-vim/#why-i-came-back-to-vim
 [ ] Better UI
   [ ] Use dialog to let user choose what he wants to install (similar to linux
       kernel build system)
