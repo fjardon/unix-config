@@ -53,27 +53,29 @@ fi
 RUN_CWD=$(pwd)
 SHAR_TMPDIR=$(mktemp -d)
 cd "${SHAR_TMPDIR}"
+echo "Unsharing files in ${SHAR_TMPDIR} ..."
+cat <<'SETUP_SHAR_EOF'> setup.shar
 # @SHAR_ARCHIVE@
 #!/bin/sh
 # This is a shell archive (produced by GNU sharutils 4.15.2).
 # To extract the files from this archive, save it to some FILE, remove
 # everything before the '#!/bin/sh' line above, then type 'sh FILE'.
 #
-lock_dir=_sh00996
-# Made on 2016-12-11 20:26 CET by <fjardon@darthvader>.
-# Source directory was '/home/fjardon/Documents/Projects/unix-config/src'.
+lock_dir=_sh06088
+# Made on 2016-12-16 20:18 CET by <fjardon@yoda>.
+# Source directory was '/home/fjardon/workspace/unix-config/src'.
 #
 # Existing files will *not* be overwritten, unless '-c' is specified.
 #
 # This shar contains:
 # length mode       name
 # ------ ---------- ------------------------------------------
-#   2219 -rw-r--r-- dot_profile
+#   2319 -rw-r--r-- dot_profile
 #   2762 -rw-r--r-- dot_bashrc
-#   3331 -rw-r--r-- dot_emacs
+#   3647 -rw-r--r-- dot_emacs
 #    901 -rwxr-xr-x runcron
-#   1164 -rw-r--r-- dot_vimrc
-#    623 -rw-r--r-- dot_Xresources
+#   3901 -rw-r--r-- dot_vimrc
+#    663 -rw-r--r-- dot_Xresources
 #   4076 -rw-r--r-- dot_XWinrc
 #
 MD5SUM=${MD5SUM-md5sum}
@@ -243,6 +245,14 @@ X    done
 X 
 X    unset pl5
 done
+X
+if [[ -f ~/.paths ]]; then
+X   while read path
+X   do
+X	PATH="${PATH}:${path}"
+X   done < ~/.paths
+fi
+X
 export PATH
 export LD_LIBRARY_PATH
 X
@@ -258,7 +268,7 @@ if [[ -f "${HOME}/.bashrc" ]]; then
 X    source "${HOME}/.bashrc"
 fi
 SHAR_EOF
-  (set 20 16 12 11 11 53 11 'dot_profile'
+  (set 20 16 12 16 20 16 52 'dot_profile'
    eval "${shar_touch}") && \
   chmod 0644 'dot_profile'
 if test $? -ne 0
@@ -268,12 +278,12 @@ fi
   then (
        ${MD5SUM} -c >/dev/null 2>&1 || ${echo} 'dot_profile': 'MD5 check failed'
        ) << \SHAR_EOF
-099a92e254e1ede73a662aa7de0e6b56  dot_profile
+9dcbd228debda9ef779f689ea9e805d2  dot_profile
 SHAR_EOF
 
 else
-test `LC_ALL=C wc -c < 'dot_profile'` -ne 2219 && \
-  ${echo} "restoration warning:  size of 'dot_profile' is not 2219"
+test `LC_ALL=C wc -c < 'dot_profile'` -ne 2319 && \
+  ${echo} "restoration warning:  size of 'dot_profile' is not 2319"
   fi
 fi
 # ============= dot_bashrc ==============
@@ -381,7 +391,7 @@ X    ssh-agent > ~/.ssh/ssh-agent.pid 2> /dev/null
 X    source ~/.ssh/ssh-agent.pid > /dev/null 2>&1
 fi
 SHAR_EOF
-  (set 20 16 12 11 11 53 11 'dot_bashrc'
+  (set 20 16 12 10 20 16 43 'dot_bashrc'
    eval "${shar_touch}") && \
   chmod 0644 'dot_bashrc'
 if test $? -ne 0
@@ -425,13 +435,27 @@ X	       (c-basic-offset . 4)     ; indent by four spaces
 X                                        ; custom indentation rules
 X	       (c-offsets-alist . ((inline-open . 0)  
 X				   (brace-list-open . 0)
-X				   (statement-case-open . +)))))
+X				   (statement-case-open . +)))
+X	       (c-hanging-braces-alist . (
+X					  (class-close)
+X					  ))
+X	       (c-cleanup-list . (
+X				  empty-defun-braces
+X				  defun-close-semi
+X				  list-close-comma
+X				  scope-operator
+X				  space-before-funcall
+X				  compact-empty-funccall
+X				  ))
+X	       ))
 X
 ;; use my-style defined above
 (defun my-c++-mode-hook ()
 X  (c-set-style "my-style")
 X  (auto-fill-mode)         
-X  (c-toggle-auto-hungry-state t))
+X  (c-toggle-auto-hungry-state t)
+X  (add-to-list 'c-cleanup-list 'defun-close-semi)
+X  )
 (add-hook 'c++-mode-hook 'my-c++-mode-hook)
 X
 ;; Typing while selecting overwrite the selection
@@ -454,7 +478,7 @@ X
 (add-to-list 'semantic-default-submodes 'global-cedet-m3-minor-mode)
 X
 ;; Activate semantic
-(semantic-mode 1)
+;;(semantic-mode 1)
 X
 ;; Activate eassist
 (require 'eassist)
@@ -504,7 +528,7 @@ X
 (require 'ecb)
 X
 SHAR_EOF
-  (set 20 16 12 11 11 53 11 'dot_emacs'
+  (set 20 16 12 16 20 16 52 'dot_emacs'
    eval "${shar_touch}") && \
   chmod 0644 'dot_emacs'
 if test $? -ne 0
@@ -514,12 +538,12 @@ fi
   then (
        ${MD5SUM} -c >/dev/null 2>&1 || ${echo} 'dot_emacs': 'MD5 check failed'
        ) << \SHAR_EOF
-2226e8fb2f99ac971d1c6181d0da2a68  dot_emacs
+d1dafcab6f35db51c72bd75e02c5a3b2  dot_emacs
 SHAR_EOF
 
 else
-test `LC_ALL=C wc -c < 'dot_emacs'` -ne 3331 && \
-  ${echo} "restoration warning:  size of 'dot_emacs' is not 3331"
+test `LC_ALL=C wc -c < 'dot_emacs'` -ne 3647 && \
+  ${echo} "restoration warning:  size of 'dot_emacs' is not 3647"
   fi
 fi
 # ============= runcron ==============
@@ -578,7 +602,7 @@ done
 X
 X
 SHAR_EOF
-  (set 20 16 12 11 11 53 11 'runcron'
+  (set 20 16 12 10 20 00 23 'runcron'
    eval "${shar_touch}") && \
   chmod 0755 'runcron'
 if test $? -ne 0
@@ -611,49 +635,134 @@ ${echo} "x - extracting dot_vimrc (text)"
 " :nmap <silent> <A-Right> :wincmd l<CR>
 X 
 " Highligth characters after 80th columns
-:set colorcolumn=80
-:highlight ColorColumn ctermbg=lightgrey guibg=lightgrey
-X 
-" Use the dark background theme
-:set background=dark
+set colorcolumn=80
+highlight ColorColumn ctermbg=lightgrey guibg=lightgrey
 X 
 " Use explorer in tree mode
-:let g:netrw_liststyle=3
+let g:netrw_liststyle=3
 X 
 " Use soft tabs, size 4
-:set tabstop=4 shiftwidth=4 expandtab
-X 
-" Syntax highlighting
-:syntax on
+set tabstop=4 shiftwidth=4 expandtab
 X 
 " Auto indent file
-:autocmd FileType *      set formatoptions=tcql nocindent comments&
-:autocmd FileType c,cpp  set formatoptions=croql cindent comments=sr:/*,mb:*,ex:*/,://
-:set autoindent
-:filetype plugin indent on
+autocmd FileType *      set formatoptions=tcql nocindent comments&
+autocmd FileType c,cpp  set formatoptions=croql cindent comments=sr:/*,mb:*,ex:*/,://
+set autoindent
+filetype plugin indent on
 X 
 " Highlight searched targets
-:set hlsearch
+set hlsearch
 X 
 " Show line numbers
-:set number
-X 
-" Show cursor position
-:set ruler
+set number
 X 
 " Block cursor
-:let &t_SI.="\e[1 q"
-:let &t_EI.="\e[0 q"
-:let &t_ti.="\e[5 q"
-:let &t_te.="\e[0 q"
+let &t_SI.="\e[1 q"
+let &t_EI.="\e[0 q"
+let &t_ti.="\e[5 q"
+let &t_te.="\e[0 q"
 X 
 " Show cursor line
-:hi CursorLine cterm=NONE ctermbg=darkred ctermfg=white
-:hi CursorColumn cterm=NONE ctermbg=darkred ctermfg=white
-:set cursorline
-:nnoremap <Leader>c :set cursorcolumn!
+hi CursorLine cterm=NONE ctermbg=darkred ctermfg=white
+hi CursorColumn cterm=NONE ctermbg=darkred ctermfg=white
+set cursorline
+nnoremap <Leader>c :set cursorcolumn!
+X
+set nocompatible              " be iMproved, required
+filetype off                  " required
+X
+" set the runtime path to include Vundle and initialize
+set rtp+=~/.vim/bundle/Vundle.vim
+call vundle#begin()
+" alternatively, pass a path where Vundle should install plugins
+"call vundle#begin('~/some/path/here')
+X
+" let Vundle manage Vundle, required
+Plugin 'gmarik/Vundle.vim'
+X
+" Code/project navigation
+Plugin 'scrooloose/nerdtree' 	    	" Project and file navigation
+Plugin 'majutsushi/tagbar'          	" Class/module browser
+X
+" others
+Plugin 'vim-airline/vim-airline'   	" Lean & mean status/tabline for vim
+Plugin 'vim-airline/vim-airline-themes'
+Plugin 'fisadev/FixedTaskList.vim'  	" Pending tasks list
+Plugin 'rosenfeld/conque-term'      	" Consoles as buffers
+Plugin 'tpope/vim-surround'	   	" Parentheses, brackets, quotes, XML tags, and more
+Plugin 'ctags.vim'
+X
+" language support
+Plugin 'elixir-lang/vim-elixir'
+X
+" solarized color theme
+Plugin 'altercation/vim-colors-solarized'
+X
+" Git support
+Plugin 'tpope/vim-fugitive'
+X
+" The following are examples of different formats supported.
+" Keep Plugin commands between vundle#begin/end.
+" plugin on GitHub repo
+" plugin from http://vim-scripts.org/vim/scripts.html
+" Plugin 'L9'
+" Git plugin not hosted on GitHub
+" Plugin 'git://git.wincent.com/command-t.git'
+" git repos on your local machine (i.e. when working on your own plugin)
+" Plugin 'file:///home/gmarik/path/to/plugin'
+" The sparkup vim script is in a subdirectory of this repo called vim.
+" Pass the path to set the runtimepath properly.
+" Plugin 'rstacruz/sparkup', {'rtp': 'vim/'}
+" Avoid a name conflict with L9
+" Plugin 'user/L9', {'name': 'newL9'}
+X
+" All of your Plugins must be added before the following line
+call vundle#end()            " required
+filetype plugin indent on    " required
+" To ignore plugin indent changes, instead use:
+"filetype plugin on
+"
+" Brief help
+" :PluginList          - list configured plugins
+" :PluginInstall(!)    - install (update) plugins
+" :PluginSearch(!) foo - search (or refresh cache first) for foo
+" :PluginClean(!)      - confirm (or auto-approve) removal of unused plugins
+"
+" see :h vundle for more details or wiki for FAQ
+" Put your non-Plugin stuff after this line
+"
+syntax on
+set ruler
+X
+" autocmd vimenter * TagbarToggle
+" autocmd vimenter * NERDTree
+" autocmd vimenter * if !argc() | NERDTree | endif
+X
+" Set solarized color theme
+let g:solarized_termcolors=256
+set background=light
+colorscheme solarized
+X
+set nu
+set nobackup
+set smarttab
+set tabstop=2
+X
+set laststatus=2
+let g:airline_powerline_fonts = 1
+let g:airline#extensions#branch#enabled = 1
+let g:airline_theme='bubblegum'
+let g:airline#extensions#tabline#enabled = 1
+let g:airline#extensions#tabline#formatter = 'unique_tail'
+set ttimeoutlen=10
+X
+map <F4> :TagbarToggle<CR>
+let g:tagbar_autofocus = 0
+X
+map <F3> :NERDTreeToggle<CR>
+map <F2> :TaskList<CR>
 SHAR_EOF
-  (set 20 16 12 11 11 53 11 'dot_vimrc'
+  (set 20 16 12 16 20 16 52 'dot_vimrc'
    eval "${shar_touch}") && \
   chmod 0644 'dot_vimrc'
 if test $? -ne 0
@@ -663,12 +772,12 @@ fi
   then (
        ${MD5SUM} -c >/dev/null 2>&1 || ${echo} 'dot_vimrc': 'MD5 check failed'
        ) << \SHAR_EOF
-e3090c6317af6c81923fca866cc50fc5  dot_vimrc
+5f82dcdd6e7d322519816c55ae4fd6dd  dot_vimrc
 SHAR_EOF
 
 else
-test `LC_ALL=C wc -c < 'dot_vimrc'` -ne 1164 && \
-  ${echo} "restoration warning:  size of 'dot_vimrc' is not 1164"
+test `LC_ALL=C wc -c < 'dot_vimrc'` -ne 3901 && \
+  ${echo} "restoration warning:  size of 'dot_vimrc' is not 3901"
   fi
 fi
 # ============= dot_Xresources ==============
@@ -680,7 +789,7 @@ else
 ${echo} "x - extracting dot_Xresources (text)"
   sed 's/^X//' << 'SHAR_EOF' > 'dot_Xresources' &&
 XXTerm*eightBitInput: true
-XXTerm*faceName: Liberation Mono
+XXTerm*faceName: Liberation Mono for Powerline,Literation Mono Powerline
 XXTerm*renderFont: true
 XXTerm*reverseVideo: true
 XXTerm*rightScrollBar: true
@@ -702,7 +811,7 @@ X
 !XTerm*backarrowKey: false
 !XTerm*backarrowKeyIsErase: true
 SHAR_EOF
-  (set 20 16 12 11 20 21 44 'dot_Xresources'
+  (set 20 16 12 16 20 16 52 'dot_Xresources'
    eval "${shar_touch}") && \
   chmod 0644 'dot_Xresources'
 if test $? -ne 0
@@ -712,12 +821,12 @@ fi
   then (
        ${MD5SUM} -c >/dev/null 2>&1 || ${echo} 'dot_Xresources': 'MD5 check failed'
        ) << \SHAR_EOF
-a97af76d31b05bab918b49820a964551  dot_Xresources
+b1731e6cd910346df0e8aaf323b6d973  dot_Xresources
 SHAR_EOF
 
 else
-test `LC_ALL=C wc -c < 'dot_Xresources'` -ne 623 && \
-  ${echo} "restoration warning:  size of 'dot_Xresources' is not 623"
+test `LC_ALL=C wc -c < 'dot_Xresources'` -ne 663 && \
+  ${echo} "restoration warning:  size of 'dot_Xresources' is not 663"
   fi
 fi
 # ============= dot_XWinrc ==============
@@ -868,7 +977,7 @@ X
 DEBUG "Done parsing the configuration file..."
 X
 SHAR_EOF
-  (set 20 16 12 11 11 53 11 'dot_XWinrc'
+  (set 20 16 12 10 20 00 23 'dot_XWinrc'
    eval "${shar_touch}") && \
   chmod 0644 'dot_XWinrc'
 if test $? -ne 0
@@ -891,6 +1000,9 @@ then ${echo} "x - removed lock directory ${lock_dir}."
 else ${echo} "x - failed to remove lock directory ${lock_dir}."
      exit 1
 fi
+exit 0
+SETUP_SHAR_EOF
+/bin/sh setup.shar
 # =============================================================================
 
 
@@ -954,7 +1066,7 @@ if has_prog crontab; then
     crontab -l > "${BACKUPDIR}/crontab"
     tmpcrontab=$(mktemp)
     grep -v ~/.local/bin/runcron "${BACKUPDIR}/crontab" \
-	 > "${tmpcrontab}"
+	       > "${tmpcrontab}"
     echo "0  * * * *" ~/.local/bin/runcron hourly   >> "${tmpcrontab}"
     echo "0  0 * * *" ~/.local/bin/runcron daily    >> "${tmpcrontab}"
     echo "0  4 * * *" ~/.local/bin/runcron daily-4  >> "${tmpcrontab}"
@@ -969,10 +1081,25 @@ if has_prog crontab; then
     rm -f "${tmpcrontab}"
 fi
 
+# fonts
+echo "fonts ..."
+install -d ~/.fonts
+install -d ~/.local/share/fonts
+if [ ! -e ~/.local/share/fonts/power-line ]; then
+    git clone https://github.com/powerline/fonts.git \
+              ~/.local/share/fonts/power-line
+    if has_prog fc-cache; then
+      fc-cache -f ~/.local/share/fonts
+    fi
+fi
+
 # vim
 echo "vim ..."
 touch ~/.vimrc
 cp -f ~/.vimrc ${BACKUPDIR}
+if [ ! -e ~/.vim/bundle/Vundle.vim ]; then
+    git clone https://github.com/gmarik/Vundle.vim.git ~/.vim/bundle/Vundle.vim
+fi
 install -m 0644 dot_vimrc ~/.vimrc
 
 # emacs
@@ -985,9 +1112,9 @@ if has_prog emacs && has_prog git && has_prog make; then
     echo "emacs cedet ..."
     CEDETDIR=cedet-git
     if [ ! -e "${DATAROOTDIR}/${CEDETDIR}" ]; then
-	git -C "${DATAROOTDIR}" clone \
-	    'http://git.code.sf.net/p/cedet/git' ${CEDETDIR}
-	make -C "${DATAROOTDIR}/${CEDETDIR}" EMACS=emacs
+	    git -C "${DATAROOTDIR}" clone \
+	        'http://git.code.sf.net/p/cedet/git' ${CEDETDIR}
+	    make -C "${DATAROOTDIR}/${CEDETDIR}" EMACS=emacs
     fi
 fi
 
@@ -995,8 +1122,8 @@ if has_prog emacs && has_prog git; then
     echo "emacs ecb ..."
     ECBDIR=ecb-git
     if [ ! -e "${DATAROOTDIR}/${ECBDIR}" ]; then
-	git -C "${DATAROOTDIR}" clone \
-	    'https://github.com/alexott/ecb.git' ${ECBDIR}
+	      git -C "${DATAROOTDIR}" clone \
+	          'https://github.com/alexott/ecb.git' ${ECBDIR}
     fi
 fi
 
@@ -1010,7 +1137,7 @@ if [[ -n "$build_idutils" ]]; then
     SRCDIR="${TMPDIR}/${RELEASE}"
     BUILDDIR="${TMPDIR}/build"
     curl -s -o "${TGZ}" \
-	 "http://ftp.gnu.org/gnu/idutils/${RELEASE}.tar.gz"
+	       "http://ftp.gnu.org/gnu/idutils/${RELEASE}.tar.gz"
     tar -C "${TMPDIR}" -zxf "${TGZ}"
     mkdir "${BUILDDIR}"
     cd "${BUILDDIR}"
@@ -1028,7 +1155,7 @@ if [[ -n "$build_global" ]]; then
     SRCDIR="${TMPDIR}/${RELEASE}"
     BUILDDIR="${TMPDIR}/build"
     curl -s -o "${TGZ}" \
-	 "http://ftp.gnu.org/gnu/global/${RELEASE}.tar.gz"
+	       "http://ftp.gnu.org/gnu/global/${RELEASE}.tar.gz"
     tar -C "${TMPDIR}" -zxf "${TGZ}"
     mkdir "${BUILDDIR}"
     cd "${BUILDDIR}"

@@ -53,7 +53,11 @@ fi
 RUN_CWD=$(pwd)
 SHAR_TMPDIR=$(mktemp -d)
 cd "${SHAR_TMPDIR}"
+echo "Unsharing files in ${SHAR_TMPDIR} ..."
+cat <<'SETUP_SHAR_EOF'> setup.shar
 # @SHAR_ARCHIVE@
+SETUP_SHAR_EOF
+/bin/sh setup.shar
 # =============================================================================
 
 
