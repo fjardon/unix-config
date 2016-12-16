@@ -136,10 +136,12 @@ fi
 echo "fonts ..."
 install -d ~/.fonts
 install -d ~/.local/share/fonts
-git clone https://github.com/powerline/fonts.git \
-          ~/.local/share/fonts/power-line
-if has_prog fc-cache; then
-  fc-cache -f ~/.local/share/fonts
+if [ ! -e ~/.local/share/fonts/power-line ]; then
+    git clone https://github.com/powerline/fonts.git \
+              ~/.local/share/fonts/power-line
+    if has_prog fc-cache; then
+      fc-cache -f ~/.local/share/fonts
+    fi
 fi
 
 # vim
