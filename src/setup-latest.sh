@@ -1051,6 +1051,7 @@ install -m 0755 -d ~/.local/var/log
 install -m 0755 -d ~/.local/var/run
 install -m 0755 -d ~/.local/etc/cron
 install -m 0755 runcron ~/.local/bin
+export PATH=${PATH}:~/.local/bin
 
 # Cron setup
 echo "cron ..."
@@ -1107,6 +1108,20 @@ if [ ! -e ~/.vim/bundle/Vundle.vim ]; then
     git clone https://github.com/gmarik/Vundle.vim.git ~/.vim/bundle/Vundle.vim
 fi
 install -m 0644 dot_vimrc ~/.vimrc
+
+# Python
+echo "Python ..."
+if ! has_prog cppman; then
+    easy_install_prog=$(compgen -c 'easy_install-3' | head -n 1)
+    if has_prog "${easy_install_prog}"; then
+        if ! has_prog pip3; then
+            ${easy_install_prog} --user pip
+        fi
+    fi
+    if has_prog pip3; then
+        pip3 install --user cppman
+    fi
+fi
 
 # emacs
 echo "emacs ..."
