@@ -71,6 +71,9 @@ Plugin 'altercation/vim-colors-solarized'
 " Git support
 Plugin 'tpope/vim-fugitive'
 
+" Project support
+Plugin 'vim-scripts/project.tar.gz'
+
 " The following are examples of different formats supported.
 " Keep Plugin commands between vundle#begin/end.
 " plugin on GitHub repo
