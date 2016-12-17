@@ -61,8 +61,8 @@ cat <<'SETUP_SHAR_EOF'> setup.shar
 # To extract the files from this archive, save it to some FILE, remove
 # everything before the '#!/bin/sh' line above, then type 'sh FILE'.
 #
-lock_dir=_sh06088
-# Made on 2016-12-16 20:18 CET by <fjardon@yoda>.
+lock_dir=_sh11964
+# Made on 2016-12-17 20:22 CET by <fjardon@yoda>.
 # Source directory was '/home/fjardon/workspace/unix-config/src'.
 #
 # Existing files will *not* be overwritten, unless '-c' is specified.
@@ -74,7 +74,7 @@ lock_dir=_sh06088
 #   2762 -rw-r--r-- dot_bashrc
 #   3647 -rw-r--r-- dot_emacs
 #    901 -rwxr-xr-x runcron
-#   3901 -rw-r--r-- dot_vimrc
+#   4007 -rw-r--r-- dot_vimrc
 #    663 -rw-r--r-- dot_Xresources
 #   4076 -rw-r--r-- dot_XWinrc
 #
@@ -701,6 +701,12 @@ X
 " Git support
 Plugin 'tpope/vim-fugitive'
 X
+" Project support
+Plugin 'vim-scripts/project.tar.gz'
+X
+" Scratch buffer
+Plugin 'vim-scripts/scratch.vim'
+X
 " The following are examples of different formats supported.
 " Keep Plugin commands between vundle#begin/end.
 " plugin on GitHub repo
@@ -762,7 +768,7 @@ X
 map <F3> :NERDTreeToggle<CR>
 map <F2> :TaskList<CR>
 SHAR_EOF
-  (set 20 16 12 16 20 16 52 'dot_vimrc'
+  (set 20 16 12 17 20 21 23 'dot_vimrc'
    eval "${shar_touch}") && \
   chmod 0644 'dot_vimrc'
 if test $? -ne 0
@@ -772,12 +778,12 @@ fi
   then (
        ${MD5SUM} -c >/dev/null 2>&1 || ${echo} 'dot_vimrc': 'MD5 check failed'
        ) << \SHAR_EOF
-5f82dcdd6e7d322519816c55ae4fd6dd  dot_vimrc
+53253ac46a877acb25b08db47637bf13  dot_vimrc
 SHAR_EOF
 
 else
-test `LC_ALL=C wc -c < 'dot_vimrc'` -ne 3901 && \
-  ${echo} "restoration warning:  size of 'dot_vimrc' is not 3901"
+test `LC_ALL=C wc -c < 'dot_vimrc'` -ne 4007 && \
+  ${echo} "restoration warning:  size of 'dot_vimrc' is not 4007"
   fi
 fi
 # ============= dot_Xresources ==============
