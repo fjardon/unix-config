@@ -61,8 +61,8 @@ cat <<'SETUP_SHAR_EOF'> setup.shar
 # To extract the files from this archive, save it to some FILE, remove
 # everything before the '#!/bin/sh' line above, then type 'sh FILE'.
 #
-lock_dir=_sh11964
-# Made on 2016-12-17 20:22 CET by <fjardon@yoda>.
+lock_dir=_sh09268
+# Made on 2016-12-18 11:04 CET by <fjardon@yoda>.
 # Source directory was '/home/fjardon/workspace/unix-config/src'.
 #
 # Existing files will *not* be overwritten, unless '-c' is specified.
@@ -70,7 +70,7 @@ lock_dir=_sh11964
 # This shar contains:
 # length mode       name
 # ------ ---------- ------------------------------------------
-#   2319 -rw-r--r-- dot_profile
+#   2366 -rw-r--r-- dot_profile
 #   2762 -rw-r--r-- dot_bashrc
 #   3647 -rw-r--r-- dot_emacs
 #    901 -rwxr-xr-x runcron
@@ -255,6 +255,9 @@ fi
 X
 export PATH
 export LD_LIBRARY_PATH
+export MANPATH
+export INFOPATH
+export PERL5LIB
 X
 # For nedit bug...
 export XLIB_SKIP_ARGB_VISUALS=1
@@ -268,7 +271,7 @@ if [[ -f "${HOME}/.bashrc" ]]; then
 X    source "${HOME}/.bashrc"
 fi
 SHAR_EOF
-  (set 20 16 12 16 20 16 52 'dot_profile'
+  (set 20 16 12 18 10 56 45 'dot_profile'
    eval "${shar_touch}") && \
   chmod 0644 'dot_profile'
 if test $? -ne 0
@@ -278,12 +281,12 @@ fi
   then (
        ${MD5SUM} -c >/dev/null 2>&1 || ${echo} 'dot_profile': 'MD5 check failed'
        ) << \SHAR_EOF
-9dcbd228debda9ef779f689ea9e805d2  dot_profile
+cadb331b31480bec7485c6021c63558e  dot_profile
 SHAR_EOF
 
 else
-test `LC_ALL=C wc -c < 'dot_profile'` -ne 2319 && \
-  ${echo} "restoration warning:  size of 'dot_profile' is not 2319"
+test `LC_ALL=C wc -c < 'dot_profile'` -ne 2366 && \
+  ${echo} "restoration warning:  size of 'dot_profile' is not 2366"
   fi
 fi
 # ============= dot_bashrc ==============

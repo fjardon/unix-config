@@ -72,6 +72,9 @@ fi
 
 export PATH
 export LD_LIBRARY_PATH
+export MANPATH
+export INFOPATH
+export PERL5LIB
 
 # For nedit bug...
 export XLIB_SKIP_ARGB_VISUALS=1
