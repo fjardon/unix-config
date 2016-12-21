@@ -43,7 +43,7 @@ fi
 
 os_name=
 if has_prog uname; then
-    os_name=$(uname -o)
+    os_name=$(uname -s)
 fi
 # =============================================================================
 
@@ -1037,7 +1037,7 @@ if [ -e ~/.Xresources ]; then
 fi
 install -m 0644 dot_Xresources ~/.Xresources
 
-if [ "Cygwin" == "${os_name}" ]; then
+if [[ "${os_name}" == CYGWIN* ]]; then
     if [ -e ~/.XWinrc ]; then
 	cp -f ~/.XWinrc ${BACKUPDIR}
     fi
@@ -1095,11 +1095,11 @@ fi
 echo "fonts ..."
 install -d ~/.fonts
 install -d ~/.local/share/fonts
-if [ ! -e ~/.local/share/fonts/power-line ]; then
-    git clone https://github.com/powerline/fonts.git \
+if has_prog fc-cache; then
+    if [ ! -e ~/.local/share/fonts/power-line ]; then
+        git clone https://github.com/powerline/fonts.git \
               ~/.local/share/fonts/power-line
-    if has_prog fc-cache; then
-      fc-cache -f ~/.local/share/fonts
+        fc-cache -f ~/.local/share/fonts
     fi
 fi
 
