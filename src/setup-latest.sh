@@ -61,8 +61,8 @@ cat <<'SETUP_SHAR_EOF'> setup.shar
 # To extract the files from this archive, save it to some FILE, remove
 # everything before the '#!/bin/sh' line above, then type 'sh FILE'.
 #
-lock_dir=_sh00988
-# Made on 2016-12-28 22:22 CET by <fjardon@yoda>.
+lock_dir=_sh10352
+# Made on 2016-12-30 11:27 CET by <fjardon@yoda>.
 # Source directory was '/home/fjardon/workspace/unix-config/src'.
 #
 # Existing files will *not* be overwritten, unless '-c' is specified.
@@ -74,7 +74,7 @@ lock_dir=_sh00988
 #   2762 -rw-r--r-- dot_bashrc
 #   3647 -rw-r--r-- dot_emacs
 #    901 -rwxr-xr-x runcron
-#   4078 -rw-r--r-- dot_vimrc
+#   4139 -rw-r--r-- dot_vimrc
 #    663 -rw-r--r-- dot_Xresources
 #   4076 -rw-r--r-- dot_XWinrc
 #
@@ -707,6 +707,9 @@ X
 " Abolish (completion, typo fixes, casing)
 Plugin 'tpope/vim-abolish'
 X
+" Repeat (repeat plugin commands)
+Plugin 'tpope/vim-repeat'
+X
 " Project support
 Plugin 'vim-scripts/project.tar.gz'
 X
@@ -774,7 +777,7 @@ X
 map <F3> :NERDTreeToggle<CR>
 map <F2> :TaskList<CR>
 SHAR_EOF
-  (set 20 16 12 28 22 22 43 'dot_vimrc'
+  (set 20 16 12 30 11 26 40 'dot_vimrc'
    eval "${shar_touch}") && \
   chmod 0644 'dot_vimrc'
 if test $? -ne 0
@@ -784,12 +787,12 @@ fi
   then (
        ${MD5SUM} -c >/dev/null 2>&1 || ${echo} 'dot_vimrc': 'MD5 check failed'
        ) << \SHAR_EOF
-713b0c5fd1a1b54755bf645d79205afd  dot_vimrc
+83ad35b9fa014dd11c7058d429657818  dot_vimrc
 SHAR_EOF
 
 else
-test `LC_ALL=C wc -c < 'dot_vimrc'` -ne 4078 && \
-  ${echo} "restoration warning:  size of 'dot_vimrc' is not 4078"
+test `LC_ALL=C wc -c < 'dot_vimrc'` -ne 4139 && \
+  ${echo} "restoration warning:  size of 'dot_vimrc' is not 4139"
   fi
 fi
 # ============= dot_Xresources ==============

@@ -74,6 +74,9 @@ Plugin 'tpope/vim-fugitive'
 " Abolish (completion, typo fixes, casing)
 Plugin 'tpope/vim-abolish'
 
+" Repeat (repeat plugin commands)
+Plugin 'tpope/vim-repeat'
+
 " Project support
 Plugin 'vim-scripts/project.tar.gz'
 
