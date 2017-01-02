@@ -28,9 +28,9 @@ set number
  
 " Block cursor
 let &t_SI.="\e[1 q"
-let &t_EI.="\e[0 q"
-let &t_ti.="\e[5 q"
-let &t_te.="\e[0 q"
+let &t_EI.="\e[1 q"
+let &t_ti.="\e[1 q"
+let &t_te.="\e[1 q"
  
 " Show cursor line
 hi CursorLine cterm=NONE ctermbg=darkred ctermfg=white
