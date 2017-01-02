@@ -61,8 +61,8 @@ cat <<'SETUP_SHAR_EOF'> setup.shar
 # To extract the files from this archive, save it to some FILE, remove
 # everything before the '#!/bin/sh' line above, then type 'sh FILE'.
 #
-lock_dir=_sh02284
-# Made on 2017-01-02 10:16 CET by <fjardon@yoda>.
+lock_dir=_sh03128
+# Made on 2017-01-02 10:39 CET by <fjardon@yoda>.
 # Source directory was '/home/fjardon/workspace/unix-config/src'.
 #
 # Existing files will *not* be overwritten, unless '-c' is specified.
@@ -70,7 +70,7 @@ lock_dir=_sh02284
 # This shar contains:
 # length mode       name
 # ------ ---------- ------------------------------------------
-#   2693 -rw-r--r-- dot_bash_profile
+#   2815 -rw-r--r-- dot_bash_profile
 #   2762 -rw-r--r-- dot_bashrc
 #   3647 -rw-r--r-- dot_emacs
 #   4139 -rw-r--r-- dot_vimrc
@@ -192,9 +192,11 @@ X    export SYSTEM_PKG_CONFIG_PATH="${PKG_CONFIG_PATH}"
 fi
 X
 if [[ -f ~/.path_dirs ]]; then
-X    grep -v '^\(#.*\)\?$' ~/.path_dirs | \
 X    while read -r xtrad || [[ -n "${xtrad}" ]];
 X    do
+X        if [[ -z "${xtrad}" || "${xtrad}" == \#* ]]; then
+X            continue
+X        fi
 X        # Set PATH so it includes user's private bin if it exists
 X        if [ -d "${xtrad}/bin" ]; then
 X            PATH="${xtrad}/bin:${PATH}"
@@ -245,15 +247,17 @@ X            fi
 X        done
 X     
 X        unset pl5
-X    done
+X    done < ~/.path_dirs
 fi
 X
 if [[ -f ~/.paths ]]; then
-X    grep -v '^\(#.*\)\?$' ~/.paths | \
 X    while read -r path || [[ -n "${path}" ]];
 X    do
+X        if [[ -z "${path}" || "${path}" == \#* ]]; then
+X            continue
+X        fi
 X        PATH="${PATH}:${path}"
-X    done
+X    done < ~/.paths
 fi
 X
 export PATH
@@ -274,7 +278,7 @@ if [[ -f "${HOME}/.bashrc" ]]; then
 X    source "${HOME}/.bashrc"
 fi
 SHAR_EOF
-  (set 20 17 01 02 10 15 03 'dot_bash_profile'
+  (set 20 17 01 02 10 39 16 'dot_bash_profile'
    eval "${shar_touch}") && \
   chmod 0644 'dot_bash_profile'
 if test $? -ne 0
@@ -284,12 +288,12 @@ fi
   then (
        ${MD5SUM} -c >/dev/null 2>&1 || ${echo} 'dot_bash_profile': 'MD5 check failed'
        ) << \SHAR_EOF
-187cd149ddb1b817014c4ac7f8d2d008  dot_bash_profile
+92484d9a9085baed7c4a84af6b3c5393  dot_bash_profile
 SHAR_EOF
 
 else
-test `LC_ALL=C wc -c < 'dot_bash_profile'` -ne 2693 && \
-  ${echo} "restoration warning:  size of 'dot_bash_profile' is not 2693"
+test `LC_ALL=C wc -c < 'dot_bash_profile'` -ne 2815 && \
+  ${echo} "restoration warning:  size of 'dot_bash_profile' is not 2815"
   fi
 fi
 # ============= dot_bashrc ==============

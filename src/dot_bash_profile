@@ -9,9 +9,11 @@ if [ -z "${SYSTEM_PATH}" ] ; then
 fi
 
 if [[ -f ~/.path_dirs ]]; then
-    grep -v '^\(#.*\)\?$' ~/.path_dirs | \
     while read -r xtrad || [[ -n "${xtrad}" ]];
     do
+        if [[ -z "${xtrad}" || "${xtrad}" == \#* ]]; then
+            continue
+        fi
         # Set PATH so it includes user's private bin if it exists
         if [ -d "${xtrad}/bin" ]; then
             PATH="${xtrad}/bin:${PATH}"
@@ -62,15 +64,17 @@ if [[ -f ~/.path_dirs ]]; then
         done
      
         unset pl5
-    done
+    done < ~/.path_dirs
 fi
 
 if [[ -f ~/.paths ]]; then
-    grep -v '^\(#.*\)\?$' ~/.paths | \
     while read -r path || [[ -n "${path}" ]];
     do
+        if [[ -z "${path}" || "${path}" == \#* ]]; then
+            continue
+        fi
         PATH="${PATH}:${path}"
-    done
+    done < ~/.paths
 fi
 
 export PATH
