@@ -61,8 +61,8 @@ cat <<'SETUP_SHAR_EOF'> setup.shar
 # To extract the files from this archive, save it to some FILE, remove
 # everything before the '#!/bin/sh' line above, then type 'sh FILE'.
 #
-lock_dir=_sh10352
-# Made on 2016-12-30 11:27 CET by <fjardon@yoda>.
+lock_dir=_sh02284
+# Made on 2017-01-02 10:16 CET by <fjardon@yoda>.
 # Source directory was '/home/fjardon/workspace/unix-config/src'.
 #
 # Existing files will *not* be overwritten, unless '-c' is specified.
@@ -70,13 +70,13 @@ lock_dir=_sh10352
 # This shar contains:
 # length mode       name
 # ------ ---------- ------------------------------------------
-#   2366 -rw-r--r-- dot_profile
+#   2693 -rw-r--r-- dot_bash_profile
 #   2762 -rw-r--r-- dot_bashrc
 #   3647 -rw-r--r-- dot_emacs
-#    901 -rwxr-xr-x runcron
 #   4139 -rw-r--r-- dot_vimrc
 #    663 -rw-r--r-- dot_Xresources
 #   4076 -rw-r--r-- dot_XWinrc
+#    901 -rwxr-xr-x runcron
 #
 MD5SUM=${MD5SUM-md5sum}
 f=`${MD5SUM} --version | egrep '^md5sum .*(core|text)utils'`
@@ -173,14 +173,14 @@ then ${echo} "x - created lock directory ${lock_dir}."
 else ${echo} "x - failed to create lock directory ${lock_dir}."
      exit 1
 fi
-# ============= dot_profile ==============
-if test -n "${keep_file}" && test -f 'dot_profile'
+# ============= dot_bash_profile ==============
+if test -n "${keep_file}" && test -f 'dot_bash_profile'
 then
-${echo} "x - SKIPPING dot_profile (file already exists)"
+${echo} "x - SKIPPING dot_bash_profile (file already exists)"
 
 else
-${echo} "x - extracting dot_profile (text)"
-  sed 's/^X//' << 'SHAR_EOF' > 'dot_profile' &&
+${echo} "x - extracting dot_bash_profile (text)"
+  sed 's/^X//' << 'SHAR_EOF' > 'dot_bash_profile' &&
 # .bash_profile executed by bash(1) for login shells.
 X
 # Save system paths the first time
@@ -191,66 +191,69 @@ X    export SYSTEM_PERL5LIB="${PERL5LIB}"
 X    export SYSTEM_PKG_CONFIG_PATH="${PKG_CONFIG_PATH}"
 fi
 X
-XXTRAPATHS="/opt /opt/local ${HOME}/.local"
-for xtrad in ${XTRAPATHS};
-do
-X    # Set PATH so it includes user's private bin if it exists
-X    if [ -d "${xtrad}/bin" ]; then
-X        PATH="${xtrad}/bin:${PATH}"
-X    fi
-X    
-X    # Set PATH so it includes user's private lib if it exists
-X    if [ -d "${xtrad}/lib" ]; then
-X        PATH="${xtrad}/lib:${PATH}"
-X        LD_LIBRARY_PATH="${xtrad}/lib:${LD_LIBRARY_PATH}"
-X    fi
-X    
-X    # Set PKG_CONFIG_PATH so it includes user's private if it exists
-X    if [ -d "${xtrad}/lib/pkgconfig" ]; then
-X        PKG_CONFIG_PATH="${xtrad}/lib/pkgconfig:${PKG_CONFIG_PATH}"
-X    fi
-X    
-X    # Set MANPATH so it includes users' private man if it exists
-X    if [ -d "${xtrad}/man" ]; then
-X        MANPATH="${xtrad}/man:${MANPATH}"
-X    fi
-X    if [ -d "${xtrad}/share/man" ]; then
-X        MANPATH="${xtrad}/share/man:${MANPATH}"
-X    fi
-X    
-X    # Set INFOPATH so it includes users' private info if it exists
-X    if [ -d "${xtrad}/info" ]; then
-X        INFOPATH="${xtrad}/info:${INFOPATH}"
-X    fi
-X    
-X    # Set PERL5LIB so it includes users' private perl5 if it exists
-X    if [ -d "${xtrad}/lib/perl5" ]; then
-X        PERL5LIB="${xtrad}/lib/perl5:${PERL5LIB}"
-X    fi
-X    if [ -d "${xtrad}/share/perl5" ]; then
-X        PERL5LIB="${xtrad}/lib/perl5:${PERL5LIB}"
-X    fi
-X    for pl5 in ${xtrad}/lib/perl5/site_perl/*;
+if [[ -f ~/.path_dirs ]]; then
+X    grep -v '^\(#.*\)\?$' ~/.path_dirs | \
+X    while read -r xtrad || [[ -n "${xtrad}" ]];
 X    do
-X        if [ -d "${pl5}" ]; then
-X            PERL5LIB="${pl5}:${PERL5LIB}"
+X        # Set PATH so it includes user's private bin if it exists
+X        if [ -d "${xtrad}/bin" ]; then
+X            PATH="${xtrad}/bin:${PATH}"
 X        fi
-X    done
-X    for pl5 in ${xtrad}/share/perl5/*;
-X    do
-X        if [ -d "${pl5}" ]; then
-X            PERL5LIB="${pl5}:${PERL5LIB}"
+X        
+X        # Set PATH so it includes user's private lib if it exists
+X        if [ -d "${xtrad}/lib" ]; then
+X            PATH="${xtrad}/lib:${PATH}"
+X            LD_LIBRARY_PATH="${xtrad}/lib:${LD_LIBRARY_PATH}"
 X        fi
+X        
+X        # Set PKG_CONFIG_PATH so it includes user's private if it exists
+X        if [ -d "${xtrad}/lib/pkgconfig" ]; then
+X            PKG_CONFIG_PATH="${xtrad}/lib/pkgconfig:${PKG_CONFIG_PATH}"
+X        fi
+X        
+X        # Set MANPATH so it includes users' private man if it exists
+X        if [ -d "${xtrad}/man" ]; then
+X            MANPATH="${xtrad}/man:${MANPATH}"
+X        fi
+X        if [ -d "${xtrad}/share/man" ]; then
+X            MANPATH="${xtrad}/share/man:${MANPATH}"
+X        fi
+X        
+X        # Set INFOPATH so it includes users' private info if it exists
+X        if [ -d "${xtrad}/info" ]; then
+X            INFOPATH="${xtrad}/info:${INFOPATH}"
+X        fi
+X        
+X        # Set PERL5LIB so it includes users' private perl5 if it exists
+X        if [ -d "${xtrad}/lib/perl5" ]; then
+X            PERL5LIB="${xtrad}/lib/perl5:${PERL5LIB}"
+X        fi
+X        if [ -d "${xtrad}/share/perl5" ]; then
+X            PERL5LIB="${xtrad}/lib/perl5:${PERL5LIB}"
+X        fi
+X        for pl5 in ${xtrad}/lib/perl5/site_perl/*;
+X        do
+X            if [ -d "${pl5}" ]; then
+X                PERL5LIB="${pl5}:${PERL5LIB}"
+X            fi
+X        done
+X        for pl5 in ${xtrad}/share/perl5/*;
+X        do
+X            if [ -d "${pl5}" ]; then
+X                PERL5LIB="${pl5}:${PERL5LIB}"
+X            fi
+X        done
+X     
+X        unset pl5
 X    done
-X 
-X    unset pl5
-done
+fi
 X
 if [[ -f ~/.paths ]]; then
-X   while read path
-X   do
-X	PATH="${PATH}:${path}"
-X   done < ~/.paths
+X    grep -v '^\(#.*\)\?$' ~/.paths | \
+X    while read -r path || [[ -n "${path}" ]];
+X    do
+X        PATH="${PATH}:${path}"
+X    done
 fi
 X
 export PATH
@@ -271,22 +274,22 @@ if [[ -f "${HOME}/.bashrc" ]]; then
 X    source "${HOME}/.bashrc"
 fi
 SHAR_EOF
-  (set 20 16 12 18 10 56 45 'dot_profile'
+  (set 20 17 01 02 10 15 03 'dot_bash_profile'
    eval "${shar_touch}") && \
-  chmod 0644 'dot_profile'
+  chmod 0644 'dot_bash_profile'
 if test $? -ne 0
-then ${echo} "restore of dot_profile failed"
+then ${echo} "restore of dot_bash_profile failed"
 fi
   if ${md5check}
   then (
-       ${MD5SUM} -c >/dev/null 2>&1 || ${echo} 'dot_profile': 'MD5 check failed'
+       ${MD5SUM} -c >/dev/null 2>&1 || ${echo} 'dot_bash_profile': 'MD5 check failed'
        ) << \SHAR_EOF
-cadb331b31480bec7485c6021c63558e  dot_profile
+187cd149ddb1b817014c4ac7f8d2d008  dot_bash_profile
 SHAR_EOF
 
 else
-test `LC_ALL=C wc -c < 'dot_profile'` -ne 2366 && \
-  ${echo} "restoration warning:  size of 'dot_profile' is not 2366"
+test `LC_ALL=C wc -c < 'dot_bash_profile'` -ne 2693 && \
+  ${echo} "restoration warning:  size of 'dot_bash_profile' is not 2693"
   fi
 fi
 # ============= dot_bashrc ==============
@@ -547,80 +550,6 @@ SHAR_EOF
 else
 test `LC_ALL=C wc -c < 'dot_emacs'` -ne 3647 && \
   ${echo} "restoration warning:  size of 'dot_emacs' is not 3647"
-  fi
-fi
-# ============= runcron ==============
-if test -n "${keep_file}" && test -f 'runcron'
-then
-${echo} "x - SKIPPING runcron (file already exists)"
-
-else
-${echo} "x - extracting runcron (text)"
-  sed 's/^X//' << 'SHAR_EOF' > 'runcron' &&
-#!/usr/bin/env bash
-X
-# Exit on any errors
-set -e
-X
-# A function to output on stderr
-function echoerr() { echo "$@" 1>&2; }
-X
-# Configuration
-CRONDIR=~/.local/etc/cron
-X
-# Get this script name
-script="$0"
-X
-# Sanity check
-scriptdir="$1"
-if [ -z "${scriptdir}" ]; then
-X    echoerr "Usage: ${script} <directory>"
-X    echoerr ""
-X    echoerr "Run all scripts inside a directory."
-X    exit 1
-fi
-X
-SCRIPTDIR="${CRONDIR}/${scriptdir}"
-if [ ! -d "${SCRIPTDIR}" ]; then
-X    echoerr "Directory: '${SCRIPTDIR}' doesn't exist. ABORTING!"
-X    exit 1
-fi
-X
-X
-# Load custom cron environment if present
-if [ -e "${CRONDIR}/environ.bash" ]; then
-X    source "${CRONDIR}/environ.bash"
-fi
-X
-# Run the commands
-for script in "${SCRIPTDIR}"/*
-do
-X    if [ -f "${script}" -a -x "${script}" ]; then
-X        echo "Running script: '${script}' ..."
-X        echo "---------------"
-X        ( "${script}" )
-X        echo -e "\f"
-X    fi
-done
-X
-X
-SHAR_EOF
-  (set 20 16 12 10 20 00 23 'runcron'
-   eval "${shar_touch}") && \
-  chmod 0755 'runcron'
-if test $? -ne 0
-then ${echo} "restore of runcron failed"
-fi
-  if ${md5check}
-  then (
-       ${MD5SUM} -c >/dev/null 2>&1 || ${echo} 'runcron': 'MD5 check failed'
-       ) << \SHAR_EOF
-0b2ab5f23034f9404b7dcff31ae0e52a  runcron
-SHAR_EOF
-
-else
-test `LC_ALL=C wc -c < 'runcron'` -ne 901 && \
-  ${echo} "restoration warning:  size of 'runcron' is not 901"
   fi
 fi
 # ============= dot_vimrc ==============
@@ -1010,6 +939,80 @@ test `LC_ALL=C wc -c < 'dot_XWinrc'` -ne 4076 && \
   ${echo} "restoration warning:  size of 'dot_XWinrc' is not 4076"
   fi
 fi
+# ============= runcron ==============
+if test -n "${keep_file}" && test -f 'runcron'
+then
+${echo} "x - SKIPPING runcron (file already exists)"
+
+else
+${echo} "x - extracting runcron (text)"
+  sed 's/^X//' << 'SHAR_EOF' > 'runcron' &&
+#!/usr/bin/env bash
+X
+# Exit on any errors
+set -e
+X
+# A function to output on stderr
+function echoerr() { echo "$@" 1>&2; }
+X
+# Configuration
+CRONDIR=~/.local/etc/cron
+X
+# Get this script name
+script="$0"
+X
+# Sanity check
+scriptdir="$1"
+if [ -z "${scriptdir}" ]; then
+X    echoerr "Usage: ${script} <directory>"
+X    echoerr ""
+X    echoerr "Run all scripts inside a directory."
+X    exit 1
+fi
+X
+SCRIPTDIR="${CRONDIR}/${scriptdir}"
+if [ ! -d "${SCRIPTDIR}" ]; then
+X    echoerr "Directory: '${SCRIPTDIR}' doesn't exist. ABORTING!"
+X    exit 1
+fi
+X
+X
+# Load custom cron environment if present
+if [ -e "${CRONDIR}/environ.bash" ]; then
+X    source "${CRONDIR}/environ.bash"
+fi
+X
+# Run the commands
+for script in "${SCRIPTDIR}"/*
+do
+X    if [ -f "${script}" -a -x "${script}" ]; then
+X        echo "Running script: '${script}' ..."
+X        echo "---------------"
+X        ( "${script}" )
+X        echo -e "\f"
+X    fi
+done
+X
+X
+SHAR_EOF
+  (set 20 16 12 10 20 00 23 'runcron'
+   eval "${shar_touch}") && \
+  chmod 0755 'runcron'
+if test $? -ne 0
+then ${echo} "restore of runcron failed"
+fi
+  if ${md5check}
+  then (
+       ${MD5SUM} -c >/dev/null 2>&1 || ${echo} 'runcron': 'MD5 check failed'
+       ) << \SHAR_EOF
+0b2ab5f23034f9404b7dcff31ae0e52a  runcron
+SHAR_EOF
+
+else
+test `LC_ALL=C wc -c < 'runcron'` -ne 901 && \
+  ${echo} "restoration warning:  size of 'runcron' is not 901"
+  fi
+fi
 if rm -fr ${lock_dir}
 then ${echo} "x - removed lock directory ${lock_dir}."
 else ${echo} "x - failed to remove lock directory ${lock_dir}."
@@ -1029,12 +1032,32 @@ install -m 0700 -d ${BACKUPDIR}
 
 # Backup files
 echo "shell ..."
-touch ~/.bash_profile
-touch ~/.bashrc
-cp -f ~/.bash_profile ${BACKUPDIR}
-cp -f ~/.bashrc       ${BACKUPDIR}
-install -m 0644 dot_profile ~/.bash_profile
-install -m 0644 dot_bashrc  ~/.bashrc
+if [ -e ~/.profile ]; then
+    cp -f ~/.profile "${BACKUPDIR}"
+fi
+if [ -e ~/.bash_profile ]; then
+    cp -f ~/.bash_profile "${BACKUPDIR}"
+fi
+if [ -e ~/.bashrc ]; then
+    cp -f ~/.bashrc "${BACKUPDIR}"
+fi
+if [ ! -e ~/.path_dirs ]; then
+    cat <<DOT_PROFILE_PATHS_EOF > ~/.path_dirs
+# Directory path in this file are scanned by .bash_profile
+# to setup the following variables:
+#  - PATH
+#  - LD_LIBRARY_PATH
+#  - MANPATH
+#  - INFOPATH
+#  - PERL5LIB
+#  - PKG_CONFIG_PATH
+
+${HOME}/.local
+DOT_PROFILE_PATHS_EOF
+fi
+install -m 0644 dot_bash_profile ~/.profile
+install -m 0644 dot_bash_profile ~/.bash_profile
+install -m 0644 dot_bashrc       ~/.bashrc
 
 # XWinrc for Cygwin
 echo "XWindow ..."

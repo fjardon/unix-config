@@ -69,12 +69,32 @@ install -m 0700 -d ${BACKUPDIR}
 
 # Backup files
 echo "shell ..."
-touch ~/.bash_profile
-touch ~/.bashrc
-cp -f ~/.bash_profile ${BACKUPDIR}
-cp -f ~/.bashrc       ${BACKUPDIR}
-install -m 0644 dot_profile ~/.bash_profile
-install -m 0644 dot_bashrc  ~/.bashrc
+if [ -e ~/.profile ]; then
+    cp -f ~/.profile "${BACKUPDIR}"
+fi
+if [ -e ~/.bash_profile ]; then
+    cp -f ~/.bash_profile "${BACKUPDIR}"
+fi
+if [ -e ~/.bashrc ]; then
+    cp -f ~/.bashrc "${BACKUPDIR}"
+fi
+if [ ! -e ~/.path_dirs ]; then
+    cat <<DOT_PROFILE_PATHS_EOF > ~/.path_dirs
+# Directory path in this file are scanned by .bash_profile
+# to setup the following variables:
+#  - PATH
+#  - LD_LIBRARY_PATH
+#  - MANPATH
+#  - INFOPATH
+#  - PERL5LIB
+#  - PKG_CONFIG_PATH
+
+${HOME}/.local
+DOT_PROFILE_PATHS_EOF
+fi
+install -m 0644 dot_bash_profile ~/.profile
+install -m 0644 dot_bash_profile ~/.bash_profile
+install -m 0644 dot_bashrc       ~/.bashrc
 
 # XWinrc for Cygwin
 echo "XWindow ..."
