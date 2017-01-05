@@ -61,8 +61,8 @@ cat <<'SETUP_SHAR_EOF'> setup.shar
 # To extract the files from this archive, save it to some FILE, remove
 # everything before the '#!/bin/sh' line above, then type 'sh FILE'.
 #
-lock_dir=_sh09876
-# Made on 2017-01-02 10:44 CET by <fjardon@yoda>.
+lock_dir=_sh00236
+# Made on 2017-01-05 21:46 CET by <fjardon@yoda>.
 # Source directory was '/home/fjardon/workspace/unix-config/src'.
 #
 # Existing files will *not* be overwritten, unless '-c' is specified.
@@ -70,9 +70,10 @@ lock_dir=_sh09876
 # This shar contains:
 # length mode       name
 # ------ ---------- ------------------------------------------
-#   2815 -rw-r--r-- dot_bash_profile
+#    405 -rw-r--r-- dot_bash_profile
 #   2762 -rw-r--r-- dot_bashrc
 #   3647 -rw-r--r-- dot_emacs
+#   2106 -rw-r--r-- dot_profile
 #   4139 -rw-r--r-- dot_vimrc
 #    663 -rw-r--r-- dot_Xresources
 #   4076 -rw-r--r-- dot_XWinrc
@@ -183,102 +184,25 @@ ${echo} "x - extracting dot_bash_profile (text)"
   sed 's/^X//' << 'SHAR_EOF' > 'dot_bash_profile' &&
 # .bash_profile executed by bash(1) for login shells.
 X
-# Save system paths the first time
-if [ -z "${SYSTEM_PATH}" ] ; then
-X    export SYSTEM_PATH="${PATH}"
-X    export SYSTEM_LD_LIBRARY_PATH="${LD_LIBRARY_PATH}"
-X    export SYSTEM_PERL5LIB="${PERL5LIB}"
-X    export SYSTEM_PKG_CONFIG_PATH="${PKG_CONFIG_PATH}"
+X. ~/.profile
+X
+if [ -d ~/.local/etc/profile.d ]; then
+X   for profile_script in ~/.local/etc/profile.d/*.bash
+X   do
+X       . "${profile_script}"
+X   done
 fi
-X
-if [[ -f ~/.path_dirs ]]; then
-X    while read -r xtrad || [[ -n "${xtrad}" ]];
-X    do
-X        if [[ -z "${xtrad}" || "${xtrad}" == \#* ]]; then
-X            continue
-X        fi
-X        # Set PATH so it includes user's private bin if it exists
-X        if [ -d "${xtrad}/bin" ]; then
-X            PATH="${xtrad}/bin:${PATH}"
-X        fi
-X        
-X        # Set PATH so it includes user's private lib if it exists
-X        if [ -d "${xtrad}/lib" ]; then
-X            PATH="${xtrad}/lib:${PATH}"
-X            LD_LIBRARY_PATH="${xtrad}/lib:${LD_LIBRARY_PATH}"
-X        fi
-X        
-X        # Set PKG_CONFIG_PATH so it includes user's private if it exists
-X        if [ -d "${xtrad}/lib/pkgconfig" ]; then
-X            PKG_CONFIG_PATH="${xtrad}/lib/pkgconfig:${PKG_CONFIG_PATH}"
-X        fi
-X        
-X        # Set MANPATH so it includes users' private man if it exists
-X        if [ -d "${xtrad}/man" ]; then
-X            MANPATH="${xtrad}/man:${MANPATH}"
-X        fi
-X        if [ -d "${xtrad}/share/man" ]; then
-X            MANPATH="${xtrad}/share/man:${MANPATH}"
-X        fi
-X        
-X        # Set INFOPATH so it includes users' private info if it exists
-X        if [ -d "${xtrad}/info" ]; then
-X            INFOPATH="${xtrad}/info:${INFOPATH}"
-X        fi
-X        
-X        # Set PERL5LIB so it includes users' private perl5 if it exists
-X        if [ -d "${xtrad}/lib/perl5" ]; then
-X            PERL5LIB="${xtrad}/lib/perl5:${PERL5LIB}"
-X        fi
-X        if [ -d "${xtrad}/share/perl5" ]; then
-X            PERL5LIB="${xtrad}/lib/perl5:${PERL5LIB}"
-X        fi
-X        for pl5 in ${xtrad}/lib/perl5/site_perl/*;
-X        do
-X            if [ -d "${pl5}" ]; then
-X                PERL5LIB="${pl5}:${PERL5LIB}"
-X            fi
-X        done
-X        for pl5 in ${xtrad}/share/perl5/*;
-X        do
-X            if [ -d "${pl5}" ]; then
-X                PERL5LIB="${pl5}:${PERL5LIB}"
-X            fi
-X        done
-X     
-X        unset pl5
-X    done < ~/.path_dirs
-fi
-X
-if [[ -f ~/.paths ]]; then
-X    while read -r path || [[ -n "${path}" ]];
-X    do
-X        if [[ -z "${path}" || "${path}" == \#* ]]; then
-X            continue
-X        fi
-X        PATH="${PATH}:${path}"
-X    done < ~/.paths
-fi
-X
-export PATH
-export LD_LIBRARY_PATH
-export MANPATH
-export INFOPATH
-export PERL5LIB
-X
-# For nedit bug...
-export XLIB_SKIP_ARGB_VISUALS=1
 X
 # Bash reads:
 # - .bash_profile for interactive login shells
 # - .bashrc for non-login intecactive shells.
 # 
-# source the users bashrc if it exists
-if [[ -f "${HOME}/.bashrc" ]]; then
-X    source "${HOME}/.bashrc"
+# source the user's bashrc if it exists
+if [ -f ~/.bashrc ]; then
+X    . ~/.bashrc
 fi
 SHAR_EOF
-  (set 20 17 01 02 10 39 16 'dot_bash_profile'
+  (set 20 17 01 05 21 43 18 'dot_bash_profile'
    eval "${shar_touch}") && \
   chmod 0644 'dot_bash_profile'
 if test $? -ne 0
@@ -288,12 +212,12 @@ fi
   then (
        ${MD5SUM} -c >/dev/null 2>&1 || ${echo} 'dot_bash_profile': 'MD5 check failed'
        ) << \SHAR_EOF
-92484d9a9085baed7c4a84af6b3c5393  dot_bash_profile
+c7e971d7883a04abfab024653929c2ce  dot_bash_profile
 SHAR_EOF
 
 else
-test `LC_ALL=C wc -c < 'dot_bash_profile'` -ne 2815 && \
-  ${echo} "restoration warning:  size of 'dot_bash_profile' is not 2815"
+test `LC_ALL=C wc -c < 'dot_bash_profile'` -ne 405 && \
+  ${echo} "restoration warning:  size of 'dot_bash_profile' is not 405"
   fi
 fi
 # ============= dot_bashrc ==============
@@ -401,7 +325,7 @@ X    ssh-agent > ~/.ssh/ssh-agent.pid 2> /dev/null
 X    source ~/.ssh/ssh-agent.pid > /dev/null 2>&1
 fi
 SHAR_EOF
-  (set 20 16 12 10 20 16 43 'dot_bashrc'
+  (set 20 17 01 05 21 34 19 'dot_bashrc'
    eval "${shar_touch}") && \
   chmod 0644 'dot_bashrc'
 if test $? -ne 0
@@ -554,6 +478,105 @@ SHAR_EOF
 else
 test `LC_ALL=C wc -c < 'dot_emacs'` -ne 3647 && \
   ${echo} "restoration warning:  size of 'dot_emacs' is not 3647"
+  fi
+fi
+# ============= dot_profile ==============
+if test -n "${keep_file}" && test -f 'dot_profile'
+then
+${echo} "x - SKIPPING dot_profile (file already exists)"
+
+else
+${echo} "x - extracting dot_profile (text)"
+  sed 's/^X//' << 'SHAR_EOF' > 'dot_profile' &&
+# .profile executed by sh(1) for login shells.
+X
+# Save system paths the first time
+if [ -z "${SYSTEM_PATH}" ] ; then
+X    export SYSTEM_PATH="${PATH}"
+X    export SYSTEM_LD_LIBRARY_PATH="${LD_LIBRARY_PATH}"
+X    export SYSTEM_PERL5LIB="${PERL5LIB}"
+X    export SYSTEM_PKG_CONFIG_PATH="${PKG_CONFIG_PATH}"
+fi
+X
+if [ -f ~/.path_dirs ]; then
+X    while read -r xtrad || [ -n "${xtrad}" ];
+X    do
+X        if echo "${xtrad}" | grep '^[[:space:]]*\(#.*\)\?$' > /dev/null 2>&1 ; then
+X            continue
+X        fi
+X        # Set PATH so it includes user's private bin if it exists
+X        if [ -d "${xtrad}/bin" ]; then
+X            PATH="${xtrad}/bin:${PATH}"
+X        fi
+X        
+X        # Set PATH so it includes user's private lib if it exists
+X        if [ -d "${xtrad}/lib" ]; then
+X            PATH="${xtrad}/lib:${PATH}"
+X            LD_LIBRARY_PATH="${xtrad}/lib:${LD_LIBRARY_PATH}"
+X        fi
+X        
+X        # Set PKG_CONFIG_PATH so it includes user's private if it exists
+X        if [ -d "${xtrad}/lib/pkgconfig" ]; then
+X            PKG_CONFIG_PATH="${xtrad}/lib/pkgconfig:${PKG_CONFIG_PATH}"
+X        fi
+X        
+X        # Set MANPATH so it includes users' private man if it exists
+X        if [ -d "${xtrad}/man" ]; then
+X            MANPATH="${xtrad}/man:${MANPATH}"
+X        fi
+X        if [ -d "${xtrad}/share/man" ]; then
+X            MANPATH="${xtrad}/share/man:${MANPATH}"
+X        fi
+X        
+X        # Set INFOPATH so it includes users' private info if it exists
+X        if [ -d "${xtrad}/info" ]; then
+X            INFOPATH="${xtrad}/info:${INFOPATH}"
+X        fi
+X        
+X    done < ~/.path_dirs
+fi
+X
+if [ -O ~/.paths ]; then
+X    while read -r xtrad || [ -n "${xtrad}" ];
+X    do
+X        if echo "${xtrad}" | grep '^[[:space:]]*\(#.*\)\?$' > /dev/null 2>&1 ; then
+X            continue
+X        fi
+X        PATH="${PATH}:${xtrad}"
+X    done < ~/.paths
+fi
+X
+export PATH
+export LD_LIBRARY_PATH
+export MANPATH
+export INFOPATH
+X
+# For nedit bug...
+export XLIB_SKIP_ARGB_VISUALS=1
+X
+if [ -d ~/.local/etc/profile.d ]; then
+X   for profile_script in ~/.local/etc/profile.d/*.sh
+X   do
+X       . "${profile_script}"
+X   done
+fi
+SHAR_EOF
+  (set 20 17 01 05 21 45 46 'dot_profile'
+   eval "${shar_touch}") && \
+  chmod 0644 'dot_profile'
+if test $? -ne 0
+then ${echo} "restore of dot_profile failed"
+fi
+  if ${md5check}
+  then (
+       ${MD5SUM} -c >/dev/null 2>&1 || ${echo} 'dot_profile': 'MD5 check failed'
+       ) << \SHAR_EOF
+7bbd9520dfb8f3aa99d6563584c79f1c  dot_profile
+SHAR_EOF
+
+else
+test `LC_ALL=C wc -c < 'dot_profile'` -ne 2106 && \
+  ${echo} "restoration warning:  size of 'dot_profile' is not 2106"
   fi
 fi
 # ============= dot_vimrc ==============
@@ -1059,7 +1082,7 @@ if [ ! -e ~/.path_dirs ]; then
 ${HOME}/.local
 DOT_PROFILE_PATHS_EOF
 fi
-install -m 0644 dot_bash_profile ~/.profile
+install -m 0644 dot_profile      ~/.profile
 install -m 0644 dot_bash_profile ~/.bash_profile
 install -m 0644 dot_bashrc       ~/.bashrc
 
@@ -1086,6 +1109,7 @@ install -m 0755 -d ~/.local/var/lock
 install -m 0755 -d ~/.local/var/log
 install -m 0755 -d ~/.local/var/run
 install -m 0755 -d ~/.local/etc/cron
+install -m 0755 -d ~/.local/etc/profile.d
 install -m 0755 runcron ~/.local/bin
 export PATH=${PATH}:~/.local/bin
 

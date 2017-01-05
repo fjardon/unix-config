@@ -92,7 +92,7 @@ if [ ! -e ~/.path_dirs ]; then
 ${HOME}/.local
 DOT_PROFILE_PATHS_EOF
 fi
-install -m 0644 dot_bash_profile ~/.profile
+install -m 0644 dot_profile      ~/.profile
 install -m 0644 dot_bash_profile ~/.bash_profile
 install -m 0644 dot_bashrc       ~/.bashrc
 
@@ -119,6 +119,7 @@ install -m 0755 -d ~/.local/var/lock
 install -m 0755 -d ~/.local/var/log
 install -m 0755 -d ~/.local/var/run
 install -m 0755 -d ~/.local/etc/cron
+install -m 0755 -d ~/.local/etc/profile.d
 install -m 0755 runcron ~/.local/bin
 export PATH=${PATH}:~/.local/bin
 

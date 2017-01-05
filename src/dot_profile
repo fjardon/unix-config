@@ -1,0 +1,72 @@
+# .profile executed by sh(1) for login shells.
+
+# Save system paths the first time
+if [ -z "${SYSTEM_PATH}" ] ; then
+    export SYSTEM_PATH="${PATH}"
+    export SYSTEM_LD_LIBRARY_PATH="${LD_LIBRARY_PATH}"
+    export SYSTEM_PERL5LIB="${PERL5LIB}"
+    export SYSTEM_PKG_CONFIG_PATH="${PKG_CONFIG_PATH}"
+fi
+
+if [ -f ~/.path_dirs ]; then
+    while read -r xtrad || [ -n "${xtrad}" ];
+    do
+        if echo "${xtrad}" | grep '^[[:space:]]*\(#.*\)\?$' > /dev/null 2>&1 ; then
+            continue
+        fi
+        # Set PATH so it includes user's private bin if it exists
+        if [ -d "${xtrad}/bin" ]; then
+            PATH="${xtrad}/bin:${PATH}"
+        fi
+        
+        # Set PATH so it includes user's private lib if it exists
+        if [ -d "${xtrad}/lib" ]; then
+            PATH="${xtrad}/lib:${PATH}"
+            LD_LIBRARY_PATH="${xtrad}/lib:${LD_LIBRARY_PATH}"
+        fi
+        
+        # Set PKG_CONFIG_PATH so it includes user's private if it exists
+        if [ -d "${xtrad}/lib/pkgconfig" ]; then
+            PKG_CONFIG_PATH="${xtrad}/lib/pkgconfig:${PKG_CONFIG_PATH}"
+        fi
+        
+        # Set MANPATH so it includes users' private man if it exists
+        if [ -d "${xtrad}/man" ]; then
+            MANPATH="${xtrad}/man:${MANPATH}"
+        fi
+        if [ -d "${xtrad}/share/man" ]; then
+            MANPATH="${xtrad}/share/man:${MANPATH}"
+        fi
+        
+        # Set INFOPATH so it includes users' private info if it exists
+        if [ -d "${xtrad}/info" ]; then
+            INFOPATH="${xtrad}/info:${INFOPATH}"
+        fi
+        
+    done < ~/.path_dirs
+fi
+
+if [ -O ~/.paths ]; then
+    while read -r xtrad || [ -n "${xtrad}" ];
+    do
+        if echo "${xtrad}" | grep '^[[:space:]]*\(#.*\)\?$' > /dev/null 2>&1 ; then
+            continue
+        fi
+        PATH="${PATH}:${xtrad}"
+    done < ~/.paths
+fi
+
+export PATH
+export LD_LIBRARY_PATH
+export MANPATH
+export INFOPATH
+
+# For nedit bug...
+export XLIB_SKIP_ARGB_VISUALS=1
+
+if [ -d ~/.local/etc/profile.d ]; then
+   for profile_script in ~/.local/etc/profile.d/*.sh
+   do
+       . "${profile_script}"
+   done
+fi
