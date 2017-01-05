@@ -61,8 +61,8 @@ cat <<'SETUP_SHAR_EOF'> setup.shar
 # To extract the files from this archive, save it to some FILE, remove
 # everything before the '#!/bin/sh' line above, then type 'sh FILE'.
 #
-lock_dir=_sh00236
-# Made on 2017-01-05 21:46 CET by <fjardon@yoda>.
+lock_dir=_sh07512
+# Made on 2017-01-05 21:57 CET by <fjardon@yoda>.
 # Source directory was '/home/fjardon/workspace/unix-config/src'.
 #
 # Existing files will *not* be overwritten, unless '-c' is specified.
@@ -561,7 +561,7 @@ X       . "${profile_script}"
 X   done
 fi
 SHAR_EOF
-  (set 20 17 01 05 21 45 46 'dot_profile'
+  (set 20 17 01 05 21 49 43 'dot_profile'
    eval "${shar_touch}") && \
   chmod 0644 'dot_profile'
 if test $? -ne 0
@@ -1171,42 +1171,62 @@ install -m 0644 dot_vimrc ~/.vimrc
 
 # Python
 echo "Python ..."
-if ! has_prog cppman; then
+if ! has_prog pip3; then
     easy_install_prog=$(compgen -c 'easy_install-3' | head -n 1)
     if has_prog "${easy_install_prog}"; then
         if ! has_prog pip3; then
             ${easy_install_prog} --user pip
         fi
     fi
+fi
+if ! has_prog cppman; then
     if has_prog pip3; then
         pip3 install --user cppman
     fi
 fi
-
-# emacs
-echo "emacs ..."
-touch ~/.emacs
-cp -f ~/.emacs ${BACKUPDIR}
-install -m 0644 dot_emacs ~/.emacs
-
-if has_prog emacs && has_prog git && has_prog make; then
-    echo "emacs cedet ..."
-    CEDETDIR=cedet-git
-    if [ ! -e "${DATAROOTDIR}/${CEDETDIR}" ]; then
-	    git -C "${DATAROOTDIR}" clone \
-	        'http://git.code.sf.net/p/cedet/git' ${CEDETDIR}
-	    make -C "${DATAROOTDIR}/${CEDETDIR}" EMACS=emacs
-    fi
+if ! has_prog ribosome.py; then
+    git clone https://github.com/sustrik/ribosome.git ribosome
+    install -m 0755 ribosome/ribosome.py ~/.local/bin/
 fi
 
-if has_prog emacs && has_prog git; then
-    echo "emacs ecb ..."
-    ECBDIR=ecb-git
-    if [ ! -e "${DATAROOTDIR}/${ECBDIR}" ]; then
-	      git -C "${DATAROOTDIR}" clone \
-	          'https://github.com/alexott/ecb.git' ${ECBDIR}
-    fi
+# Perl
+echo "Perl ..."
+if [ ! -e ~/.local/share/perl5 ]; then
+    wget http://search.cpan.org/CPAN/authors/id/H/HA/HAARG/local-lib-2.000018.tar.gz
+    tar zxvf local-lib-2.000018.tar.gz
+    cd local-lib-2.000018
+    perl Makefile.PL --bootstrap=${HOME}/.local/share/perl5
+    make test && make install
+    cd ..
+    perl -I${HOME}/.local/share/perl5/lib/perl5 -Mlocal::lib \
+        > ~/.local/etc/profile.d/perl5.bash
+    . ~/.local/etc/profile.d/perl5.bash
 fi
+
+## emacs
+#echo "emacs ..."
+#touch ~/.emacs
+#cp -f ~/.emacs ${BACKUPDIR}
+#install -m 0644 dot_emacs ~/.emacs
+#
+#if has_prog emacs && has_prog git && has_prog make; then
+#    echo "emacs cedet ..."
+#    CEDETDIR=cedet-git
+#    if [ ! -e "${DATAROOTDIR}/${CEDETDIR}" ]; then
+#	    git -C "${DATAROOTDIR}" clone \
+#	        'http://git.code.sf.net/p/cedet/git' ${CEDETDIR}
+#	    make -C "${DATAROOTDIR}/${CEDETDIR}" EMACS=emacs
+#    fi
+#fi
+#
+#if has_prog emacs && has_prog git; then
+#    echo "emacs ecb ..."
+#    ECBDIR=ecb-git
+#    if [ ! -e "${DATAROOTDIR}/${ECBDIR}" ]; then
+#	      git -C "${DATAROOTDIR}" clone \
+#	          'https://github.com/alexott/ecb.git' ${ECBDIR}
+#    fi
+#fi
 
 # gnu global / idutils
 echo "dev tools ..."
