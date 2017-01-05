@@ -189,6 +189,14 @@ if ! has_prog pip3; then
         fi
     fi
 fi
+if ! has_prog pip2; then
+    easy_install_prog=$(compgen -c 'easy_install-2' | head -n 1)
+    if has_prog "${easy_install_prog}"; then
+        if ! has_prog pip2; then
+            ${easy_install_prog} --user pip
+        fi
+    fi
+fi
 if ! has_prog cppman; then
     if has_prog pip3; then
         pip3 install --user cppman
