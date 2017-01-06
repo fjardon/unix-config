@@ -32,12 +32,12 @@ done
 [[ -z "${has_errors}" ]] || exit 1
 
 build_idutils=
-if has_prog mkid && has_prog curl && has_prog gcc && has_prog make && has_prog tar; then
+if ! has_prog mkid && has_prog curl && has_prog gcc && has_prog make && has_prog tar; then
     build_idutils=Yes
 fi
 
 build_global=
-if has_prog global && has_prog curl && has_prog gcc && has_prog make && has_prog tar; then
+if ! has_prog global && has_prog curl && has_prog gcc && has_prog make && has_prog tar; then
     build_global=Yes
 fi
 
@@ -61,8 +61,8 @@ cat <<'SETUP_SHAR_EOF'> setup.shar
 # To extract the files from this archive, save it to some FILE, remove
 # everything before the '#!/bin/sh' line above, then type 'sh FILE'.
 #
-lock_dir=_sh07512
-# Made on 2017-01-05 21:57 CET by <fjardon@yoda>.
+lock_dir=_sh09556
+# Made on 2017-01-06 20:25 CET by <fjardon@yoda>.
 # Source directory was '/home/fjardon/workspace/unix-config/src'.
 #
 # Existing files will *not* be overwritten, unless '-c' is specified.
@@ -70,10 +70,10 @@ lock_dir=_sh07512
 # This shar contains:
 # length mode       name
 # ------ ---------- ------------------------------------------
-#    405 -rw-r--r-- dot_bash_profile
+#    456 -rw-r--r-- dot_bash_profile
 #   2762 -rw-r--r-- dot_bashrc
 #   3647 -rw-r--r-- dot_emacs
-#   2106 -rw-r--r-- dot_profile
+#   2158 -rw-r--r-- dot_profile
 #   4139 -rw-r--r-- dot_vimrc
 #    663 -rw-r--r-- dot_Xresources
 #   4076 -rw-r--r-- dot_XWinrc
@@ -187,10 +187,11 @@ X
 X. ~/.profile
 X
 if [ -d ~/.local/etc/profile.d ]; then
-X   for profile_script in ~/.local/etc/profile.d/*.bash
-X   do
-X       . "${profile_script}"
-X   done
+X    for profile_script in ~/.local/etc/profile.d/*.bash
+X    do
+X        [ -e "${profile_script}" ] || continue
+X        . "${profile_script}"
+X    done
 fi
 X
 # Bash reads:
@@ -202,7 +203,7 @@ if [ -f ~/.bashrc ]; then
 X    . ~/.bashrc
 fi
 SHAR_EOF
-  (set 20 17 01 05 21 43 18 'dot_bash_profile'
+  (set 20 17 01 06 20 25 09 'dot_bash_profile'
    eval "${shar_touch}") && \
   chmod 0644 'dot_bash_profile'
 if test $? -ne 0
@@ -212,12 +213,12 @@ fi
   then (
        ${MD5SUM} -c >/dev/null 2>&1 || ${echo} 'dot_bash_profile': 'MD5 check failed'
        ) << \SHAR_EOF
-c7e971d7883a04abfab024653929c2ce  dot_bash_profile
+abefa303889936dd08889dbe573e894c  dot_bash_profile
 SHAR_EOF
 
 else
-test `LC_ALL=C wc -c < 'dot_bash_profile'` -ne 405 && \
-  ${echo} "restoration warning:  size of 'dot_bash_profile' is not 405"
+test `LC_ALL=C wc -c < 'dot_bash_profile'` -ne 456 && \
+  ${echo} "restoration warning:  size of 'dot_bash_profile' is not 456"
   fi
 fi
 # ============= dot_bashrc ==============
@@ -555,13 +556,15 @@ X
 export XLIB_SKIP_ARGB_VISUALS=1
 X
 if [ -d ~/.local/etc/profile.d ]; then
-X   for profile_script in ~/.local/etc/profile.d/*.sh
-X   do
-X       . "${profile_script}"
-X   done
+X    for profile_script in ~/.local/etc/profile.d/*.sh
+X    do
+X        [ -e "${profile_script}" ] || continue
+X        . "${profile_script}"
+X    done
 fi
+X
 SHAR_EOF
-  (set 20 17 01 05 21 49 43 'dot_profile'
+  (set 20 17 01 06 20 25 09 'dot_profile'
    eval "${shar_touch}") && \
   chmod 0644 'dot_profile'
 if test $? -ne 0
@@ -571,12 +574,12 @@ fi
   then (
        ${MD5SUM} -c >/dev/null 2>&1 || ${echo} 'dot_profile': 'MD5 check failed'
        ) << \SHAR_EOF
-7bbd9520dfb8f3aa99d6563584c79f1c  dot_profile
+9178fc533b6b631e75e50716c872727d  dot_profile
 SHAR_EOF
 
 else
-test `LC_ALL=C wc -c < 'dot_profile'` -ne 2106 && \
-  ${echo} "restoration warning:  size of 'dot_profile' is not 2106"
+test `LC_ALL=C wc -c < 'dot_profile'` -ne 2158 && \
+  ${echo} "restoration warning:  size of 'dot_profile' is not 2158"
   fi
 fi
 # ============= dot_vimrc ==============
@@ -1175,6 +1178,14 @@ if ! has_prog pip3; then
     easy_install_prog=$(compgen -c 'easy_install-3' | head -n 1)
     if has_prog "${easy_install_prog}"; then
         if ! has_prog pip3; then
+            ${easy_install_prog} --user pip
+        fi
+    fi
+fi
+if ! has_prog pip2; then
+    easy_install_prog=$(compgen -c 'easy_install-2' | head -n 1)
+    if has_prog "${easy_install_prog}"; then
+        if ! has_prog pip2; then
             ${easy_install_prog} --user pip
         fi
     fi
