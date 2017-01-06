@@ -3,10 +3,11 @@
 . ~/.profile
 
 if [ -d ~/.local/etc/profile.d ]; then
-   for profile_script in ~/.local/etc/profile.d/*.bash
-   do
-       . "${profile_script}"
-   done
+    for profile_script in ~/.local/etc/profile.d/*.bash
+    do
+        [ -e "${profile_script}" ] || continue
+        . "${profile_script}"
+    done
 fi
 
 # Bash reads:

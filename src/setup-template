@@ -32,12 +32,12 @@ done
 [[ -z "${has_errors}" ]] || exit 1
 
 build_idutils=
-if has_prog mkid && has_prog curl && has_prog gcc && has_prog make && has_prog tar; then
+if ! has_prog mkid && has_prog curl && has_prog gcc && has_prog make && has_prog tar; then
     build_idutils=Yes
 fi
 
 build_global=
-if has_prog global && has_prog curl && has_prog gcc && has_prog make && has_prog tar; then
+if ! has_prog global && has_prog curl && has_prog gcc && has_prog make && has_prog tar; then
     build_global=Yes
 fi
 
