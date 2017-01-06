@@ -96,19 +96,12 @@ install -m 0644 dot_profile      ~/.profile
 install -m 0644 dot_bash_profile ~/.bash_profile
 install -m 0644 dot_bashrc       ~/.bashrc
 
-# XWinrc for Cygwin
+# XWindow
 echo "XWindow ..."
 if [ -e ~/.Xresources ]; then
     cp -f ~/.Xresources ${BACKUPDIR}
 fi
 install -m 0644 dot_Xresources ~/.Xresources
-
-if [[ "${os_name}" == CYGWIN* ]]; then
-    if [ -e ~/.XWinrc ]; then
-	cp -f ~/.XWinrc ${BACKUPDIR}
-    fi
-    install -m 0644 dot_XWinrc ~/.XWinrc
-fi
 
 # .local setup
 echo "local ..."
@@ -122,6 +115,20 @@ install -m 0755 -d ~/.local/etc/cron
 install -m 0755 -d ~/.local/etc/profile.d
 install -m 0755 runcron ~/.local/bin
 export PATH=${PATH}:~/.local/bin
+
+# Cygwin
+if [[ "${os_name}" == CYGWIN* ]]; then
+    echo "Cygwin ..."
+    if [ -e ~/.XWinrc ]; then
+        cp -f ~/.XWinrc ${BACKUPDIR}
+    fi
+    install -m 0644 dot_XWinrc ~/.XWinrc
+
+    if ! has_prog apt-cyg; then
+        git clone https://github.com/transcode-open/apt-cyg.git apt-cyg
+        install -m 0755 apt-cyg/apt-cyg ~/.local/bin
+    fi
+fi
 
 # Cron setup
 echo "cron ..."
@@ -158,7 +165,7 @@ if has_prog crontab; then
     rm -f "${tmpcrontab}"
 fi
 
-# fonts
+# Fonts
 echo "fonts ..."
 install -d ~/.fonts
 install -d ~/.local/share/fonts
