@@ -228,6 +228,15 @@ if [ ! -e ~/.local/share/perl5 ]; then
     . ~/.local/etc/profile.d/perl5.bash
 fi
 
+# Gnulib
+echo "Gnulib ..."
+if ! has_cmd gnulib-tool; then
+    if [ ! -e ~/.local/share/gnulib ]; then
+        git clone git://git.savannah.gnu.org/gnulib.git ~/.local/share/gnulib
+    fi
+    ln -s ~/.local/share/gnulib/gnulib-tool ~/.local/bin/gnulib-tool
+fi
+
 ## emacs
 #echo "emacs ..."
 #touch ~/.emacs
