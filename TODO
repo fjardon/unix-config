@@ -25,9 +25,14 @@ TODO
 [ ] Better cygwin support
   [ ] Create a cygwin package with all good tools for developers (as requires)
   [ ] Configure XWinrc only if cygwin is detected
+  [ ] Add perl script to generate visual-c++ equivalent of vcvarsall.bat
 [ ] Better SSH support
   [ ] Help user setup its ssh keys (through GUI)
-
+[ ] Better install
+  [ ] Before replacing the .bashrc, extract customization (after the marker line
+      and copy them at the end of the new .bashrc.
+      This will solve most of the problems with setup scripts (perl, ruby, ...)
+      which updates the .bashrc with host specific lines.
 
 DONE
 ====

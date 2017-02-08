@@ -7,7 +7,7 @@ if [ -t 1 -a -n "${TPUT}" ]; then
     NCOLORS=$(tput colors)
     if [ -n "${NCOLORS}" -a "${NCOLORS}" -ge 8 ]; then
         #BLACK_FG=$(tput setaf 0)
-        #RED_FG=$(tput setaf 1)
+        RED_FG=$(tput setaf 1)
         GREEN_FG=$(tput setaf 2)
         YELLOW_FG=$(tput setaf 3)
         #BLUE_FG=$(tput setaf 4)
@@ -15,9 +15,6 @@ if [ -t 1 -a -n "${TPUT}" ]; then
         #CYAN_FG=$(tput setaf 6)
         WHITE_FG=$(tput setaf 7)
         DEFAULT_FG=$(tput setaf $(expr ${NCOLORS} + 1))
-        PS1="${GREEN_FG}\\u@\\h ${MAGENTA_FG}\\t ${YELLOW_FG}\\w${WHITE_FG}\n\$ "
-    else
-        PS1='\u@\h \t \w\n\$ '
     fi
 fi
 
@@ -25,6 +22,10 @@ if [[ "${TERM}" == *xterm* ]]; then
     SETXTERMTITLE='\[\e]0;\h - \w\a\]\n'
     PS1="${SETXTERMTITLE}${PS1}"
 fi
+if [[ -n "${VIMRUNTIME}" ]]; then
+    VIM_MARKER="${RED_FG}[vim] "
+fi
+PS1="${SETXTERMTITLE}${VIM_MARKER}${GREEN_FG}\\u@\\h ${MAGENTA_FG}\\t ${YELLOW_FG}\\w\n${WHITE_FG}\$ "
 export PS1
 
 # Make bash append rather than overwrite the history on disk
@@ -40,6 +41,10 @@ export PROMPT_COMMAND="history -a"
 if [ -f /usr/share/bash-completion/bash_completion ]; then
     source /usr/share/bash-completion/bash_completion
 fi
+
+# Following line is usually added by travis gem for bash autocompletion
+# added by travis gem
+[ -f ~/.travis/travis.sh ] && source ~/.travis/travis.sh
 
 # Aliases
 #
@@ -94,3 +99,7 @@ if ! is_ssh_agent_running "${SSH_AGENT_PID:-1}"; then
     ssh-agent > ~/.ssh/ssh-agent.pid 2> /dev/null
     source ~/.ssh/ssh-agent.pid > /dev/null 2>&1
 fi
+
+#
+# ===== END OF STANDARD BASHRC =====
+
