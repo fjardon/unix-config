@@ -23,9 +23,12 @@ if [[ "${TERM}" == *xterm* ]]; then
     PS1="${SETXTERMTITLE}${PS1}"
 fi
 if [[ -n "${VIMRUNTIME}" ]]; then
-    VIM_MARKER="${RED_FG}[vim] "
+    VIM_LED="${RED_FG}[vim] "
 fi
-PS1="${SETXTERMTITLE}${VIM_MARKER}${CYAN_FG}${VS_SETUP}${GREEN_FG}\\u@\\h ${MAGENTA_FG}\\t ${YELLOW_FG}\\w\n${WHITE_FG}\$ "
+if [[ -n "${VS_SETUP}" ]]; then
+    VS_LED="${CYAN_FG}${VS_SETUP} "
+fi
+PS1="${SETXTERMTITLE}${VIM_LED}${VS_LED}${GREEN_FG}\\u@\\h ${MAGENTA_FG}\\t ${YELLOW_FG}\\w${WHITE_FG}\n\$ "
 export PS1
 
 # Make bash append rather than overwrite the history on disk
