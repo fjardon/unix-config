@@ -61,8 +61,8 @@ cat <<'SETUP_SHAR_EOF'> setup.shar
 # To extract the files from this archive, save it to some FILE, remove
 # everything before the '#!/bin/sh' line above, then type 'sh FILE'.
 #
-lock_dir=_sh09556
-# Made on 2017-01-06 20:25 CET by <fjardon@yoda>.
+lock_dir=_sh04808
+# Made on 2017-02-09 07:00 CET by <fjardon@yoda>.
 # Source directory was '/home/fjardon/workspace/unix-config/src'.
 #
 # Existing files will *not* be overwritten, unless '-c' is specified.
@@ -71,7 +71,7 @@ lock_dir=_sh09556
 # length mode       name
 # ------ ---------- ------------------------------------------
 #    456 -rw-r--r-- dot_bash_profile
-#   2762 -rw-r--r-- dot_bashrc
+#   3037 -rw-r--r-- dot_bashrc
 #   3647 -rw-r--r-- dot_emacs
 #   2158 -rw-r--r-- dot_profile
 #   4139 -rw-r--r-- dot_vimrc
@@ -238,17 +238,14 @@ if [ -t 1 -a -n "${TPUT}" ]; then
 X    NCOLORS=$(tput colors)
 X    if [ -n "${NCOLORS}" -a "${NCOLORS}" -ge 8 ]; then
 X        #BLACK_FG=$(tput setaf 0)
-X        #RED_FG=$(tput setaf 1)
+X        RED_FG=$(tput setaf 1)
 X        GREEN_FG=$(tput setaf 2)
 X        YELLOW_FG=$(tput setaf 3)
 X        #BLUE_FG=$(tput setaf 4)
 X        MAGENTA_FG=$(tput setaf 5)
-X        #CYAN_FG=$(tput setaf 6)
+X        CYAN_FG=$(tput setaf 6)
 X        WHITE_FG=$(tput setaf 7)
 X        DEFAULT_FG=$(tput setaf $(expr ${NCOLORS} + 1))
-X        PS1="${GREEN_FG}\\u@\\h ${MAGENTA_FG}\\t ${YELLOW_FG}\\w${WHITE_FG}\n\$ "
-X    else
-X        PS1='\u@\h \t \w\n\$ '
 X    fi
 fi
 X
@@ -256,6 +253,13 @@ if [[ "${TERM}" == *xterm* ]]; then
 X    SETXTERMTITLE='\[\e]0;\h - \w\a\]\n'
 X    PS1="${SETXTERMTITLE}${PS1}"
 fi
+if [[ -n "${VIMRUNTIME}" ]]; then
+X    VIM_LED="${RED_FG}[vim] "
+fi
+if [[ -n "${VS_SETUP}" ]]; then
+X    VS_LED="${CYAN_FG}${VS_SETUP} "
+fi
+PS1="${SETXTERMTITLE}${VIM_LED}${VS_LED}${GREEN_FG}\\u@\\h ${MAGENTA_FG}\\t ${YELLOW_FG}\\w${WHITE_FG}\n\$ "
 export PS1
 X
 # Make bash append rather than overwrite the history on disk
@@ -271,6 +275,10 @@ X
 if [ -f /usr/share/bash-completion/bash_completion ]; then
 X    source /usr/share/bash-completion/bash_completion
 fi
+X
+# Following line is usually added by travis gem for bash autocompletion
+# added by travis gem
+[ -f ~/.travis/travis.sh ] && source ~/.travis/travis.sh
 X
 # Aliases
 #
@@ -326,7 +334,7 @@ X    ssh-agent > ~/.ssh/ssh-agent.pid 2> /dev/null
 X    source ~/.ssh/ssh-agent.pid > /dev/null 2>&1
 fi
 SHAR_EOF
-  (set 20 17 01 05 21 34 19 'dot_bashrc'
+  (set 20 17 02 09 07 00 50 'dot_bashrc'
    eval "${shar_touch}") && \
   chmod 0644 'dot_bashrc'
 if test $? -ne 0
@@ -336,12 +344,12 @@ fi
   then (
        ${MD5SUM} -c >/dev/null 2>&1 || ${echo} 'dot_bashrc': 'MD5 check failed'
        ) << \SHAR_EOF
-7edefe5d31a7fe45d7a80ddc0a501062  dot_bashrc
+5525d9dca769a8f947ec82888146ec72  dot_bashrc
 SHAR_EOF
 
 else
-test `LC_ALL=C wc -c < 'dot_bashrc'` -ne 2762 && \
-  ${echo} "restoration warning:  size of 'dot_bashrc' is not 2762"
+test `LC_ALL=C wc -c < 'dot_bashrc'` -ne 3037 && \
+  ${echo} "restoration warning:  size of 'dot_bashrc' is not 3037"
   fi
 fi
 # ============= dot_emacs ==============
@@ -1219,6 +1227,15 @@ if [ ! -e ~/.local/share/perl5 ]; then
     perl -I${HOME}/.local/share/perl5/lib/perl5 -Mlocal::lib \
         > ~/.local/etc/profile.d/perl5.bash
     . ~/.local/etc/profile.d/perl5.bash
+fi
+
+# Gnulib
+echo "Gnulib ..."
+if ! has_prog gnulib-tool; then
+    if [ ! -e ~/.local/share/gnulib ]; then
+        git clone git://git.savannah.gnu.org/gnulib.git ~/.local/share/gnulib
+    fi
+    ln -s ~/.local/share/gnulib/gnulib-tool ~/.local/bin/gnulib-tool
 fi
 
 ## emacs
