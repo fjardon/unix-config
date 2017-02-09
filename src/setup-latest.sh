@@ -61,8 +61,8 @@ cat <<'SETUP_SHAR_EOF'> setup.shar
 # To extract the files from this archive, save it to some FILE, remove
 # everything before the '#!/bin/sh' line above, then type 'sh FILE'.
 #
-lock_dir=_sh04808
-# Made on 2017-02-09 07:00 CET by <fjardon@yoda>.
+lock_dir=_sh10652
+# Made on 2017-02-09 20:51 CET by <fjardon@yoda>.
 # Source directory was '/home/fjardon/workspace/unix-config/src'.
 #
 # Existing files will *not* be overwritten, unless '-c' is specified.
@@ -1224,7 +1224,7 @@ if [ ! -e ~/.local/share/perl5 ]; then
     perl Makefile.PL --bootstrap=${HOME}/.local/share/perl5
     make test && make install
     cd ..
-    perl -I${HOME}/.local/share/perl5/lib/perl5 -Mlocal::lib \
+    perl -I${HOME}/.local/share/perl5/lib/perl5 -Mlocal::lib=${HOME}/.local/share/perl5 \
         > ~/.local/etc/profile.d/perl5.bash
     . ~/.local/etc/profile.d/perl5.bash
 fi
