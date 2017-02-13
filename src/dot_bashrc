@@ -25,8 +25,8 @@ fi
 if [[ -n "${VIMRUNTIME}" ]]; then
     VIM_LED="${RED_FG}[vim] "
 fi
-if [[ -n "${VS_SETUP}" ]]; then
-    VS_LED="${CYAN_FG}${VS_SETUP} "
+if [[ -n "${VS_KIT}" ]]; then
+    VS_LED="${CYAN_FG}[msvc ${VS_KIT} ${VS_VERSION:0:2}.${VS_VERSION:2:1}] "
 fi
 PS1="${SETXTERMTITLE}${VIM_LED}${VS_LED}${GREEN_FG}\\u@\\h ${MAGENTA_FG}\\t ${YELLOW_FG}\\w${WHITE_FG}\n\$ "
 export PS1
