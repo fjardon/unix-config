@@ -61,8 +61,8 @@ cat <<'SETUP_SHAR_EOF'> setup.shar
 # To extract the files from this archive, save it to some FILE, remove
 # everything before the '#!/bin/sh' line above, then type 'sh FILE'.
 #
-lock_dir=_sh10652
-# Made on 2017-02-09 20:51 CET by <fjardon@yoda>.
+lock_dir=_sh03108
+# Made on 2017-02-14 07:48 CET by <fjardon@yoda>.
 # Source directory was '/home/fjardon/workspace/unix-config/src'.
 #
 # Existing files will *not* be overwritten, unless '-c' is specified.
@@ -71,7 +71,7 @@ lock_dir=_sh10652
 # length mode       name
 # ------ ---------- ------------------------------------------
 #    456 -rw-r--r-- dot_bash_profile
-#   3037 -rw-r--r-- dot_bashrc
+#   3076 -rw-r--r-- dot_bashrc
 #   3647 -rw-r--r-- dot_emacs
 #   2158 -rw-r--r-- dot_profile
 #   4139 -rw-r--r-- dot_vimrc
@@ -256,8 +256,8 @@ fi
 if [[ -n "${VIMRUNTIME}" ]]; then
 X    VIM_LED="${RED_FG}[vim] "
 fi
-if [[ -n "${VS_SETUP}" ]]; then
-X    VS_LED="${CYAN_FG}${VS_SETUP} "
+if [[ -n "${VS_KIT}" ]]; then
+X    VS_LED="${CYAN_FG}[msvc ${VS_KIT} ${VS_VERSION:0:2}.${VS_VERSION:2:1}] "
 fi
 PS1="${SETXTERMTITLE}${VIM_LED}${VS_LED}${GREEN_FG}\\u@\\h ${MAGENTA_FG}\\t ${YELLOW_FG}\\w${WHITE_FG}\n\$ "
 export PS1
@@ -334,7 +334,7 @@ X    ssh-agent > ~/.ssh/ssh-agent.pid 2> /dev/null
 X    source ~/.ssh/ssh-agent.pid > /dev/null 2>&1
 fi
 SHAR_EOF
-  (set 20 17 02 09 07 00 50 'dot_bashrc'
+  (set 20 17 02 14 07 48 38 'dot_bashrc'
    eval "${shar_touch}") && \
   chmod 0644 'dot_bashrc'
 if test $? -ne 0
@@ -344,12 +344,12 @@ fi
   then (
        ${MD5SUM} -c >/dev/null 2>&1 || ${echo} 'dot_bashrc': 'MD5 check failed'
        ) << \SHAR_EOF
-5525d9dca769a8f947ec82888146ec72  dot_bashrc
+7922aee51734183a2119446f387c1d5e  dot_bashrc
 SHAR_EOF
 
 else
-test `LC_ALL=C wc -c < 'dot_bashrc'` -ne 3037 && \
-  ${echo} "restoration warning:  size of 'dot_bashrc' is not 3037"
+test `LC_ALL=C wc -c < 'dot_bashrc'` -ne 3076 && \
+  ${echo} "restoration warning:  size of 'dot_bashrc' is not 3076"
   fi
 fi
 # ============= dot_emacs ==============
