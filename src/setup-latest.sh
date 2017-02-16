@@ -61,8 +61,8 @@ cat <<'SETUP_SHAR_EOF'> setup.shar
 # To extract the files from this archive, save it to some FILE, remove
 # everything before the '#!/bin/sh' line above, then type 'sh FILE'.
 #
-lock_dir=_sh03108
-# Made on 2017-02-14 07:48 CET by <fjardon@yoda>.
+lock_dir=_sh04208
+# Made on 2017-02-16 20:56 CET by <fjardon@yoda>.
 # Source directory was '/home/fjardon/workspace/unix-config/src'.
 #
 # Existing files will *not* be overwritten, unless '-c' is specified.
@@ -75,7 +75,7 @@ lock_dir=_sh03108
 #   3647 -rw-r--r-- dot_emacs
 #   2158 -rw-r--r-- dot_profile
 #   4139 -rw-r--r-- dot_vimrc
-#    663 -rw-r--r-- dot_Xresources
+#    638 -rw-r--r-- dot_Xresources
 #   4076 -rw-r--r-- dot_XWinrc
 #    901 -rwxr-xr-x runcron
 #
@@ -771,7 +771,7 @@ else
 ${echo} "x - extracting dot_Xresources (text)"
   sed 's/^X//' << 'SHAR_EOF' > 'dot_Xresources' &&
 XXTerm*eightBitInput: true
-XXTerm*faceName: Liberation Mono for Powerline,Literation Mono Powerline
+XXTerm*faceName: DejaVu Sans Mono for Powerline
 XXTerm*renderFont: true
 XXTerm*reverseVideo: true
 XXTerm*rightScrollBar: true
@@ -793,7 +793,7 @@ X
 !XTerm*backarrowKey: false
 !XTerm*backarrowKeyIsErase: true
 SHAR_EOF
-  (set 20 16 12 16 20 16 52 'dot_Xresources'
+  (set 20 17 02 16 13 34 38 'dot_Xresources'
    eval "${shar_touch}") && \
   chmod 0644 'dot_Xresources'
 if test $? -ne 0
@@ -803,12 +803,12 @@ fi
   then (
        ${MD5SUM} -c >/dev/null 2>&1 || ${echo} 'dot_Xresources': 'MD5 check failed'
        ) << \SHAR_EOF
-b1731e6cd910346df0e8aaf323b6d973  dot_Xresources
+2ec6725320f702c4e51a717927268800  dot_Xresources
 SHAR_EOF
 
 else
-test `LC_ALL=C wc -c < 'dot_Xresources'` -ne 663 && \
-  ${echo} "restoration warning:  size of 'dot_Xresources' is not 663"
+test `LC_ALL=C wc -c < 'dot_Xresources'` -ne 638 && \
+  ${echo} "restoration warning:  size of 'dot_Xresources' is not 638"
   fi
 fi
 # ============= dot_XWinrc ==============
