@@ -8,6 +8,25 @@ o The configuration should work for a real UNIX and Cygwin.
 o It should be as fast as possible.
 o It should be productive.
 
+
+= Cygwin
+
+
+ - In case cygwin mess up permissions
+   * setfacl -b \<file|dir\>
+   * icalcs \<file|dir\> /q /c /t /reset
+
+One can use the following commands:
+
+    fjardon@yoda 08:02:32 ~/workspace/tmp/fjtools
+    $ find . -exec setfacl -b {} \;
+
+    fjardon@yoda 08:03:17 ~/workspace/tmp/fjtools
+    $ find . -exec chgrp Utilisateurs {} \;
+
+    fjardon@yoda 08:03:36 ~/workspace/tmp/fjtools
+    $ find . -exec setfacl -b {} \;
+
 = XTerm
 
 xterm -rv -sb -rightbar -tn xterm-256color
