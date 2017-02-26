@@ -1,0 +1,204 @@
+<?xml version="1.0">
+<setup version="1.0.0">
+    <packages>
+        <package name="dot-local-setup">
+            <category name="shell" />
+            <description>
+                Install a directory ~/.local where user can install its
+                own packages.
+            </description>
+            <dir dest="~/.local" />
+            <dir dest="~/.local/bin" />
+            <dir dest="~/.local/lib" />
+            <dir dest="~/.local/share" />
+            <dir dest="~/.local/var/lock" />
+            <dir dest="~/.local/var/log" />
+            <dir dest="~/.local/var/run" />
+            <dir dest="~/.local/etc/cron" />
+            <dir dest="~/.local/etc/profile.d" />
+        </package>
+
+        <package name="bash-dot-files">
+            <category name="shell" />
+            <requires package="dot-local-setup" />
+            <!-- file tag indicates simple copy from unshared files to dest -->
+            <file src="dot_bashrc"   dest="~/.bashrc" />
+            <file src="dot_profile"  dest="~/.profile" />
+            <file src="bash_profile" dest="~/.bash_profile" />
+            <file src="dot_bashrc"   dest="~/.bashrc" />
+            <postrun>. ~/.bash_profile</bash>
+        </package>
+
+        <package name="dot-cron">
+            <category name="productivity" />
+            <requires package="dot-local-setup" />
+            <requires command="crontab" />
+            <requires command="mktemp" />
+            <dir dest="~/.local/etc/cron" />
+            <dir dest="~/.local/etc/cron/hourly" />
+            <dir dest="~/.local/etc/cron/daily" />
+            <dir dest="~/.local/etc/cron/daily-4" />
+            <dir dest="~/.local/etc/cron/daily-8" />
+            <dir dest="~/.local/etc/cron/daily-12" />
+            <dir dest="~/.local/etc/cron/daily-16" />
+            <dir dest="~/.local/etc/cron/daily-20" />
+            <dir dest="~/.local/etc/cron/weekly" />
+            <dir dest="~/.local/etc/cron/monthly" />
+            <dir dest="~/.local/etc/cron/yearly" />
+            <dir dest="~/.local/etc/cron/commands" />
+            <file src="runcron" dest="~/.local/bin" />
+            <file dest="~/.local/etc/cron/environ.bash" />
+            <bash><![CDATA[
+crontab -l > "${BACKUPDIR}/crontab"
+tmpcrontab=$(mktemp)
+grep -v ~/.local/bin/runcron "${BACKUPDIR}/crontab" \
+     > "${tmpcrontab}"
+echo "0  * * * *" ~/.local/bin/runcron hourly   >> "${tmpcrontab}"
+echo "0  0 * * *" ~/.local/bin/runcron daily    >> "${tmpcrontab}"
+echo "0  4 * * *" ~/.local/bin/runcron daily-4  >> "${tmpcrontab}"
+echo "0  8 * * *" ~/.local/bin/runcron daily-8  >> "${tmpcrontab}"
+echo "0 12 * * *" ~/.local/bin/runcron daily-12 >> "${tmpcrontab}"
+echo "0 16 * * *" ~/.local/bin/runcron daily-16 >> "${tmpcrontab}"
+echo "0 20 * * *" ~/.local/bin/runcron daily-20 >> "${tmpcrontab}"
+echo "0  0 * * 0" ~/.local/bin/runcron weekly   >> "${tmpcrontab}"
+echo "0  0 1 * *" ~/.local/bin/runcron monthly  >> "${tmpcrontab}"
+echo "0  0 1 1 *" ~/.local/bin/runcron yearly   >> "${tmpcrontab}"
+crontab "${tmpcrontab}"
+rm -f "${tmpcrontab}"
+]]>
+            </bash>
+        </package>
+
+        <package name="vim-powerline-fonts">
+            <category name="editor" />
+            <requires command="fc-cache" />
+            <requires command="git" />
+            <provides dir="~/.local/share/fonts/power-line" />
+            <dir dest="~/.fonts" />
+            <dir dest="~/.local/share/fonts" />
+            <bash>
+git clone "https://github.com/powerline/fonts.git" ~/.local/share/fonts/power-line
+fc-cache -f ~/.local/share/fonts
+            </bash>
+        </package>
+        
+        <package name="vim-vundle">
+            <category name="editor" />
+            <requires command="git" />
+            <provides dir="~/.vim/bundle" />
+            <dir dest="~/.vim/bundle" />
+            <bash>
+git clone "https://github.com/gmarik/Vundle.vim.git" ~/.vim/bundle/Vundle.vim
+            </bash>
+        </package>
+
+        <package name="dot-vimrc">
+            <category name="editor" />
+            <requires package="vim-vundle" />
+            <recommend package="vim-powerline-fonts" />
+            <file src="dot_vimrc" dest="~/.vimrc" />
+        </package>
+
+        <package name="python-pip2">
+            <category name="development" />
+            <define 
+                name="easy_install2_prog"
+                command="compgen -c 'easy_install-2' | head -n 1" />
+            <requires test='-n "${easy_install2_prog}"' />
+            <provides command="pip2" />
+            <bash>
+"${easy_install2_prog}" --user pip
+            </bash>
+        </package>
+
+        <package name="python-pip3">
+            <category name="development" />
+            <define 
+                name="easy_install3_prog"
+                command="compgen -c 'easy_install-3' | head -n 1" />
+            <requires test=r'-n "${easy_install3_prog}"' />
+            <provides command="pip3" />
+            <bash>
+"${easy_install3_prog}" --user pip
+            </bash>
+        </package>
+
+        <package name="cppman">
+            <category name="development" />
+            <provides command="cppman" />
+            <requires package="pip3" />
+            <bash>pip3 install --user cppman</bash>
+        </package>
+
+        <package name="perl5-local-install">
+            <category name="development" />
+            <provides dir="~/.local/share/perl5" />
+            <requires command="curl" />
+            <requires command="gzip" />
+            <requires command="tar" />
+            <requires command="perl" />
+            <requires command="make" />
+            <bash><![CDATA[
+curl -O http://search.cpan.org/CPAN/authors/id/H/HA/HAARG/local-lib-2.000018.tar.gz
+tar zxvf local-lib-2.000018.tar.gz
+cd local-lib-2.000018
+perl Makefile.PL --bootstrap=${HOME}/.local/share/perl5
+make test && make install
+cd ..
+perl -I${HOME}/.local/share/perl5/lib/perl5 \
+     -Mlocal::lib=${HOME}/.local/share/perl5 \
+     > ~/.local/etc/profile.d/perl5.bash
+]]>
+            </bash>
+            <postrun>. ~/.local/etc/profile.d/perl5.bash</postrun>
+        </package>
+
+        <package name="gnulib">
+            <category name="development" />
+            <requires package="dot-local-setup" />
+            <requires command="git" />
+            <requires command="ln" />
+            <provides command="gnulib-tool" />
+            <bash>
+git clone "git://git.savannah.gnu.org/gnulib.git" ~/.local/share/gnulib
+ln -s ~/.local/share/gnulib/gnulib-tool ~/.local/bin/gnulib-tool
+            </bash>
+        </package>
+
+        <package name="x-resources">
+            <category name="X11" />
+            <description>
+                Provides resource definitions for better display of XTerm
+            </description>
+            <file src="dot_Xresources" dest="~/.Xresources" />
+        </package>
+
+        <package name="dot-x-winrc">
+            <category name="X11" />
+            <category name="cygwin" />
+            <description>
+                Provides a custom .XWinrc with tray-icon for xdg menus.
+            </description>
+            <requires os="CYGWIN*" />
+            <file src="dot_XWinrc" dest="~/.XWinrc" />
+        </package>
+
+        <package name="apt-cyg" >
+            <category name="productivity" />
+            <category name="cygwin" />
+            <description>
+                Install 'apt-cyg' program which gives the ability to install
+                cygwin packages from the command line.
+            </description>
+            <requires os="CYGWIN*" />
+            <requires command="git" />
+            <requires command="install" />
+            <requires package="dot-local-setup" />
+            <provides command="apt-cyg" />
+            <bash>
+git clone "https://github.com/transcode-open/apt-cyg.git" apt-cyg
+install -m 0755 apt-cyg/apt-cyg ~/.local/bin
+            </bash>
+        </package>
+    </packages>
+</setup>
