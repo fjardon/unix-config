@@ -61,22 +61,22 @@ cat <<'SETUP_SHAR_EOF'> setup.shar
 # To extract the files from this archive, save it to some FILE, remove
 # everything before the '#!/bin/sh' line above, then type 'sh FILE'.
 #
-lock_dir=_sh04208
-# Made on 2017-02-16 20:56 CET by <fjardon@yoda>.
-# Source directory was '/home/fjardon/workspace/unix-config/src'.
+lock_dir=_sh07344
+# Made on 2017-03-14 20:11 CET by <frede@darthvader>.
+# Source directory was '/home/frede/Documents/workspace/github/unix-config/src'.
 #
 # Existing files will *not* be overwritten, unless '-c' is specified.
 #
 # This shar contains:
 # length mode       name
 # ------ ---------- ------------------------------------------
-#    456 -rw-r--r-- dot_bash_profile
-#   3076 -rw-r--r-- dot_bashrc
-#   3647 -rw-r--r-- dot_emacs
-#   2158 -rw-r--r-- dot_profile
-#   4139 -rw-r--r-- dot_vimrc
-#    638 -rw-r--r-- dot_Xresources
-#   4076 -rw-r--r-- dot_XWinrc
+#    456 -rwxr-xr-x dot_bash_profile
+#   3076 -rwxr-xr-x dot_bashrc
+#   3647 -rwxr-xr-x dot_emacs
+#   2158 -rwxr-xr-x dot_profile
+#   4139 -rwxr-xr-x dot_vimrc
+#    638 -rwxr-xr-x dot_Xresources
+#   4076 -rwxr-xr-x dot_XWinrc
 #    901 -rwxr-xr-x runcron
 #
 MD5SUM=${MD5SUM-md5sum}
@@ -203,9 +203,9 @@ if [ -f ~/.bashrc ]; then
 X    . ~/.bashrc
 fi
 SHAR_EOF
-  (set 20 17 01 06 20 25 09 'dot_bash_profile'
+  (set 20 17 03 03 23 23 14 'dot_bash_profile'
    eval "${shar_touch}") && \
-  chmod 0644 'dot_bash_profile'
+  chmod 0755 'dot_bash_profile'
 if test $? -ne 0
 then ${echo} "restore of dot_bash_profile failed"
 fi
@@ -334,9 +334,9 @@ X    ssh-agent > ~/.ssh/ssh-agent.pid 2> /dev/null
 X    source ~/.ssh/ssh-agent.pid > /dev/null 2>&1
 fi
 SHAR_EOF
-  (set 20 17 02 14 07 48 38 'dot_bashrc'
+  (set 20 17 03 03 23 23 14 'dot_bashrc'
    eval "${shar_touch}") && \
-  chmod 0644 'dot_bashrc'
+  chmod 0755 'dot_bashrc'
 if test $? -ne 0
 then ${echo} "restore of dot_bashrc failed"
 fi
@@ -471,9 +471,9 @@ X
 (require 'ecb)
 X
 SHAR_EOF
-  (set 20 16 12 16 20 16 52 'dot_emacs'
+  (set 20 17 03 03 23 23 14 'dot_emacs'
    eval "${shar_touch}") && \
-  chmod 0644 'dot_emacs'
+  chmod 0755 'dot_emacs'
 if test $? -ne 0
 then ${echo} "restore of dot_emacs failed"
 fi
@@ -572,9 +572,9 @@ X    done
 fi
 X
 SHAR_EOF
-  (set 20 17 01 06 20 25 09 'dot_profile'
+  (set 20 17 03 03 23 23 14 'dot_profile'
    eval "${shar_touch}") && \
-  chmod 0644 'dot_profile'
+  chmod 0755 'dot_profile'
 if test $? -ne 0
 then ${echo} "restore of dot_profile failed"
 fi
@@ -744,9 +744,9 @@ X
 map <F3> :NERDTreeToggle<CR>
 map <F2> :TaskList<CR>
 SHAR_EOF
-  (set 20 17 01 02 10 44 28 'dot_vimrc'
+  (set 20 17 03 03 23 23 14 'dot_vimrc'
    eval "${shar_touch}") && \
-  chmod 0644 'dot_vimrc'
+  chmod 0755 'dot_vimrc'
 if test $? -ne 0
 then ${echo} "restore of dot_vimrc failed"
 fi
@@ -793,9 +793,9 @@ X
 !XTerm*backarrowKey: false
 !XTerm*backarrowKeyIsErase: true
 SHAR_EOF
-  (set 20 17 02 16 13 34 38 'dot_Xresources'
+  (set 20 17 03 03 23 23 14 'dot_Xresources'
    eval "${shar_touch}") && \
-  chmod 0644 'dot_Xresources'
+  chmod 0755 'dot_Xresources'
 if test $? -ne 0
 then ${echo} "restore of dot_Xresources failed"
 fi
@@ -959,9 +959,9 @@ X
 DEBUG "Done parsing the configuration file..."
 X
 SHAR_EOF
-  (set 20 16 12 10 20 00 23 'dot_XWinrc'
+  (set 20 17 03 03 23 23 14 'dot_XWinrc'
    eval "${shar_touch}") && \
-  chmod 0644 'dot_XWinrc'
+  chmod 0755 'dot_XWinrc'
 if test $? -ne 0
 then ${echo} "restore of dot_XWinrc failed"
 fi
@@ -1033,7 +1033,7 @@ done
 X
 X
 SHAR_EOF
-  (set 20 16 12 10 20 00 23 'runcron'
+  (set 20 17 03 03 23 23 14 'runcron'
    eval "${shar_touch}") && \
   chmod 0755 'runcron'
 if test $? -ne 0
@@ -1091,6 +1091,7 @@ if [ ! -e ~/.path_dirs ]; then
 #  - PKG_CONFIG_PATH
 
 ${HOME}/.local
+${HOME}/.local/share/perl5
 DOT_PROFILE_PATHS_EOF
 fi
 install -m 0644 dot_profile      ~/.profile

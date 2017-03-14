@@ -90,6 +90,7 @@ if [ ! -e ~/.path_dirs ]; then
 #  - PKG_CONFIG_PATH
 
 ${HOME}/.local
+${HOME}/.local/share/perl5
 DOT_PROFILE_PATHS_EOF
 fi
 install -m 0644 dot_profile      ~/.profile
