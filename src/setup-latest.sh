@@ -20,7 +20,7 @@ function has_prog() {
     return $?
 }
 
-REQUIRED_PROGS=(git grep install mktemp sed)
+REQUIRED_PROGS=(curl git grep install mktemp sed)
 has_errors=
 for p in ${REQUIRED_PROGS[@]};
 do
@@ -30,16 +30,6 @@ do
     fi
 done
 [[ -z "${has_errors}" ]] || exit 1
-
-build_idutils=
-if ! has_prog mkid && has_prog curl && has_prog gcc && has_prog make && has_prog tar; then
-    build_idutils=Yes
-fi
-
-build_global=
-if ! has_prog global && has_prog curl && has_prog gcc && has_prog make && has_prog tar; then
-    build_global=Yes
-fi
 
 os_name=
 if has_prog uname; then
@@ -61,8 +51,8 @@ cat <<'SETUP_SHAR_EOF'> setup.shar
 # To extract the files from this archive, save it to some FILE, remove
 # everything before the '#!/bin/sh' line above, then type 'sh FILE'.
 #
-lock_dir=_sh07344
-# Made on 2017-03-14 20:11 CET by <frede@darthvader>.
+lock_dir=_sh05460
+# Made on 2017-03-15 19:48 CET by <frede@darthvader>.
 # Source directory was '/home/frede/Documents/workspace/github/unix-config/src'.
 #
 # Existing files will *not* be overwritten, unless '-c' is specified.
@@ -1219,7 +1209,7 @@ fi
 # Perl
 echo "Perl ..."
 if [ ! -e ~/.local/share/perl5 ]; then
-    wget http://search.cpan.org/CPAN/authors/id/H/HA/HAARG/local-lib-2.000018.tar.gz
+    curl -O http://search.cpan.org/CPAN/authors/id/H/HA/HAARG/local-lib-2.000018.tar.gz
     tar zxvf local-lib-2.000018.tar.gz
     cd local-lib-2.000018
     perl Makefile.PL --bootstrap=${HOME}/.local/share/perl5
@@ -1264,41 +1254,51 @@ fi
 #    fi
 #fi
 
-# gnu global / idutils
-echo "dev tools ..."
-if [[ -n "$build_idutils" ]]; then
-    echo "Building idutils ..."
-    TMPDIR=$(mktemp -d)
-    RELEASE="idutils-4.5"
-    TGZ="${TMPDIR}/${RELEASE}.tar.gz"
-    SRCDIR="${TMPDIR}/${RELEASE}"
-    BUILDDIR="${TMPDIR}/build"
-    curl -s -o "${TGZ}" \
-	       "http://ftp.gnu.org/gnu/idutils/${RELEASE}.tar.gz"
-    tar -C "${TMPDIR}" -zxf "${TGZ}"
-    mkdir "${BUILDDIR}"
-    cd "${BUILDDIR}"
-    "${SRCDIR}/configure" "--prefix=${HOME}/.local"
-    make
-    make install
-    cd "${SHAR_TMPDIR}"
-fi
 
-if [[ -n "$build_global" ]]; then
-    echo "Building GNU global ..."
-    TMPDIR=$(mktemp -d)
-    RELEASE="global-6.5.4"
-    TGZ="${TMPDIR}/${RELEASE}.tar.gz"
-    SRCDIR="${TMPDIR}/${RELEASE}"
-    BUILDDIR="${TMPDIR}/build"
-    curl -s -o "${TGZ}" \
-	       "http://ftp.gnu.org/gnu/global/${RELEASE}.tar.gz"
-    tar -C "${TMPDIR}" -zxf "${TGZ}"
-    mkdir "${BUILDDIR}"
-    cd "${BUILDDIR}"
-    "${SRCDIR}/configure" "--prefix=${HOME}/.local"
-    make
-    make install
-    cd "${SHAR_TMPDIR}"
-fi
-
+# # gnu global / idutils
+# build_idutils=
+# if ! has_prog mkid && has_prog curl && has_prog gcc && has_prog make && has_prog tar; then
+#     build_idutils=Yes
+# fi
+# echo "dev tools ..."
+# if [[ -n "$build_idutils" ]]; then
+#     echo "Building idutils ..."
+#     TMPDIR=$(mktemp -d)
+#     RELEASE="idutils-4.5"
+#     TGZ="${TMPDIR}/${RELEASE}.tar.gz"
+#     SRCDIR="${TMPDIR}/${RELEASE}"
+#     BUILDDIR="${TMPDIR}/build"
+#     curl -s -o "${TGZ}" \
+# 	       "http://ftp.gnu.org/gnu/idutils/${RELEASE}.tar.gz"
+#     tar -C "${TMPDIR}" -zxf "${TGZ}"
+#     mkdir "${BUILDDIR}"
+#     cd "${BUILDDIR}"
+#     "${SRCDIR}/configure" "--prefix=${HOME}/.local"
+#     make
+#     make install
+#     cd "${SHAR_TMPDIR}"
+# fi
+# 
+# 
+# build_global=
+# if ! has_prog global && has_prog curl && has_prog gcc && has_prog make && has_prog tar; then
+#     build_global=Yes
+# fi
+# if [[ -n "$build_global" ]]; then
+#     echo "Building GNU global ..."
+#     TMPDIR=$(mktemp -d)
+#     RELEASE="global-6.5.4"
+#     TGZ="${TMPDIR}/${RELEASE}.tar.gz"
+#     SRCDIR="${TMPDIR}/${RELEASE}"
+#     BUILDDIR="${TMPDIR}/build"
+#     curl -s -o "${TGZ}" \
+# 	       "http://ftp.gnu.org/gnu/global/${RELEASE}.tar.gz"
+#     tar -C "${TMPDIR}" -zxf "${TGZ}"
+#     mkdir "${BUILDDIR}"
+#     cd "${BUILDDIR}"
+#     "${SRCDIR}/configure" "--prefix=${HOME}/.local"
+#     make
+#     make install
+#     cd "${SHAR_TMPDIR}"
+# fi
+# 

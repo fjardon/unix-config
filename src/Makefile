@@ -18,3 +18,6 @@ SHAR_FILES = dot_bash_profile \
 setup-files.shar: $(SHAR_FILES)
 	shar $^ > $@
 
+clean:
+		$(RM) setup-latest.sh
+		$(RM) setup-files.shar
