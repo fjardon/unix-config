@@ -1,4 +1,4 @@
-<?xml version="1.0">
+<?xml version="1.0" ?>
 <setup version="1.0.0">
     <packages>
         <package name="dot-local-setup">
@@ -26,7 +26,7 @@
             <file src="dot_profile"  dest="~/.profile" />
             <file src="bash_profile" dest="~/.bash_profile" />
             <file src="dot_bashrc"   dest="~/.bashrc" />
-            <postrun>. ~/.bash_profile</bash>
+            <postrun>. ~/.bash_profile</postrun>
         </package>
 
         <package name="dot-cron">
@@ -116,7 +116,7 @@ git clone "https://github.com/gmarik/Vundle.vim.git" ~/.vim/bundle/Vundle.vim
             <define 
                 name="easy_install3_prog"
                 command="compgen -c 'easy_install-3' | head -n 1" />
-            <requires test=r'-n "${easy_install3_prog}"' />
+            <requires test='-n "${easy_install3_prog}"' />
             <provides command="pip3" />
             <bash>
 "${easy_install3_prog}" --user pip
