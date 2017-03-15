@@ -81,7 +81,7 @@ git clone "https://github.com/powerline/fonts.git" ~/.local/share/fonts/power-li
 fc-cache -f ~/.local/share/fonts
             </bash>
         </package>
-        
+
         <package name="vim-vundle">
             <category name="editor" />
             <requires command="git" />
@@ -101,7 +101,7 @@ git clone "https://github.com/gmarik/Vundle.vim.git" ~/.vim/bundle/Vundle.vim
 
         <package name="python-pip2">
             <category name="development" />
-            <define 
+            <define
                 name="easy_install2_prog"
                 command="compgen -c 'easy_install-2' | head -n 1" />
             <requires test='-n "${easy_install2_prog}"' />
@@ -113,7 +113,7 @@ git clone "https://github.com/gmarik/Vundle.vim.git" ~/.vim/bundle/Vundle.vim
 
         <package name="python-pip3">
             <category name="development" />
-            <define 
+            <define
                 name="easy_install3_prog"
                 command="compgen -c 'easy_install-3' | head -n 1" />
             <requires test='-n "${easy_install3_prog}"' />
