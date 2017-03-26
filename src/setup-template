@@ -141,7 +141,7 @@ if has_prog crontab; then
     crontab -l > "${BACKUPDIR}/crontab"
     tmpcrontab=$(mktemp)
     grep -v ~/.local/bin/runcron "${BACKUPDIR}/crontab" \
-	       > "${tmpcrontab}"
+         > "${tmpcrontab}"
     echo "0  * * * *" ~/.local/bin/runcron hourly   >> "${tmpcrontab}"
     echo "0  0 * * *" ~/.local/bin/runcron daily    >> "${tmpcrontab}"
     echo "0  4 * * *" ~/.local/bin/runcron daily-4  >> "${tmpcrontab}"
@@ -228,6 +228,16 @@ if ! has_prog gnulib-tool; then
     ln -s ~/.local/share/gnulib/gnulib-tool ~/.local/bin/gnulib-tool
 fi
 
+
+#TeX
+echo "TeX ..."
+if has_prog kpsewhich; then
+    texmf_home=$(kpsewhich -var-value TEXMFHOME)
+    mkdir -p "${texmf_home}/tex/latex/"
+    git clone https://github.com/aginiewicz/createspace.git "${texmf_home}/tex/latex/createspace"
+fi
+
+
 ## emacs
 #echo "emacs ..."
 #touch ~/.emacs
@@ -277,8 +287,8 @@ fi
 #     make install
 #     cd "${SHAR_TMPDIR}"
 # fi
-# 
-# 
+#
+#
 # build_global=
 # if ! has_prog global && has_prog curl && has_prog gcc && has_prog make && has_prog tar; then
 #     build_global=Yes
@@ -300,4 +310,4 @@ fi
 #     make install
 #     cd "${SHAR_TMPDIR}"
 # fi
-# 
+#
