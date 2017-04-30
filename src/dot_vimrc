@@ -70,6 +70,7 @@ Plugin 'altercation/vim-colors-solarized'
 
 " Git support
 Plugin 'tpope/vim-fugitive'
+Plugin 'airblade/vim-gitgutter'
 
 " Abolish (completion, typo fixes, casing)
 Plugin 'tpope/vim-abolish'
