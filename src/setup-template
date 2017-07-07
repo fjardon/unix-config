@@ -233,8 +233,10 @@ fi
 echo "TeX ..."
 if has_prog kpsewhich; then
     texmf_home=$(kpsewhich -var-value TEXMFHOME)
-    mkdir -p "${texmf_home}/tex/latex/"
-    git clone https://github.com/aginiewicz/createspace.git "${texmf_home}/tex/latex/createspace"
+    if [ ! -e "${texmf_home}/tex/latex/createspace" ]; then
+        mkdir -p "${texmf_home}/tex/latex/"
+        git clone https://github.com/aginiewicz/createspace.git "${texmf_home}/tex/latex/createspace"
+    fi
 fi
 
 

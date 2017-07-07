@@ -1235,8 +1235,11 @@ fi
 echo "TeX ..."
 if has_prog kpsewhich; then
     texmf_home=$(kpsewhich -var-value TEXMFHOME)
-    mkdir -p "${texmf_home}/tex/latex/"
-    git clone https://github.com/aginiewicz/createspace.git "${texmf_home}/tex/latex/createspace"
+    if [ ! -e "${texmf_home}/tex/latex/createspace" ]; then
+        echo "Creating createspace templates ..."
+        mkdir -p "${texmf_home}/tex/latex/"
+        git clone https://github.com/aginiewicz/createspace.git "${texmf_home}/tex/latex/createspace"
+    fi
 fi
 
 
