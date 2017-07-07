@@ -51,8 +51,8 @@ cat <<'SETUP_SHAR_EOF'> setup.shar
 # To extract the files from this archive, save it to some FILE, remove
 # everything before the '#!/bin/sh' line above, then type 'sh FILE'.
 #
-lock_dir=_sh09572
-# Made on 2017-04-30 15:22 CEST by <frede@darthvader>.
+lock_dir=_sh05940
+# Made on 2017-07-07 20:09 CEST by <frede@darthvader>.
 # Source directory was '/home/frede/Documents/workspace/github/unix-config/src'.
 #
 # Existing files will *not* be overwritten, unless '-c' is specified.
@@ -1217,8 +1217,8 @@ if [ ! -e ~/.local/share/perl5 ]; then
     make test && make install
     cd ..
     perl -I${HOME}/.local/share/perl5/lib/perl5 -Mlocal::lib=${HOME}/.local/share/perl5 \
-        > ~/.local/etc/profile.d/perl5.bash
-    . ~/.local/etc/profile.d/perl5.bash
+        > ~/.local/etc/profile.d/perl5.sh
+    . ~/.local/etc/profile.d/perl5.sh
 fi
 
 # Gnulib

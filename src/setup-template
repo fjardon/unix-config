@@ -215,8 +215,8 @@ if [ ! -e ~/.local/share/perl5 ]; then
     make test && make install
     cd ..
     perl -I${HOME}/.local/share/perl5/lib/perl5 -Mlocal::lib=${HOME}/.local/share/perl5 \
-        > ~/.local/etc/profile.d/perl5.bash
-    . ~/.local/etc/profile.d/perl5.bash
+        > ~/.local/etc/profile.d/perl5.sh
+    . ~/.local/etc/profile.d/perl5.sh
 fi
 
 # Gnulib
