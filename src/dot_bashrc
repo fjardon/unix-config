@@ -18,10 +18,12 @@ if [ -t 1 -a -n "${TPUT}" ]; then
     fi
 fi
 
-if [[ "${TERM}" == *xterm* ]]; then
-    SETXTERMTITLE='\[\e]0;\h - \w\a\]\n'
+case "${TERM}" in
+  *xterm* | tmux*)
+    SETXTERMTITLE='\[\e]0;\h - \w\a\]\n';
     PS1="${SETXTERMTITLE}${PS1}"
-fi
+    ;;
+esac
 if [[ -n "${VIMRUNTIME}" ]]; then
     VIM_LED="${RED_FG}[vim] "
 fi

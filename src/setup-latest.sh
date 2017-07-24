@@ -47,13 +47,13 @@ echo "Unsharing files in ${SHAR_TMPDIR} ..."
 cat <<'SETUP_SHAR_EOF'> setup.shar
 # @SHAR_ARCHIVE@
 #!/bin/sh
-# This is a shell archive (produced by GNU sharutils 4.15.2).
+# This is a shell archive (produced by GNU sharutils 4.14).
 # To extract the files from this archive, save it to some FILE, remove
 # everything before the '#!/bin/sh' line above, then type 'sh FILE'.
 #
-lock_dir=_sh05940
-# Made on 2017-07-07 20:09 CEST by <frede@darthvader>.
-# Source directory was '/home/frede/Documents/workspace/github/unix-config/src'.
+lock_dir=_sh10188
+# Made on 2017-07-24 06:07 UTC by <fjardon@DiskStation>.
+# Source directory was '/home/fjardon/workspace/github/unix-config/src'.
 #
 # Existing files will *not* be overwritten, unless '-c' is specified.
 #
@@ -61,7 +61,7 @@ lock_dir=_sh05940
 # length mode       name
 # ------ ---------- ------------------------------------------
 #    456 -rw-r--r-- dot_bash_profile
-#   3076 -rw-r--r-- dot_bashrc
+#   3087 -rw-r--r-- dot_bashrc
 #   3647 -rw-r--r-- dot_emacs
 #   2158 -rw-r--r-- dot_profile
 #   4171 -rw-r--r-- dot_vimrc
@@ -193,7 +193,7 @@ if [ -f ~/.bashrc ]; then
 X    . ~/.bashrc
 fi
 SHAR_EOF
-  (set 20 17 03 03 23 23 14 'dot_bash_profile'
+  (set 20 17 07 06 07 11 31 'dot_bash_profile'
    eval "${shar_touch}") && \
   chmod 0644 'dot_bash_profile'
 if test $? -ne 0
@@ -239,10 +239,12 @@ X        DEFAULT_FG=$(tput setaf $(expr ${NCOLORS} + 1))
 X    fi
 fi
 X
-if [[ "${TERM}" == *xterm* ]]; then
-X    SETXTERMTITLE='\[\e]0;\h - \w\a\]\n'
+case "${TERM}" in
+X  *xterm* | tmux*)
+X    SETXTERMTITLE='\[\e]0;\h - \w\a\]\n';
 X    PS1="${SETXTERMTITLE}${PS1}"
-fi
+X    ;;
+esac
 if [[ -n "${VIMRUNTIME}" ]]; then
 X    VIM_LED="${RED_FG}[vim] "
 fi
@@ -324,7 +326,7 @@ X    ssh-agent > ~/.ssh/ssh-agent.pid 2> /dev/null
 X    source ~/.ssh/ssh-agent.pid > /dev/null 2>&1
 fi
 SHAR_EOF
-  (set 20 17 03 03 23 23 14 'dot_bashrc'
+  (set 20 17 07 20 07 56 05 'dot_bashrc'
    eval "${shar_touch}") && \
   chmod 0644 'dot_bashrc'
 if test $? -ne 0
@@ -334,12 +336,12 @@ fi
   then (
        ${MD5SUM} -c >/dev/null 2>&1 || ${echo} 'dot_bashrc': 'MD5 check failed'
        ) << \SHAR_EOF
-7922aee51734183a2119446f387c1d5e  dot_bashrc
+1dea44e461421fa564278faf53da91ea  dot_bashrc
 SHAR_EOF
 
 else
-test `LC_ALL=C wc -c < 'dot_bashrc'` -ne 3076 && \
-  ${echo} "restoration warning:  size of 'dot_bashrc' is not 3076"
+test `LC_ALL=C wc -c < 'dot_bashrc'` -ne 3087 && \
+  ${echo} "restoration warning:  size of 'dot_bashrc' is not 3087"
   fi
 fi
 # ============= dot_emacs ==============
@@ -461,7 +463,7 @@ X
 (require 'ecb)
 X
 SHAR_EOF
-  (set 20 17 03 03 23 23 14 'dot_emacs'
+  (set 20 17 07 06 07 11 31 'dot_emacs'
    eval "${shar_touch}") && \
   chmod 0644 'dot_emacs'
 if test $? -ne 0
@@ -562,7 +564,7 @@ X    done
 fi
 X
 SHAR_EOF
-  (set 20 17 03 03 23 23 14 'dot_profile'
+  (set 20 17 07 06 07 11 31 'dot_profile'
    eval "${shar_touch}") && \
   chmod 0644 'dot_profile'
 if test $? -ne 0
@@ -735,7 +737,7 @@ X
 map <F3> :NERDTreeToggle<CR>
 map <F2> :TaskList<CR>
 SHAR_EOF
-  (set 20 17 04 30 14 04 19 'dot_vimrc'
+  (set 20 17 07 06 07 11 31 'dot_vimrc'
    eval "${shar_touch}") && \
   chmod 0644 'dot_vimrc'
 if test $? -ne 0
@@ -784,7 +786,7 @@ X
 !XTerm*backarrowKey: false
 !XTerm*backarrowKeyIsErase: true
 SHAR_EOF
-  (set 20 17 03 03 23 23 14 'dot_Xresources'
+  (set 20 17 07 06 07 11 31 'dot_Xresources'
    eval "${shar_touch}") && \
   chmod 0644 'dot_Xresources'
 if test $? -ne 0
@@ -950,7 +952,7 @@ X
 DEBUG "Done parsing the configuration file..."
 X
 SHAR_EOF
-  (set 20 17 03 03 23 23 14 'dot_XWinrc'
+  (set 20 17 07 06 07 11 31 'dot_XWinrc'
    eval "${shar_touch}") && \
   chmod 0644 'dot_XWinrc'
 if test $? -ne 0
@@ -1024,7 +1026,7 @@ done
 X
 X
 SHAR_EOF
-  (set 20 17 03 03 23 23 14 'runcron'
+  (set 20 17 07 06 07 11 31 'runcron'
    eval "${shar_touch}") && \
   chmod 0755 'runcron'
 if test $? -ne 0
@@ -1210,9 +1212,10 @@ fi
 # Perl
 echo "Perl ..."
 if [ ! -e ~/.local/share/perl5 ]; then
-    curl -O http://search.cpan.org/CPAN/authors/id/H/HA/HAARG/local-lib-2.000018.tar.gz
-    tar zxvf local-lib-2.000018.tar.gz
-    cd local-lib-2.000018
+    perl_local_lib=local-lib-2.000023
+    curl -O http://www.cpan.org/authors/id/H/HA/HAARG/${perl_local_lib}.tar.gz
+    tar zxvf ${perl_local_lib}.tar.gz
+    cd ${perl_local_lib}
     perl Makefile.PL --bootstrap=${HOME}/.local/share/perl5
     make test && make install
     cd ..
@@ -1236,7 +1239,6 @@ echo "TeX ..."
 if has_prog kpsewhich; then
     texmf_home=$(kpsewhich -var-value TEXMFHOME)
     if [ ! -e "${texmf_home}/tex/latex/createspace" ]; then
-        echo "Creating createspace templates ..."
         mkdir -p "${texmf_home}/tex/latex/"
         git clone https://github.com/aginiewicz/createspace.git "${texmf_home}/tex/latex/createspace"
     fi

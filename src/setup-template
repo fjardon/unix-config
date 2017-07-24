@@ -208,9 +208,10 @@ fi
 # Perl
 echo "Perl ..."
 if [ ! -e ~/.local/share/perl5 ]; then
-    curl -O http://search.cpan.org/CPAN/authors/id/H/HA/HAARG/local-lib-2.000018.tar.gz
-    tar zxvf local-lib-2.000018.tar.gz
-    cd local-lib-2.000018
+    perl_local_lib=local-lib-2.000023
+    curl -O http://www.cpan.org/authors/id/H/HA/HAARG/${perl_local_lib}.tar.gz
+    tar zxvf ${perl_local_lib}.tar.gz
+    cd ${perl_local_lib}
     perl Makefile.PL --bootstrap=${HOME}/.local/share/perl5
     make test && make install
     cd ..
