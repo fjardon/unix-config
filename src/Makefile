@@ -8,8 +8,8 @@ setup-latest.sh: setup-template setup-files.shar
 
 SHAR_FILES = dot_bash_profile \
 						 dot_bashrc \
-						 dot_emacs \
 						 dot_profile \
+						 dot_tmux_conf \
 						 dot_vimrc \
 						 dot_Xresources \
 						 dot_XWinrc \

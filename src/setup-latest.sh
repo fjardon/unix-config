@@ -8,8 +8,8 @@ function echoerr() { echo "$@" 1>&2; }
 
 # =============================================================================
 # Configure some shell variables
-PATH=${PATH}:${HOME}/.local/bin
-LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${HOME}/.local/lib
+PATH="${PATH}:${HOME}/.local/bin"
+LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:${HOME}/.local/lib"
 DATAROOTDIR="${HOME}/.local/share"
 # =============================================================================
 
@@ -47,13 +47,13 @@ echo "Unsharing files in ${SHAR_TMPDIR} ..."
 cat <<'SETUP_SHAR_EOF'> setup.shar
 # @SHAR_ARCHIVE@
 #!/bin/sh
-# This is a shell archive (produced by GNU sharutils 4.14).
+# This is a shell archive (produced by GNU sharutils 4.15.2).
 # To extract the files from this archive, save it to some FILE, remove
 # everything before the '#!/bin/sh' line above, then type 'sh FILE'.
 #
-lock_dir=_sh10188
-# Made on 2017-07-24 06:07 UTC by <fjardon@DiskStation>.
-# Source directory was '/home/fjardon/workspace/github/unix-config/src'.
+lock_dir=_sh07028
+# Made on 2017-12-22 11:36 CET by <fjardon@yoda>.
+# Source directory was '/home/fjardon/workspace/unix-config/src'.
 #
 # Existing files will *not* be overwritten, unless '-c' is specified.
 #
@@ -62,12 +62,12 @@ lock_dir=_sh10188
 # ------ ---------- ------------------------------------------
 #    456 -rw-r--r-- dot_bash_profile
 #   3087 -rw-r--r-- dot_bashrc
-#   3647 -rw-r--r-- dot_emacs
 #   2158 -rw-r--r-- dot_profile
-#   4171 -rw-r--r-- dot_vimrc
+#     97 -rw-r--r-- dot_tmux_conf
+#   4202 -rw-r--r-- dot_vimrc
 #    638 -rw-r--r-- dot_Xresources
 #   4076 -rw-r--r-- dot_XWinrc
-#    901 -rwxr-xr-x runcron
+#    901 -rwxrwxr-x runcron
 #
 MD5SUM=${MD5SUM-md5sum}
 f=`${MD5SUM} --version | egrep '^md5sum .*(core|text)utils'`
@@ -193,7 +193,7 @@ if [ -f ~/.bashrc ]; then
 X    . ~/.bashrc
 fi
 SHAR_EOF
-  (set 20 17 07 06 07 11 31 'dot_bash_profile'
+  (set 20 17 12 22 11 05 26 'dot_bash_profile'
    eval "${shar_touch}") && \
   chmod 0644 'dot_bash_profile'
 if test $? -ne 0
@@ -326,7 +326,7 @@ X    ssh-agent > ~/.ssh/ssh-agent.pid 2> /dev/null
 X    source ~/.ssh/ssh-agent.pid > /dev/null 2>&1
 fi
 SHAR_EOF
-  (set 20 17 07 20 07 56 05 'dot_bashrc'
+  (set 20 17 12 22 11 05 26 'dot_bashrc'
    eval "${shar_touch}") && \
   chmod 0644 'dot_bashrc'
 if test $? -ne 0
@@ -342,143 +342,6 @@ SHAR_EOF
 else
 test `LC_ALL=C wc -c < 'dot_bashrc'` -ne 3087 && \
   ${echo} "restoration warning:  size of 'dot_bashrc' is not 3087"
-  fi
-fi
-# ============= dot_emacs ==============
-if test -n "${keep_file}" && test -f 'dot_emacs'
-then
-${echo} "x - SKIPPING dot_emacs (file already exists)"
-
-else
-${echo} "x - extracting dot_emacs (text)"
-  sed 's/^X//' << 'SHAR_EOF' > 'dot_emacs' &&
-;; Enable column display in status bar
-;; -----------------------------------
-(column-number-mode t)
-X
-;; highlight .h file as c++ (doesn't do any harm to pure C files)
-;; --------------------------------------------------------------
-(require 'cc-mode)
-(add-to-list 'auto-mode-alist '("\\.h\\'" . c++-mode))
-X
-;; style I want to use in c++ mode
-;; -------------------------------
-(c-add-style "my-style" 
-X	     '("stroustrup"
-X	       (indent-tabs-mode . nil) ; use spaces rather than tabs
-X	       (c-basic-offset . 4)     ; indent by four spaces
-X                                        ; custom indentation rules
-X	       (c-offsets-alist . ((inline-open . 0)  
-X				   (brace-list-open . 0)
-X				   (statement-case-open . +)))
-X	       (c-hanging-braces-alist . (
-X					  (class-close)
-X					  ))
-X	       (c-cleanup-list . (
-X				  empty-defun-braces
-X				  defun-close-semi
-X				  list-close-comma
-X				  scope-operator
-X				  space-before-funcall
-X				  compact-empty-funccall
-X				  ))
-X	       ))
-X
-;; use my-style defined above
-(defun my-c++-mode-hook ()
-X  (c-set-style "my-style")
-X  (auto-fill-mode)         
-X  (c-toggle-auto-hungry-state t)
-X  (add-to-list 'c-cleanup-list 'defun-close-semi)
-X  )
-(add-hook 'c++-mode-hook 'my-c++-mode-hook)
-X
-;; Typing while selecting overwrite the selection
-;; ----------------------------------------------
-(delete-selection-mode t)
-X
-X
-;; CEDET activation
-;; ----------------
-(setq cedet-root-path (file-name-as-directory "~/.local/share/cedet-git"))
-(load-file (concat cedet-root-path "cedet-devel-load.el"))
-(add-to-list 'load-path (concat cedet-root-path "contrib"))
-X
-;; select which submodes we want to activate
-(add-to-list 'semantic-default-submodes 'global-semantic-mru-bookmark-mode)
-(add-to-list 'semantic-default-submodes 'global-semanticdb-minor-mode)
-(add-to-list 'semantic-default-submodes 'global-semantic-highlight-func-mode)
-(add-to-list 'semantic-default-submodes 'global-semantic-idle-scheduler-mode)
-(add-to-list 'semantic-default-submodes 'global-semantic-stickyfunc-mode)
-(add-to-list 'semantic-default-submodes 'global-cedet-m3-minor-mode)
-X
-;; Activate semantic
-;;(semantic-mode 1)
-X
-;; Activate eassist
-(require 'eassist)
-X
-;; customisation of modes
-(defun custom-cedet-hook ()
-X  (local-set-key [(control return)] 'semantic-ia-complete-symbol-menu)
-X  (local-set-key "\C-c?" 'semantic-ia-complete-symbol)
-X
-X  (local-set-key "\C-c>" 'semantic-complete-analyze-inline)
-X  (local-set-key "\C-c=" 'semantic-decoration-include-visit)
-X
-X  (local-set-key "\C-cj" 'semantic-ia-fast-jump)
-X  (local-set-key "\C-cq" 'semantic-ia-show-doc)
-X  (local-set-key "\C-cs" 'semantic-ia-show-summary)
-X  (local-set-key "\C-cp" 'semantic-analyze-proto-impl-toggle)
-X  )
-(add-hook 'c-mode-common-hook   'custom-cedet-hook)
-(add-hook 'lisp-mode-hook       'custom-cedet-hook)
-(add-hook 'scheme-mode-hook     'custom-cedet-hook)
-(add-hook 'emacs-lisp-mode-hook 'custom-cedet-hook)
-(add-hook 'erlang-mode-hook     'custom-cedet-hook)
-X
-(defun custom-c-mode-cedet-hook ()
-X  (local-set-key "\C-ct" 'eassist-switch-h-cpp)
-X  (local-set-key "\C-xt" 'eassist-switch-h-cpp)
-X  (local-set-key "\C-ce" 'eassist-list-methods)
-X  (local-set-key "\C-c\C-r" 'semantic-symref)
-X  )
-(add-hook 'c-mode-common-hook 'custom-c-mode-cedet-hook)
-X
-(semanticdb-enable-gnu-global-databases 'c-mode   t)
-(semanticdb-enable-gnu-global-databases 'c++-mode t)
-X
-(when (cedet-ectag-version-check t)
-X  (semantic-load-enable-primary-ectags-support))
-X
-;; SRecode
-(global-srecode-minor-mode t)
-X
-;; Enable EDE (Project Management) features
-;;(global-ede-mode t)
-(ede-enable-generic-projects)
-X
-;; Enable ECB
-(add-to-list 'load-path "~/.local/share/ecb-git")
-(require 'ecb)
-X
-SHAR_EOF
-  (set 20 17 07 06 07 11 31 'dot_emacs'
-   eval "${shar_touch}") && \
-  chmod 0644 'dot_emacs'
-if test $? -ne 0
-then ${echo} "restore of dot_emacs failed"
-fi
-  if ${md5check}
-  then (
-       ${MD5SUM} -c >/dev/null 2>&1 || ${echo} 'dot_emacs': 'MD5 check failed'
-       ) << \SHAR_EOF
-d1dafcab6f35db51c72bd75e02c5a3b2  dot_emacs
-SHAR_EOF
-
-else
-test `LC_ALL=C wc -c < 'dot_emacs'` -ne 3647 && \
-  ${echo} "restoration warning:  size of 'dot_emacs' is not 3647"
   fi
 fi
 # ============= dot_profile ==============
@@ -564,7 +427,7 @@ X    done
 fi
 X
 SHAR_EOF
-  (set 20 17 07 06 07 11 31 'dot_profile'
+  (set 20 17 12 22 11 05 26 'dot_profile'
    eval "${shar_touch}") && \
   chmod 0644 'dot_profile'
 if test $? -ne 0
@@ -580,6 +443,36 @@ SHAR_EOF
 else
 test `LC_ALL=C wc -c < 'dot_profile'` -ne 2158 && \
   ${echo} "restoration warning:  size of 'dot_profile' is not 2158"
+  fi
+fi
+# ============= dot_tmux_conf ==============
+if test -n "${keep_file}" && test -f 'dot_tmux_conf'
+then
+${echo} "x - SKIPPING dot_tmux_conf (file already exists)"
+
+else
+${echo} "x - extracting dot_tmux_conf (text)"
+  sed 's/^X//' << 'SHAR_EOF' > 'dot_tmux_conf' &&
+set -g default-terminal "tmux-256color"        
+set-window-option -g mode-keys vi              
+X
+SHAR_EOF
+  (set 20 17 12 22 11 13 43 'dot_tmux_conf'
+   eval "${shar_touch}") && \
+  chmod 0644 'dot_tmux_conf'
+if test $? -ne 0
+then ${echo} "restore of dot_tmux_conf failed"
+fi
+  if ${md5check}
+  then (
+       ${MD5SUM} -c >/dev/null 2>&1 || ${echo} 'dot_tmux_conf': 'MD5 check failed'
+       ) << \SHAR_EOF
+dd325341becf8590a75efa260b75d3ad  dot_tmux_conf
+SHAR_EOF
+
+else
+test `LC_ALL=C wc -c < 'dot_tmux_conf'` -ne 97 && \
+  ${echo} "restoration warning:  size of 'dot_tmux_conf' is not 97"
   fi
 fi
 # ============= dot_vimrc ==============
@@ -721,7 +614,9 @@ X
 set nu
 set nobackup
 set smarttab
-set tabstop=2
+set tabstop=4
+set shiftwidth=4
+set expandtab
 X
 set laststatus=2
 let g:airline_powerline_fonts = 1
@@ -737,7 +632,7 @@ X
 map <F3> :NERDTreeToggle<CR>
 map <F2> :TaskList<CR>
 SHAR_EOF
-  (set 20 17 07 06 07 11 31 'dot_vimrc'
+  (set 20 17 12 22 11 35 51 'dot_vimrc'
    eval "${shar_touch}") && \
   chmod 0644 'dot_vimrc'
 if test $? -ne 0
@@ -747,12 +642,12 @@ fi
   then (
        ${MD5SUM} -c >/dev/null 2>&1 || ${echo} 'dot_vimrc': 'MD5 check failed'
        ) << \SHAR_EOF
-2d629f8d8cb1546b0e9049861b8b6e33  dot_vimrc
+7bd738e6e33956494c5699a1d7c79ce5  dot_vimrc
 SHAR_EOF
 
 else
-test `LC_ALL=C wc -c < 'dot_vimrc'` -ne 4171 && \
-  ${echo} "restoration warning:  size of 'dot_vimrc' is not 4171"
+test `LC_ALL=C wc -c < 'dot_vimrc'` -ne 4202 && \
+  ${echo} "restoration warning:  size of 'dot_vimrc' is not 4202"
   fi
 fi
 # ============= dot_Xresources ==============
@@ -786,7 +681,7 @@ X
 !XTerm*backarrowKey: false
 !XTerm*backarrowKeyIsErase: true
 SHAR_EOF
-  (set 20 17 07 06 07 11 31 'dot_Xresources'
+  (set 20 17 12 22 11 05 26 'dot_Xresources'
    eval "${shar_touch}") && \
   chmod 0644 'dot_Xresources'
 if test $? -ne 0
@@ -952,7 +847,7 @@ X
 DEBUG "Done parsing the configuration file..."
 X
 SHAR_EOF
-  (set 20 17 07 06 07 11 31 'dot_XWinrc'
+  (set 20 17 12 22 11 05 26 'dot_XWinrc'
    eval "${shar_touch}") && \
   chmod 0644 'dot_XWinrc'
 if test $? -ne 0
@@ -1026,9 +921,9 @@ done
 X
 X
 SHAR_EOF
-  (set 20 17 07 06 07 11 31 'runcron'
+  (set 20 16 12 10 20 00 23 'runcron'
    eval "${shar_touch}") && \
-  chmod 0755 'runcron'
+  chmod 0775 'runcron'
 if test $? -ne 0
 then ${echo} "restore of runcron failed"
 fi
@@ -1058,8 +953,8 @@ SETUP_SHAR_EOF
 # Prepare backups directory
 DATE=$(date '+%Y%m%d')
 HOUR=$(date '+%H%M%S')
-BACKUPDIR=~/.backups/${DATE}/${HOUR}
-install -m 0700 -d ${BACKUPDIR}
+BACKUPDIR="${HOME}/.backups/${DATE}/${HOUR}"
+install -m 0700 -d "${BACKUPDIR}"
 
 # Backup files
 echo "shell ..."
@@ -1094,7 +989,7 @@ install -m 0644 dot_bashrc       ~/.bashrc
 # XWindow
 echo "XWindow ..."
 if [ -e ~/.Xresources ]; then
-    cp -f ~/.Xresources ${BACKUPDIR}
+    cp -f ~/.Xresources "${BACKUPDIR}"
 fi
 install -m 0644 dot_Xresources ~/.Xresources
 
@@ -1109,20 +1004,18 @@ install -m 0755 -d ~/.local/var/run
 install -m 0755 -d ~/.local/etc/cron
 install -m 0755 -d ~/.local/etc/profile.d
 install -m 0755 runcron ~/.local/bin
-export PATH=${PATH}:~/.local/bin
+export PATH="${PATH}:~/.local/bin"
 
 # Cygwin
 if [[ "${os_name}" == CYGWIN* ]]; then
     echo "Cygwin ..."
     if [ -e ~/.XWinrc ]; then
-        cp -f ~/.XWinrc ${BACKUPDIR}
+        cp -f ~/.XWinrc "${BACKUPDIR}"
     fi
     install -m 0644 dot_XWinrc ~/.XWinrc
 
-    if ! has_prog apt-cyg; then
-        git clone https://github.com/transcode-open/apt-cyg.git apt-cyg
-        install -m 0755 apt-cyg/apt-cyg ~/.local/bin
-    fi
+    git clone https://github.com/transcode-open/apt-cyg.git apt-cyg
+    install -m 0755 apt-cyg/apt-cyg ~/.local/bin
 fi
 
 # Cron setup
@@ -1174,12 +1067,20 @@ fi
 
 # vim
 echo "vim ..."
-touch ~/.vimrc
-cp -f ~/.vimrc ${BACKUPDIR}
+if [ -e ~/.vimrc ]; then
+    cp -f ~/.vimrc "${BACKUPDIR}"
+fi
 if [ ! -e ~/.vim/bundle/Vundle.vim ]; then
     git clone https://github.com/gmarik/Vundle.vim.git ~/.vim/bundle/Vundle.vim
 fi
 install -m 0644 dot_vimrc ~/.vimrc
+
+# tmux
+echo "tmux ..."
+if [ -e ~/.tmux.conf ]; then
+    cp -f ~/.tmux.conf "${BACKUPDIR}"
+fi
+install -m 0644 dot_tmux_conf ~/.tmux.conf
 
 # Python
 echo "Python ..."
@@ -1187,7 +1088,7 @@ if ! has_prog pip3; then
     easy_install_prog=$(compgen -c 'easy_install-3' | head -n 1)
     if has_prog "${easy_install_prog}"; then
         if ! has_prog pip3; then
-            ${easy_install_prog} --user pip
+             "${easy_install_prog}" --user pip
         fi
     fi
 fi
@@ -1195,7 +1096,7 @@ if ! has_prog pip2; then
     easy_install_prog=$(compgen -c 'easy_install-2' | head -n 1)
     if has_prog "${easy_install_prog}"; then
         if ! has_prog pip2; then
-            ${easy_install_prog} --user pip
+             "${easy_install_prog}" --user pip
         fi
     fi
 fi
@@ -1204,22 +1105,18 @@ if ! has_prog cppman; then
         pip3 install --user cppman
     fi
 fi
-if ! has_prog ribosome.py; then
-    git clone https://github.com/sustrik/ribosome.git ribosome
-    install -m 0755 ribosome/ribosome.py ~/.local/bin/
-fi
 
 # Perl
 echo "Perl ..."
 if [ ! -e ~/.local/share/perl5 ]; then
     perl_local_lib=local-lib-2.000023
-    curl -O http://www.cpan.org/authors/id/H/HA/HAARG/${perl_local_lib}.tar.gz
-    tar zxvf ${perl_local_lib}.tar.gz
-    cd ${perl_local_lib}
-    perl Makefile.PL --bootstrap=${HOME}/.local/share/perl5
+    curl -O "http://www.cpan.org/authors/id/H/HA/HAARG/${perl_local_lib}.tar.gz"
+    tar zxvf "${perl_local_lib}.tar.gz"
+    cd  "${perl_local_lib}"
+    perl Makefile.PL "--bootstrap=${HOME}/.local/share/perl5"
     make test && make install
     cd ..
-    perl -I${HOME}/.local/share/perl5/lib/perl5 -Mlocal::lib=${HOME}/.local/share/perl5 \
+    perl "-I${HOME}/.local/share/perl5/lib/perl5" "-Mlocal::lib=${HOME}/.local/share/perl5" \
         > ~/.local/etc/profile.d/perl5.sh
     . ~/.local/etc/profile.d/perl5.sh
 fi
@@ -1233,7 +1130,6 @@ if ! has_prog gnulib-tool; then
     ln -s ~/.local/share/gnulib/gnulib-tool ~/.local/bin/gnulib-tool
 fi
 
-
 #TeX
 echo "TeX ..."
 if has_prog kpsewhich; then
@@ -1244,77 +1140,3 @@ if has_prog kpsewhich; then
     fi
 fi
 
-
-## emacs
-#echo "emacs ..."
-#touch ~/.emacs
-#cp -f ~/.emacs ${BACKUPDIR}
-#install -m 0644 dot_emacs ~/.emacs
-#
-#if has_prog emacs && has_prog git && has_prog make; then
-#    echo "emacs cedet ..."
-#    CEDETDIR=cedet-git
-#    if [ ! -e "${DATAROOTDIR}/${CEDETDIR}" ]; then
-#	    git -C "${DATAROOTDIR}" clone \
-#	        'http://git.code.sf.net/p/cedet/git' ${CEDETDIR}
-#	    make -C "${DATAROOTDIR}/${CEDETDIR}" EMACS=emacs
-#    fi
-#fi
-#
-#if has_prog emacs && has_prog git; then
-#    echo "emacs ecb ..."
-#    ECBDIR=ecb-git
-#    if [ ! -e "${DATAROOTDIR}/${ECBDIR}" ]; then
-#	      git -C "${DATAROOTDIR}" clone \
-#	          'https://github.com/alexott/ecb.git' ${ECBDIR}
-#    fi
-#fi
-
-
-# # gnu global / idutils
-# build_idutils=
-# if ! has_prog mkid && has_prog curl && has_prog gcc && has_prog make && has_prog tar; then
-#     build_idutils=Yes
-# fi
-# echo "dev tools ..."
-# if [[ -n "$build_idutils" ]]; then
-#     echo "Building idutils ..."
-#     TMPDIR=$(mktemp -d)
-#     RELEASE="idutils-4.5"
-#     TGZ="${TMPDIR}/${RELEASE}.tar.gz"
-#     SRCDIR="${TMPDIR}/${RELEASE}"
-#     BUILDDIR="${TMPDIR}/build"
-#     curl -s -o "${TGZ}" \
-# 	       "http://ftp.gnu.org/gnu/idutils/${RELEASE}.tar.gz"
-#     tar -C "${TMPDIR}" -zxf "${TGZ}"
-#     mkdir "${BUILDDIR}"
-#     cd "${BUILDDIR}"
-#     "${SRCDIR}/configure" "--prefix=${HOME}/.local"
-#     make
-#     make install
-#     cd "${SHAR_TMPDIR}"
-# fi
-#
-#
-# build_global=
-# if ! has_prog global && has_prog curl && has_prog gcc && has_prog make && has_prog tar; then
-#     build_global=Yes
-# fi
-# if [[ -n "$build_global" ]]; then
-#     echo "Building GNU global ..."
-#     TMPDIR=$(mktemp -d)
-#     RELEASE="global-6.5.4"
-#     TGZ="${TMPDIR}/${RELEASE}.tar.gz"
-#     SRCDIR="${TMPDIR}/${RELEASE}"
-#     BUILDDIR="${TMPDIR}/build"
-#     curl -s -o "${TGZ}" \
-# 	       "http://ftp.gnu.org/gnu/global/${RELEASE}.tar.gz"
-#     tar -C "${TMPDIR}" -zxf "${TGZ}"
-#     mkdir "${BUILDDIR}"
-#     cd "${BUILDDIR}"
-#     "${SRCDIR}/configure" "--prefix=${HOME}/.local"
-#     make
-#     make install
-#     cd "${SHAR_TMPDIR}"
-# fi
-#

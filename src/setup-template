@@ -8,8 +8,8 @@ function echoerr() { echo "$@" 1>&2; }
 
 # =============================================================================
 # Configure some shell variables
-PATH=${PATH}:${HOME}/.local/bin
-LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${HOME}/.local/lib
+PATH="${PATH}:${HOME}/.local/bin"
+LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:${HOME}/.local/lib"
 DATAROOTDIR="${HOME}/.local/share"
 # =============================================================================
 
@@ -54,8 +54,8 @@ SETUP_SHAR_EOF
 # Prepare backups directory
 DATE=$(date '+%Y%m%d')
 HOUR=$(date '+%H%M%S')
-BACKUPDIR=~/.backups/${DATE}/${HOUR}
-install -m 0700 -d ${BACKUPDIR}
+BACKUPDIR="${HOME}/.backups/${DATE}/${HOUR}"
+install -m 0700 -d "${BACKUPDIR}"
 
 # Backup files
 echo "shell ..."
@@ -90,7 +90,7 @@ install -m 0644 dot_bashrc       ~/.bashrc
 # XWindow
 echo "XWindow ..."
 if [ -e ~/.Xresources ]; then
-    cp -f ~/.Xresources ${BACKUPDIR}
+    cp -f ~/.Xresources "${BACKUPDIR}"
 fi
 install -m 0644 dot_Xresources ~/.Xresources
 
@@ -105,20 +105,18 @@ install -m 0755 -d ~/.local/var/run
 install -m 0755 -d ~/.local/etc/cron
 install -m 0755 -d ~/.local/etc/profile.d
 install -m 0755 runcron ~/.local/bin
-export PATH=${PATH}:~/.local/bin
+export PATH="${PATH}:~/.local/bin"
 
 # Cygwin
 if [[ "${os_name}" == CYGWIN* ]]; then
     echo "Cygwin ..."
     if [ -e ~/.XWinrc ]; then
-        cp -f ~/.XWinrc ${BACKUPDIR}
+        cp -f ~/.XWinrc "${BACKUPDIR}"
     fi
     install -m 0644 dot_XWinrc ~/.XWinrc
 
-    if ! has_prog apt-cyg; then
-        git clone https://github.com/transcode-open/apt-cyg.git apt-cyg
-        install -m 0755 apt-cyg/apt-cyg ~/.local/bin
-    fi
+    git clone https://github.com/transcode-open/apt-cyg.git apt-cyg
+    install -m 0755 apt-cyg/apt-cyg ~/.local/bin
 fi
 
 # Cron setup
@@ -170,12 +168,20 @@ fi
 
 # vim
 echo "vim ..."
-touch ~/.vimrc
-cp -f ~/.vimrc ${BACKUPDIR}
+if [ -e ~/.vimrc ]; then
+    cp -f ~/.vimrc "${BACKUPDIR}"
+fi
 if [ ! -e ~/.vim/bundle/Vundle.vim ]; then
     git clone https://github.com/gmarik/Vundle.vim.git ~/.vim/bundle/Vundle.vim
 fi
 install -m 0644 dot_vimrc ~/.vimrc
+
+# tmux
+echo "tmux ..."
+if [ -e ~/.tmux.conf ]; then
+    cp -f ~/.tmux.conf "${BACKUPDIR}"
+fi
+install -m 0644 dot_tmux_conf ~/.tmux.conf
 
 # Python
 echo "Python ..."
@@ -183,7 +189,7 @@ if ! has_prog pip3; then
     easy_install_prog=$(compgen -c 'easy_install-3' | head -n 1)
     if has_prog "${easy_install_prog}"; then
         if ! has_prog pip3; then
-            ${easy_install_prog} --user pip
+             "${easy_install_prog}" --user pip
         fi
     fi
 fi
@@ -191,7 +197,7 @@ if ! has_prog pip2; then
     easy_install_prog=$(compgen -c 'easy_install-2' | head -n 1)
     if has_prog "${easy_install_prog}"; then
         if ! has_prog pip2; then
-            ${easy_install_prog} --user pip
+             "${easy_install_prog}" --user pip
         fi
     fi
 fi
@@ -200,22 +206,18 @@ if ! has_prog cppman; then
         pip3 install --user cppman
     fi
 fi
-if ! has_prog ribosome.py; then
-    git clone https://github.com/sustrik/ribosome.git ribosome
-    install -m 0755 ribosome/ribosome.py ~/.local/bin/
-fi
 
 # Perl
 echo "Perl ..."
 if [ ! -e ~/.local/share/perl5 ]; then
     perl_local_lib=local-lib-2.000023
-    curl -O http://www.cpan.org/authors/id/H/HA/HAARG/${perl_local_lib}.tar.gz
-    tar zxvf ${perl_local_lib}.tar.gz
-    cd ${perl_local_lib}
-    perl Makefile.PL --bootstrap=${HOME}/.local/share/perl5
+    curl -O "http://www.cpan.org/authors/id/H/HA/HAARG/${perl_local_lib}.tar.gz"
+    tar zxvf "${perl_local_lib}.tar.gz"
+    cd  "${perl_local_lib}"
+    perl Makefile.PL "--bootstrap=${HOME}/.local/share/perl5"
     make test && make install
     cd ..
-    perl -I${HOME}/.local/share/perl5/lib/perl5 -Mlocal::lib=${HOME}/.local/share/perl5 \
+    perl "-I${HOME}/.local/share/perl5/lib/perl5" "-Mlocal::lib=${HOME}/.local/share/perl5" \
         > ~/.local/etc/profile.d/perl5.sh
     . ~/.local/etc/profile.d/perl5.sh
 fi
@@ -229,7 +231,6 @@ if ! has_prog gnulib-tool; then
     ln -s ~/.local/share/gnulib/gnulib-tool ~/.local/bin/gnulib-tool
 fi
 
-
 #TeX
 echo "TeX ..."
 if has_prog kpsewhich; then
@@ -240,77 +241,3 @@ if has_prog kpsewhich; then
     fi
 fi
 
-
-## emacs
-#echo "emacs ..."
-#touch ~/.emacs
-#cp -f ~/.emacs ${BACKUPDIR}
-#install -m 0644 dot_emacs ~/.emacs
-#
-#if has_prog emacs && has_prog git && has_prog make; then
-#    echo "emacs cedet ..."
-#    CEDETDIR=cedet-git
-#    if [ ! -e "${DATAROOTDIR}/${CEDETDIR}" ]; then
-#	    git -C "${DATAROOTDIR}" clone \
-#	        'http://git.code.sf.net/p/cedet/git' ${CEDETDIR}
-#	    make -C "${DATAROOTDIR}/${CEDETDIR}" EMACS=emacs
-#    fi
-#fi
-#
-#if has_prog emacs && has_prog git; then
-#    echo "emacs ecb ..."
-#    ECBDIR=ecb-git
-#    if [ ! -e "${DATAROOTDIR}/${ECBDIR}" ]; then
-#	      git -C "${DATAROOTDIR}" clone \
-#	          'https://github.com/alexott/ecb.git' ${ECBDIR}
-#    fi
-#fi
-
-
-# # gnu global / idutils
-# build_idutils=
-# if ! has_prog mkid && has_prog curl && has_prog gcc && has_prog make && has_prog tar; then
-#     build_idutils=Yes
-# fi
-# echo "dev tools ..."
-# if [[ -n "$build_idutils" ]]; then
-#     echo "Building idutils ..."
-#     TMPDIR=$(mktemp -d)
-#     RELEASE="idutils-4.5"
-#     TGZ="${TMPDIR}/${RELEASE}.tar.gz"
-#     SRCDIR="${TMPDIR}/${RELEASE}"
-#     BUILDDIR="${TMPDIR}/build"
-#     curl -s -o "${TGZ}" \
-# 	       "http://ftp.gnu.org/gnu/idutils/${RELEASE}.tar.gz"
-#     tar -C "${TMPDIR}" -zxf "${TGZ}"
-#     mkdir "${BUILDDIR}"
-#     cd "${BUILDDIR}"
-#     "${SRCDIR}/configure" "--prefix=${HOME}/.local"
-#     make
-#     make install
-#     cd "${SHAR_TMPDIR}"
-# fi
-#
-#
-# build_global=
-# if ! has_prog global && has_prog curl && has_prog gcc && has_prog make && has_prog tar; then
-#     build_global=Yes
-# fi
-# if [[ -n "$build_global" ]]; then
-#     echo "Building GNU global ..."
-#     TMPDIR=$(mktemp -d)
-#     RELEASE="global-6.5.4"
-#     TGZ="${TMPDIR}/${RELEASE}.tar.gz"
-#     SRCDIR="${TMPDIR}/${RELEASE}"
-#     BUILDDIR="${TMPDIR}/build"
-#     curl -s -o "${TGZ}" \
-# 	       "http://ftp.gnu.org/gnu/global/${RELEASE}.tar.gz"
-#     tar -C "${TMPDIR}" -zxf "${TGZ}"
-#     mkdir "${BUILDDIR}"
-#     cd "${BUILDDIR}"
-#     "${SRCDIR}/configure" "--prefix=${HOME}/.local"
-#     make
-#     make install
-#     cd "${SHAR_TMPDIR}"
-# fi
-#

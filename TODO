@@ -4,11 +4,6 @@ TODO
   [ ] gcc (for gnu global)
   [ ] perl (for substitution and templating)
   [ ] make
-[/] Add emacs setups...
-  [/] cedet
-    [ ] Fix touch makefile issues
-  [/] ecb
-    [ ] Enable bytecode compilation
 [/] Vim
   [ ] Extract as much knowledge as possible from:
   http://stevelosh.com/blog/2010/09/coming-home-to-vim/#why-i-came-back-to-vim
