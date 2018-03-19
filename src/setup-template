@@ -183,6 +183,24 @@ if [ -e ~/.tmux.conf ]; then
 fi
 install -m 0644 dot_tmux_conf ~/.tmux.conf
 
+echo "terminfo ..."
+if has_prog tic; then
+    has_tmux256_terminfo=
+    if [ -e /lib/terminfo/t/tmux-256color ]; then
+        has_tmux256_terminfo="y"
+    fi
+    if [ -e /usr/share/terminfo/t/tmux-256color ]; then
+        has_tmux256_terminfo="y"
+    fi
+    if [ -e ~/.terminfo/t/tmux-256color ]; then
+        has_tmux256_terminfo="y"
+    fi
+    if [ -z "${has_tmux256_terminfo}" ]; then
+        mkdir -p ~/.terminfo
+        tic -o ~/.terminfo tmux-256color.tinfo
+    fi
+fi
+
 # Python
 echo "Python ..."
 if ! has_prog pip3; then

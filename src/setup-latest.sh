@@ -47,13 +47,13 @@ echo "Unsharing files in ${SHAR_TMPDIR} ..."
 cat <<'SETUP_SHAR_EOF'> setup.shar
 # @SHAR_ARCHIVE@
 #!/bin/sh
-# This is a shell archive (produced by GNU sharutils 4.15.2).
+# This is a shell archive (produced by GNU sharutils 4.14).
 # To extract the files from this archive, save it to some FILE, remove
 # everything before the '#!/bin/sh' line above, then type 'sh FILE'.
 #
-lock_dir=_sh07028
-# Made on 2017-12-22 11:36 CET by <fjardon@yoda>.
-# Source directory was '/home/fjardon/workspace/unix-config/src'.
+lock_dir=_sh25080
+# Made on 2018-03-19 19:14 UTC by <fjardon@DiskStation>.
+# Source directory was '/home/fjardon/workspace/github/unix-config/src'.
 #
 # Existing files will *not* be overwritten, unless '-c' is specified.
 #
@@ -67,7 +67,8 @@ lock_dir=_sh07028
 #   4202 -rw-r--r-- dot_vimrc
 #    638 -rw-r--r-- dot_Xresources
 #   4076 -rw-r--r-- dot_XWinrc
-#    901 -rwxrwxr-x runcron
+#   2836 -rw-r--r-- tmux-256color.tinfo
+#    901 -rwxr-xr-x runcron
 #
 MD5SUM=${MD5SUM-md5sum}
 f=`${MD5SUM} --version | egrep '^md5sum .*(core|text)utils'`
@@ -193,7 +194,7 @@ if [ -f ~/.bashrc ]; then
 X    . ~/.bashrc
 fi
 SHAR_EOF
-  (set 20 17 12 22 11 05 26 'dot_bash_profile'
+  (set 20 17 07 06 07 11 31 'dot_bash_profile'
    eval "${shar_touch}") && \
   chmod 0644 'dot_bash_profile'
 if test $? -ne 0
@@ -326,7 +327,7 @@ X    ssh-agent > ~/.ssh/ssh-agent.pid 2> /dev/null
 X    source ~/.ssh/ssh-agent.pid > /dev/null 2>&1
 fi
 SHAR_EOF
-  (set 20 17 12 22 11 05 26 'dot_bashrc'
+  (set 20 17 07 20 07 56 05 'dot_bashrc'
    eval "${shar_touch}") && \
   chmod 0644 'dot_bashrc'
 if test $? -ne 0
@@ -427,7 +428,7 @@ X    done
 fi
 X
 SHAR_EOF
-  (set 20 17 12 22 11 05 26 'dot_profile'
+  (set 20 17 07 06 07 11 31 'dot_profile'
    eval "${shar_touch}") && \
   chmod 0644 'dot_profile'
 if test $? -ne 0
@@ -457,7 +458,7 @@ set -g default-terminal "tmux-256color"
 set-window-option -g mode-keys vi              
 X
 SHAR_EOF
-  (set 20 17 12 22 11 13 43 'dot_tmux_conf'
+  (set 20 18 03 19 10 02 21 'dot_tmux_conf'
    eval "${shar_touch}") && \
   chmod 0644 'dot_tmux_conf'
 if test $? -ne 0
@@ -632,7 +633,7 @@ X
 map <F3> :NERDTreeToggle<CR>
 map <F2> :TaskList<CR>
 SHAR_EOF
-  (set 20 17 12 22 11 35 51 'dot_vimrc'
+  (set 20 18 03 19 10 02 21 'dot_vimrc'
    eval "${shar_touch}") && \
   chmod 0644 'dot_vimrc'
 if test $? -ne 0
@@ -681,7 +682,7 @@ X
 !XTerm*backarrowKey: false
 !XTerm*backarrowKeyIsErase: true
 SHAR_EOF
-  (set 20 17 12 22 11 05 26 'dot_Xresources'
+  (set 20 17 07 06 07 11 31 'dot_Xresources'
    eval "${shar_touch}") && \
   chmod 0644 'dot_Xresources'
 if test $? -ne 0
@@ -847,7 +848,7 @@ X
 DEBUG "Done parsing the configuration file..."
 X
 SHAR_EOF
-  (set 20 17 12 22 11 05 26 'dot_XWinrc'
+  (set 20 17 07 06 07 11 31 'dot_XWinrc'
    eval "${shar_touch}") && \
   chmod 0644 'dot_XWinrc'
 if test $? -ne 0
@@ -863,6 +864,80 @@ SHAR_EOF
 else
 test `LC_ALL=C wc -c < 'dot_XWinrc'` -ne 4076 && \
   ${echo} "restoration warning:  size of 'dot_XWinrc' is not 4076"
+  fi
+fi
+# ============= tmux-256color.tinfo ==============
+if test -n "${keep_file}" && test -f 'tmux-256color.tinfo'
+then
+${echo} "x - SKIPPING tmux-256color.tinfo (file already exists)"
+
+else
+${echo} "x - extracting tmux-256color.tinfo (text)"
+  sed 's/^X//' << 'SHAR_EOF' > 'tmux-256color.tinfo' &&
+#       Reconstructed via infocmp from file: /usr/share/terminfo/74/tmux-256color
+tmux-256color|tmux with 256 colors,
+X        am, hs, km, mir, msgr, xenl,
+X        colors#0x100, cols#80, it#8, lines#24, pairs#0x7fff,
+X        acsc=++\,\,--..00``aaffgghhiijjkkllmmnnooppqqrrssttuuvvwwxxyyzz{{||}}~~,
+X        bel=^G, blink=\E[5m, bold=\E[1m, cbt=\E[Z, civis=\E[?25l,
+X        clear=\E[H\E[J, cnorm=\E[34h\E[?25h, cr=\r,
+X        csr=\E[%i%p1%d;%p2%dr, cub=\E[%p1%dD, cub1=^H,
+X        cud=\E[%p1%dB, cud1=\n, cuf=\E[%p1%dC, cuf1=\E[C,
+X        cup=\E[%i%p1%d;%p2%dH, cuu=\E[%p1%dA, cuu1=\EM,
+X        cvvis=\E[34l, dch=\E[%p1%dP, dch1=\E[P, dim=\E[2m,
+X        dl=\E[%p1%dM, dl1=\E[M, dsl=\E]0;\007, ed=\E[J, el=\E[K,
+X        el1=\E[1K, enacs=\E(B\E)0, flash=\Eg, fsl=^G, home=\E[H,
+X        ht=^I, hts=\EH, ich=\E[%p1%d@, il=\E[%p1%dL, il1=\E[L,
+X        ind=\n, is2=\E)0, kDC=\E[3;2~, kEND=\E[1;2F, kHOM=\E[1;2H,
+X        kIC=\E[2;2~, kLFT=\E[1;2D, kNXT=\E[6;2~, kPRV=\E[5;2~,
+X        kRIT=\E[1;2C, kbs=^H, kcbt=\E[Z, kcub1=\EOD, kcud1=\EOB,
+X        kcuf1=\EOC, kcuu1=\EOA, kdch1=\E[3~, kend=\E[4~, kf1=\EOP,
+X        kf10=\E[21~, kf11=\E[23~, kf12=\E[24~, kf13=\E[1;2P,
+X        kf14=\E[1;2Q, kf15=\E[1;2R, kf16=\E[1;2S, kf17=\E[15;2~,
+X        kf18=\E[17;2~, kf19=\E[18;2~, kf2=\EOQ, kf20=\E[19;2~,
+X        kf21=\E[20;2~, kf22=\E[21;2~, kf23=\E[23;2~,
+X        kf24=\E[24;2~, kf25=\E[1;5P, kf26=\E[1;5Q, kf27=\E[1;5R,
+X        kf28=\E[1;5S, kf29=\E[15;5~, kf3=\EOR, kf30=\E[17;5~,
+X        kf31=\E[18;5~, kf32=\E[19;5~, kf33=\E[20;5~,
+X        kf34=\E[21;5~, kf35=\E[23;5~, kf36=\E[24;5~,
+X        kf37=\E[1;6P, kf38=\E[1;6Q, kf39=\E[1;6R, kf4=\EOS,
+X        kf40=\E[1;6S, kf41=\E[15;6~, kf42=\E[17;6~,
+X        kf43=\E[18;6~, kf44=\E[19;6~, kf45=\E[20;6~,
+X        kf46=\E[21;6~, kf47=\E[23;6~, kf48=\E[24;6~,
+X        kf49=\E[1;3P, kf5=\E[15~, kf50=\E[1;3Q, kf51=\E[1;3R,
+X        kf52=\E[1;3S, kf53=\E[15;3~, kf54=\E[17;3~,
+X        kf55=\E[18;3~, kf56=\E[19;3~, kf57=\E[20;3~,
+X        kf58=\E[21;3~, kf59=\E[23;3~, kf6=\E[17~, kf60=\E[24;3~,
+X        kf61=\E[1;4P, kf62=\E[1;4Q, kf63=\E[1;4R, kf7=\E[18~,
+X        kf8=\E[19~, kf9=\E[20~, khome=\E[1~, kich1=\E[2~,
+X        kind=\E[1;2B, kmous=\E[M, knp=\E[6~, kpp=\E[5~,
+X        kri=\E[1;2A, nel=\EE, op=\E[39;49m, rc=\E8, rev=\E[7m,
+X        ri=\EM, ritm=\E[23m, rmacs=^O, rmcup=\E[?1049l, rmir=\E[4l,
+X        rmkx=\E[?1l\E>, rmso=\E[27m, rmul=\E[24m,
+X        rs2=\Ec\E[?1000l\E[?25h, sc=\E7,
+X        setab=\E[%?%p1%{8}%<%t4%p1%d%e%p1%{16}%<%t10%p1%{8}%-%d%e48;5;%p1%d%;m,
+X        setaf=\E[%?%p1%{8}%<%t3%p1%d%e%p1%{16}%<%t9%p1%{8}%-%d%e38;5;%p1%d%;m,
+X        sgr=\E[0%?%p6%t;1%;%?%p1%t;3%;%?%p2%t;4%;%?%p3%t;7%;%?%p4%t;5%;%?%p5%t;2%;m%?%p9%t\016%e\017%;,
+X        sgr0=\E[m\017, sitm=\E[3m, smacs=^N, smcup=\E[?1049h,
+X        smir=\E[4h, smkx=\E[?1h\E=, smso=\E[7m, smul=\E[4m,
+X        tbc=\E[3g, tsl=\E]0;,
+SHAR_EOF
+  (set 20 18 03 19 10 02 44 'tmux-256color.tinfo'
+   eval "${shar_touch}") && \
+  chmod 0644 'tmux-256color.tinfo'
+if test $? -ne 0
+then ${echo} "restore of tmux-256color.tinfo failed"
+fi
+  if ${md5check}
+  then (
+       ${MD5SUM} -c >/dev/null 2>&1 || ${echo} 'tmux-256color.tinfo': 'MD5 check failed'
+       ) << \SHAR_EOF
+6ab6c2f0e9d36f696206c718d24287c3  tmux-256color.tinfo
+SHAR_EOF
+
+else
+test `LC_ALL=C wc -c < 'tmux-256color.tinfo'` -ne 2836 && \
+  ${echo} "restoration warning:  size of 'tmux-256color.tinfo' is not 2836"
   fi
 fi
 # ============= runcron ==============
@@ -921,9 +996,9 @@ done
 X
 X
 SHAR_EOF
-  (set 20 16 12 10 20 00 23 'runcron'
+  (set 20 17 07 06 07 11 31 'runcron'
    eval "${shar_touch}") && \
-  chmod 0775 'runcron'
+  chmod 0755 'runcron'
 if test $? -ne 0
 then ${echo} "restore of runcron failed"
 fi
@@ -1081,6 +1156,24 @@ if [ -e ~/.tmux.conf ]; then
     cp -f ~/.tmux.conf "${BACKUPDIR}"
 fi
 install -m 0644 dot_tmux_conf ~/.tmux.conf
+
+echo "terminfo ..."
+if has_prog tic; then
+    has_tmux256_terminfo=
+    if [ -e /lib/terminfo/t/tmux-256color ]; then
+        has_tmux256_terminfo="y"
+    fi
+    if [ -e /usr/share/terminfo/t/tmux-256color ]; then
+        has_tmux256_terminfo="y"
+    fi
+    if [ -e ~/.terminfo/t/tmux-256color ]; then
+        has_tmux256_terminfo="y"
+    fi
+    if [ -z "${has_tmux256_terminfo}" ]; then
+        mkdir -p ~/.terminfo
+        tic -o ~/.terminfo tmux-256color.tinfo
+    fi
+fi
 
 # Python
 echo "Python ..."
