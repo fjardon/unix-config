@@ -155,13 +155,14 @@ if has_prog crontab; then
 fi
 
 # Fonts
-echo "fonts ..."
+echo "nerd fonts ..."
 install -d ~/.fonts
-install -d ~/.local/share/fonts
+install -d ~/.local/share/fonts/nerd-fonts
 if has_prog fc-cache; then
-    if [ ! -e ~/.local/share/fonts/power-line ]; then
-        git clone https://github.com/powerline/fonts.git \
-              ~/.local/share/fonts/power-line
+    if [ ! -e ~/.local/share/fonts/nerd-fonts ]; then
+        git clone https://github.com/ryanoasis/nerd-fonts.git
+        install -D ~/.local/share/fonts/nerd-fonts/DejaVuSansMono \
+                   nerd-fonts/patched-fonts/DejaVuSansMono
         fc-cache -f ~/.local/share/fonts
     fi
 fi
@@ -185,7 +186,7 @@ install -m 0644 dot_tmux_conf ~/.tmux.conf
 
 echo "terminfo ..."
 if has_prog tic; then
-    has_tmux256_terminfo=
+    has_tmux256_terminfo=""
     if [ -e /lib/terminfo/t/tmux-256color ]; then
         has_tmux256_terminfo="y"
     fi

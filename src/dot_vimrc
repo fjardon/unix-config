@@ -3,35 +3,38 @@
 " :nmap <silent> <A-Down> :wincmd j<CR>
 " :nmap <silent> <A-Left> :wincmd h<CR>
 " :nmap <silent> <A-Right> :wincmd l<CR>
- 
+
 " Highligth characters after 80th columns
 set colorcolumn=80
 highlight ColorColumn ctermbg=lightgrey guibg=lightgrey
- 
+
 " Use explorer in tree mode
 let g:netrw_liststyle=3
- 
+
 " Use soft tabs, size 4
 set tabstop=4 shiftwidth=4 expandtab
- 
+
 " Auto indent file
 autocmd FileType *      set formatoptions=tcql nocindent comments&
 autocmd FileType c,cpp  set formatoptions=croql cindent comments=sr:/*,mb:*,ex:*/,://
 set autoindent
 filetype plugin indent on
- 
+
 " Highlight searched targets
 set hlsearch
- 
+
 " Show line numbers
 set number
- 
+
+" Encoding utf8
+set encoding=utf8
+
 " Block cursor
 let &t_SI.="\e[1 q"
 let &t_EI.="\e[1 q"
 let &t_ti.="\e[1 q"
 let &t_te.="\e[1 q"
- 
+
 " Show cursor line
 hi CursorLine cterm=NONE ctermbg=darkred ctermfg=white
 hi CursorColumn cterm=NONE ctermbg=darkred ctermfg=white
@@ -53,8 +56,34 @@ Plugin 'gmarik/Vundle.vim'
 " Code/project navigation
 Plugin 'scrooloose/nerdtree' 	    	" Project and file navigation
 Plugin 'majutsushi/tagbar'          	" Class/module browser
+Plugin 'ervandew/supertab'
+Plugin 'BufOnly.vim'
+Plugin 'wesQ3/vim-windowswap'
+Plugin 'SirVer/ultisnips'
+Plugin 'junegunn/fzf.vim'
+Plugin 'junegunn/fzf'
+Plugin 'godlygeek/tabular'
+Plugin 'ctrlpvim/ctrlp.vim'
+Plugin 'benmills/vimux'
+Plugin 'jeetsukumaran/vim-buffergator'
+Plugin 'gilsondev/searchtasks.vim'
+Plugin 'Shougo/neocomplete.vim'
+Plugin 'tpope/vim-dispatch'
 
-" others
+" Programming
+Plugin 'honza/vim-snippets'
+Plugin 'Townk/vim-autoclose'
+Plugin 'vim-syntastic/syntastic'
+Plugin 'neomake/neomake'
+
+" Markdown / Writting
+Plugin 'reedes/vim-pencil'
+Plugin 'tpope/vim-markdown'
+Plugin 'jtratner/vim-flavored-markdown'
+Plugin 'LanguageTool'
+
+" Theming
+Plugin 'ryanoasis/vim-devicons'
 Plugin 'vim-airline/vim-airline'   	" Lean & mean status/tabline for vim
 Plugin 'vim-airline/vim-airline-themes'
 Plugin 'fisadev/FixedTaskList.vim'  	" Pending tasks list
@@ -64,6 +93,7 @@ Plugin 'ctags.vim'
 
 " language support
 Plugin 'elixir-lang/vim-elixir'
+Plugin 'leafgarland/typescript-vim'
 
 " solarized color theme
 Plugin 'altercation/vim-colors-solarized'

@@ -1,5 +1,5 @@
 XTerm*eightBitInput: true
-XTerm*faceName: DejaVu Sans Mono for Powerline
+XTerm*faceName: DejaVuSansMonoForPowerline NF
 XTerm*renderFont: true
 XTerm*reverseVideo: true
 XTerm*rightScrollBar: true
