@@ -158,12 +158,13 @@ if has_prog xterm; then
     # Fonts
     echo "nerd fonts ..."
     install -d ~/.fonts
-    install -d ~/.local/share/fonts/nerd-fonts
+    install -d ~/.local/share/fonts
     if has_prog fc-cache; then
-        if [ ! -e ~/.local/share/fonts/nerd-fonts ]; then
+        if [ ! -d ~/.local/share/fonts/nerd-fonts ]; then
+            install -d ~/.local/share/fonts/nerd-fonts
             git clone https://github.com/ryanoasis/nerd-fonts.git
-            install -D ~/.local/share/fonts/nerd-fonts/DejaVuSansMono \
-                       nerd-fonts/patched-fonts/DejaVuSansMono
+            cp -r nerd-fonts/patched-fonts/DejaVuSansMono \
+                       ~/.local/share/fonts/nerd-fonts/
             fc-cache -f ~/.local/share/fonts
         fi
     fi

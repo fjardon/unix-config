@@ -47,13 +47,13 @@ echo "Unsharing files in ${SHAR_TMPDIR} ..."
 cat <<'SETUP_SHAR_EOF'> setup.shar
 # @SHAR_ARCHIVE@
 #!/bin/sh
-# This is a shell archive (produced by GNU sharutils 4.14).
+# This is a shell archive (produced by GNU sharutils 4.15.2).
 # To extract the files from this archive, save it to some FILE, remove
 # everything before the '#!/bin/sh' line above, then type 'sh FILE'.
 #
-lock_dir=_sh25080
-# Made on 2018-03-19 19:14 UTC by <fjardon@DiskStation>.
-# Source directory was '/home/fjardon/workspace/github/unix-config/src'.
+lock_dir=_sh09452
+# Made on 2018-03-31 13:01 CEST by <frede@darthvader>.
+# Source directory was '/home/frede/Documents/workspace/github/unix-config/src'.
 #
 # Existing files will *not* be overwritten, unless '-c' is specified.
 #
@@ -63,9 +63,9 @@ lock_dir=_sh25080
 #    456 -rw-r--r-- dot_bash_profile
 #   3087 -rw-r--r-- dot_bashrc
 #   2158 -rw-r--r-- dot_profile
-#     97 -rw-r--r-- dot_tmux_conf
-#   4202 -rw-r--r-- dot_vimrc
-#    638 -rw-r--r-- dot_Xresources
+#   2889 -rw-r--r-- dot_tmux_conf
+#   4933 -rw-r--r-- dot_vimrc
+#    637 -rw-r--r-- dot_Xresources
 #   4076 -rw-r--r-- dot_XWinrc
 #   2836 -rw-r--r-- tmux-256color.tinfo
 #    901 -rwxr-xr-x runcron
@@ -194,7 +194,7 @@ if [ -f ~/.bashrc ]; then
 X    . ~/.bashrc
 fi
 SHAR_EOF
-  (set 20 17 07 06 07 11 31 'dot_bash_profile'
+  (set 20 18 02 01 18 48 58 'dot_bash_profile'
    eval "${shar_touch}") && \
   chmod 0644 'dot_bash_profile'
 if test $? -ne 0
@@ -327,7 +327,7 @@ X    ssh-agent > ~/.ssh/ssh-agent.pid 2> /dev/null
 X    source ~/.ssh/ssh-agent.pid > /dev/null 2>&1
 fi
 SHAR_EOF
-  (set 20 17 07 20 07 56 05 'dot_bashrc'
+  (set 20 18 02 01 18 48 58 'dot_bashrc'
    eval "${shar_touch}") && \
   chmod 0644 'dot_bashrc'
 if test $? -ne 0
@@ -428,7 +428,7 @@ X    done
 fi
 X
 SHAR_EOF
-  (set 20 17 07 06 07 11 31 'dot_profile'
+  (set 20 18 02 01 18 48 58 'dot_profile'
    eval "${shar_touch}") && \
   chmod 0644 'dot_profile'
 if test $? -ne 0
@@ -452,13 +452,78 @@ then
 ${echo} "x - SKIPPING dot_tmux_conf (file already exists)"
 
 else
-${echo} "x - extracting dot_tmux_conf (text)"
-  sed 's/^X//' << 'SHAR_EOF' > 'dot_tmux_conf' &&
-set -g default-terminal "tmux-256color"        
-set-window-option -g mode-keys vi              
-X
+${echo} "x - extracting dot_tmux_conf (texte)"
+  sed 's/^X//' << 'SHAR_EOF' | uudecode &&
+begin 600 dot_tmux_conf
+M(R`M+2T@9V5N97)A;"`M+2TM+2TM+2TM+2TM+2TM+2TM+2TM+2TM+2TM+2TM
+M+2TM+2TM+2TM+2TM+2TM+2TM+2TM+2TM"G-E="`M9R!D969A=6QT+71E<FUI
+M;F%L(")T;75X+3(U-F-O;&]R(@IS971W("UG('AT97)M+6ME>7,@;VX*<V5T
+M=R`M9R!M;V1E+6ME>7,@=FD@("`@("`@("`@("`@(`IS970@+7,@9F]C=7,M
+M979E;G1S(&]N"@HC<V5T("UQ("UG('-T871U<RUU=&8X(&]N"G-E='<@+7$@
+M+6<@=71F."!O;@H*(R!C,"UC:&%N9V4M:6YT97)V86P@:6YT97)V86P@(R!P
+M<F5V96YT<R!F;&]O9&EN9R!T;R!B<F5A:R!#=')L*T,*(R!C,"UC:&%N9V4M
+M=')I9V=E<B!T<FEG9V5R("`@(R`*"B,@+2TM(&1I<W!L87D@+2TM+2TM+2TM
+M+2TM+2TM+2TM+2TM+2TM+2TM+2TM+2TM+2TM+2TM+2TM+2TM+2TM+2TM+2TM
+M+0IS970@+6<@8F%S92UI;F1E>"`Q("`@("`@("`@(R!S=&%R="!W:6YD;W<@
+M;G5M8F5R:6YG(&%T(#$*<V5T=R`M9R!P86YE+6)A<V4M:6YD97@@,2`@(",@
+M<W1A<G0@<&%N92!N=6UB97)I;F<@870@,0H*<V5T=R`M9R!A=71O;6%T:6,M
+M<F5N86UE(&]N(",@<F5N86UE('=I;F1O=R!T;R!C=7)R96YT('!R;V=R86T*
+M<V5T("UG(')E;G5M8F5R+7=I;F1O=W,@;VX@(",@<F5N86UE('=I;F1O=R!W
+M:&5N('=I;F1O=R!I<R!C;&]S960*"G-E="`M9R!S970M=&ET;&5S(&]N("`@
+M("`@("`C('-E="!T97)M:6YA;"!T:71L90IS970@+6<@<V5T+71I=&QE<RUS
+M=')I;F<@)R-H("`@(U,@("`C22`C5R<*"G-E="`M9R!D:7-P;&%Y+7!A;F5S
+M+71I;64@.#`P(",@;&]N9V5R('!A;F4@:6YD:6-A=&]R(&1I<W!L87D@=&EM
+M90IS970@+6<@9&ES<&QA>2UT:6UE(#$P,#`@("`@("`C(&QO;F=E<B!S=&%T
+M=7,@:6YD:6-A=&]R(&1I<W!L87D@=&EM90IS970@+6<@<W1A='5S+6EN=&5R
+M=F%L(#$P("`@("`C(')E9G)E<V@@<W1A='5S(&5V97)Y(#$P('-E8V]N9',*
+M"B,@86-T:79I='D*<V5T("UG(&UO;FET;W(M86-T:79I='D@;VX*<V5T("UG
+M('9I<W5A;"UA8W1I=FET>2!O9F8*"B,@+2TM('-T871U<R!T:&5M92`M+2TM
+M+2TM+2TM+2TM+2TM+2TM+2TM+2TM+2TM+2TM+2TM+2TM+2TM+2TM+2TM+2TM
+M+0IS970@+6<@<W1A='5S+6)G("=C;VQO=7(R,S4G"G-E="`M9R!M97-S86=E
+M+6-O;6UA;F0M9F<@)V-O;&]U<C(R,B<*<V5T("UG('-T871U<RUJ=7-T:69Y
+M("=C96YT<F4G"G-E="`M9R!S=&%T=7,M;&5F="UL96YG=&@@)S$P,"<*<V5T
+M("UG('-T871U<R`G;VXG"G-E="`M9R!P86YE+6%C=&EV92UB;W)D97(M9F<@
+M)V-O;&]U<C$U-"<*<V5T("UG(&UE<W-A9V4M8F<@)V-O;&]U<C(S."<*<V5T
+M("UG('-T871U<RUR:6=H="UL96YG=&@@)S$P,"<*<V5T("UG('-T871U<RUR
+M:6=H="UA='1R("=N;VYE)PIS970@+6<@;65S<V%G92UF9R`G8V]L;W5R,C(R
+M)PIS970@+6<@;65S<V%G92UC;VUM86YD+6)G("=C;VQO=7(R,S@G"G-E="`M
+M9R!S=&%T=7,M871T<B`G;F]N92<*<V5T("UG('!A;F4M8F]R9&5R+69G("=C
+M;VQO=7(R,S@G"G-E="`M9R!S=&%T=7,M;&5F="UA='1R("=N;VYE)PIS971W
+M("UG('=I;F1O=RUS=&%T=7,M9F<@)V-O;&]U<C$R,2<*<V5T=R`M9R!W:6YD
+M;W<M<W1A='5S+6%T='(@)VYO;F4G"G-E='<@+6<@=VEN9&]W+7-T871U<RUA
+M8W1I=FET>2UB9R`G8V]L;W5R,C,U)PIS971W("UG('=I;F1O=RUS=&%T=7,M
+M86-T:79I='DM871T<B`G;F]N92<*<V5T=R`M9R!W:6YD;W<M<W1A='5S+6%C
+M=&EV:71Y+69G("=C;VQO=7(Q-30G"G-E='<@+6<@=VEN9&]W+7-T871U<RUS
+M97!A<F%T;W(@)R<*<V5T=R`M9R!W:6YD;W<M<W1A='5S+6)G("=C;VQO=7(R
+M,S4G"G-E="`M9R!S=&%T=7,M;&5F="`G(UMF9SUC;VQO=7(R,S(L8F<]8V]L
+M;W5R,34T72`C4R`C6V9G/6-O;&]U<C$U-"QB9SUC;VQO=7(R,S@L;F]B;VQD
+M+&YO=6YD97)S8V]R92QN;VET86QI8W-=[H*P(UMF9SUC;VQO=7(R,C(L8F<]
+M8V]L;W5R,C,X72`C5R`C6V9G/6-O;&]U<C(S."QB9SUC;VQO=7(R,S4L;F]B
+M;VQD+&YO=6YD97)S8V]R92QN;VET86QI8W-=[H*P(UMF9SUC;VQO=7(Q,C$L
+M8F<]8V]L;W5R,C,U72`C*'=H;V%M:2D@[H*Q(",H=7!T:6UE("!\(&-U="`M
+M9"`B("(@+68@,2PR+#,I("-;9F<]8V]L;W5R,C,U+&)G/6-O;&]U<C(S-2QN
+M;V)O;&0L;F]U;F1E<G-C;W)E+&YO:71A;&EC<UWN@K`G"G-E="`M9R!S=&%T
+M=7,M<FEG:'0@)R-;9F<]8V]L;W5R,C,U+&)G/6-O;&]U<C(S-2QN;V)O;&0L
+M;F]U;F1E<G-C;W)E+&YO:71A;&EC<UWN@K(C6V9G/6-O;&]U<C$R,2QB9SUC
+M;VQO=7(R,S5=("5R(.Z"LR`E82#N@K,@)5D@(UMF9SUC;VQO=7(R,S@L8F<]
+M8V]L;W5R,C,U+&YO8F]L9"QN;W5N9&5R<V-O<F4L;F]I=&%L:6-S7>Z"LB-;
+M9F<]8V]L;W5R,C(R+&)G/6-O;&]U<C(S.%T@(T@@(UMF9SUC;VQO=7(Q-30L
+M8F<]8V]L;W5R,C,X+&YO8F]L9"QN;W5N9&5R<V-O<F4L;F]I=&%L:6-S7>Z"
+MLB-;9F<]8V]L;W5R,C,R+&)G/6-O;&]U<C$U-%T@(RAR86EN8F%R9B`M+6)A
+M='1E<GD@+2UR96UA:6YI;F<@+2UN;RUR9V(I("<*<V5T=R`M9R!W:6YD;W<M
+M<W1A='5S+69O<FUA="`G(UMF9SUC;VQO=7(R,S4L8F<]8V]L;W5R,C,U+&YO
+M8F]L9"QN;W5N9&5R<V-O<F4L;F]I=&%L:6-S7>Z"L"-;9&5F875L=%T@(TD@
+M[H*Q("-7("-;9F<]8V]L;W5R,C,U+&)G/6-O;&]U<C(S-2QN;V)O;&0L;F]U
+M;F1E<G-C;W)E+&YO:71A;&EC<UWN@K`G"G-E='<@+6<@=VEN9&]W+7-T871U
+M<RUC=7)R96YT+69O<FUA="`G(UMF9SUC;VQO=7(R,S4L8F<]8V]L;W5R,C,X
+M+&YO8F]L9"QN;W5N9&5R<V-O<F4L;F]I=&%L:6-S7>Z"L"-;9F<]8V]L;W5R
+M,C(R+&)G/6-O;&]U<C(S.%T@(TD@[H*Q("-7(.Z"L2`C1B`C6V9G/6-O;&]U
+M<C(S."QB9SUC;VQO=7(R,S4L;F]B;VQD+&YO=6YD97)S8V]R92QN;VET86QI
+)8W-=[H*P)PH*
+`
+end
 SHAR_EOF
-  (set 20 18 03 19 10 02 21 'dot_tmux_conf'
+  (set 20 18 03 31 11 41 59 'dot_tmux_conf'
    eval "${shar_touch}") && \
   chmod 0644 'dot_tmux_conf'
 if test $? -ne 0
@@ -468,12 +533,12 @@ fi
   then (
        ${MD5SUM} -c >/dev/null 2>&1 || ${echo} 'dot_tmux_conf': 'MD5 check failed'
        ) << \SHAR_EOF
-dd325341becf8590a75efa260b75d3ad  dot_tmux_conf
+7f2bd72c0c11481a1daa9626be005c3d  dot_tmux_conf
 SHAR_EOF
 
 else
-test `LC_ALL=C wc -c < 'dot_tmux_conf'` -ne 97 && \
-  ${echo} "restoration warning:  size of 'dot_tmux_conf' is not 97"
+test `LC_ALL=C wc -c < 'dot_tmux_conf'` -ne 2889 && \
+  ${echo} "restoration warning:  size of 'dot_tmux_conf' is not 2889"
   fi
 fi
 # ============= dot_vimrc ==============
@@ -489,35 +554,38 @@ ${echo} "x - extracting dot_vimrc (text)"
 " :nmap <silent> <A-Down> :wincmd j<CR>
 " :nmap <silent> <A-Left> :wincmd h<CR>
 " :nmap <silent> <A-Right> :wincmd l<CR>
-X 
+X
 " Highligth characters after 80th columns
 set colorcolumn=80
 highlight ColorColumn ctermbg=lightgrey guibg=lightgrey
-X 
+X
 " Use explorer in tree mode
 let g:netrw_liststyle=3
-X 
+X
 " Use soft tabs, size 4
 set tabstop=4 shiftwidth=4 expandtab
-X 
+X
 " Auto indent file
 autocmd FileType *      set formatoptions=tcql nocindent comments&
 autocmd FileType c,cpp  set formatoptions=croql cindent comments=sr:/*,mb:*,ex:*/,://
 set autoindent
 filetype plugin indent on
-X 
+X
 " Highlight searched targets
 set hlsearch
-X 
+X
 " Show line numbers
 set number
-X 
+X
+" Encoding utf8
+set encoding=utf8
+X
 " Block cursor
 let &t_SI.="\e[1 q"
 let &t_EI.="\e[1 q"
 let &t_ti.="\e[1 q"
 let &t_te.="\e[1 q"
-X 
+X
 " Show cursor line
 hi CursorLine cterm=NONE ctermbg=darkred ctermfg=white
 hi CursorColumn cterm=NONE ctermbg=darkred ctermfg=white
@@ -539,8 +607,34 @@ X
 " Code/project navigation
 Plugin 'scrooloose/nerdtree' 	    	" Project and file navigation
 Plugin 'majutsushi/tagbar'          	" Class/module browser
+Plugin 'ervandew/supertab'
+Plugin 'BufOnly.vim'
+Plugin 'wesQ3/vim-windowswap'
+Plugin 'SirVer/ultisnips'
+Plugin 'junegunn/fzf.vim'
+Plugin 'junegunn/fzf'
+Plugin 'godlygeek/tabular'
+Plugin 'ctrlpvim/ctrlp.vim'
+Plugin 'benmills/vimux'
+Plugin 'jeetsukumaran/vim-buffergator'
+Plugin 'gilsondev/searchtasks.vim'
+Plugin 'Shougo/neocomplete.vim'
+Plugin 'tpope/vim-dispatch'
 X
-" others
+" Programming
+Plugin 'honza/vim-snippets'
+Plugin 'Townk/vim-autoclose'
+Plugin 'vim-syntastic/syntastic'
+Plugin 'neomake/neomake'
+X
+" Markdown / Writting
+Plugin 'reedes/vim-pencil'
+Plugin 'tpope/vim-markdown'
+Plugin 'jtratner/vim-flavored-markdown'
+Plugin 'LanguageTool'
+X
+" Theming
+Plugin 'ryanoasis/vim-devicons'
 Plugin 'vim-airline/vim-airline'   	" Lean & mean status/tabline for vim
 Plugin 'vim-airline/vim-airline-themes'
 Plugin 'fisadev/FixedTaskList.vim'  	" Pending tasks list
@@ -550,6 +644,7 @@ Plugin 'ctags.vim'
 X
 " language support
 Plugin 'elixir-lang/vim-elixir'
+Plugin 'leafgarland/typescript-vim'
 X
 " solarized color theme
 Plugin 'altercation/vim-colors-solarized'
@@ -633,7 +728,7 @@ X
 map <F3> :NERDTreeToggle<CR>
 map <F2> :TaskList<CR>
 SHAR_EOF
-  (set 20 18 03 19 10 02 21 'dot_vimrc'
+  (set 20 18 03 31 10 51 09 'dot_vimrc'
    eval "${shar_touch}") && \
   chmod 0644 'dot_vimrc'
 if test $? -ne 0
@@ -643,12 +738,12 @@ fi
   then (
        ${MD5SUM} -c >/dev/null 2>&1 || ${echo} 'dot_vimrc': 'MD5 check failed'
        ) << \SHAR_EOF
-7bd738e6e33956494c5699a1d7c79ce5  dot_vimrc
+ec36a3912e6494d33abc780035137632  dot_vimrc
 SHAR_EOF
 
 else
-test `LC_ALL=C wc -c < 'dot_vimrc'` -ne 4202 && \
-  ${echo} "restoration warning:  size of 'dot_vimrc' is not 4202"
+test `LC_ALL=C wc -c < 'dot_vimrc'` -ne 4933 && \
+  ${echo} "restoration warning:  size of 'dot_vimrc' is not 4933"
   fi
 fi
 # ============= dot_Xresources ==============
@@ -660,7 +755,7 @@ else
 ${echo} "x - extracting dot_Xresources (text)"
   sed 's/^X//' << 'SHAR_EOF' > 'dot_Xresources' &&
 XXTerm*eightBitInput: true
-XXTerm*faceName: DejaVu Sans Mono for Powerline
+XXTerm*faceName: DejaVuSansMonoForPowerline NF
 XXTerm*renderFont: true
 XXTerm*reverseVideo: true
 XXTerm*rightScrollBar: true
@@ -682,7 +777,7 @@ X
 !XTerm*backarrowKey: false
 !XTerm*backarrowKeyIsErase: true
 SHAR_EOF
-  (set 20 17 07 06 07 11 31 'dot_Xresources'
+  (set 20 18 03 31 10 51 09 'dot_Xresources'
    eval "${shar_touch}") && \
   chmod 0644 'dot_Xresources'
 if test $? -ne 0
@@ -692,12 +787,12 @@ fi
   then (
        ${MD5SUM} -c >/dev/null 2>&1 || ${echo} 'dot_Xresources': 'MD5 check failed'
        ) << \SHAR_EOF
-2ec6725320f702c4e51a717927268800  dot_Xresources
+d811037451a6553daf8a38d44ec9ba57  dot_Xresources
 SHAR_EOF
 
 else
-test `LC_ALL=C wc -c < 'dot_Xresources'` -ne 638 && \
-  ${echo} "restoration warning:  size of 'dot_Xresources' is not 638"
+test `LC_ALL=C wc -c < 'dot_Xresources'` -ne 637 && \
+  ${echo} "restoration warning:  size of 'dot_Xresources' is not 637"
   fi
 fi
 # ============= dot_XWinrc ==============
@@ -848,7 +943,7 @@ X
 DEBUG "Done parsing the configuration file..."
 X
 SHAR_EOF
-  (set 20 17 07 06 07 11 31 'dot_XWinrc'
+  (set 20 18 02 01 18 48 58 'dot_XWinrc'
    eval "${shar_touch}") && \
   chmod 0644 'dot_XWinrc'
 if test $? -ne 0
@@ -922,7 +1017,7 @@ X        sgr0=\E[m\017, sitm=\E[3m, smacs=^N, smcup=\E[?1049h,
 X        smir=\E[4h, smkx=\E[?1h\E=, smso=\E[7m, smul=\E[4m,
 X        tbc=\E[3g, tsl=\E]0;,
 SHAR_EOF
-  (set 20 18 03 19 10 02 44 'tmux-256color.tinfo'
+  (set 20 18 03 31 10 51 09 'tmux-256color.tinfo'
    eval "${shar_touch}") && \
   chmod 0644 'tmux-256color.tinfo'
 if test $? -ne 0
@@ -996,7 +1091,7 @@ done
 X
 X
 SHAR_EOF
-  (set 20 17 07 06 07 11 31 'runcron'
+  (set 20 18 02 01 18 48 58 'runcron'
    eval "${shar_touch}") && \
   chmod 0755 'runcron'
 if test $? -ne 0
@@ -1061,13 +1156,6 @@ install -m 0644 dot_profile      ~/.profile
 install -m 0644 dot_bash_profile ~/.bash_profile
 install -m 0644 dot_bashrc       ~/.bashrc
 
-# XWindow
-echo "XWindow ..."
-if [ -e ~/.Xresources ]; then
-    cp -f ~/.Xresources "${BACKUPDIR}"
-fi
-install -m 0644 dot_Xresources ~/.Xresources
-
 # .local setup
 echo "local ..."
 install -m 0755 -d ~/.local/bin
@@ -1080,18 +1168,6 @@ install -m 0755 -d ~/.local/etc/cron
 install -m 0755 -d ~/.local/etc/profile.d
 install -m 0755 runcron ~/.local/bin
 export PATH="${PATH}:~/.local/bin"
-
-# Cygwin
-if [[ "${os_name}" == CYGWIN* ]]; then
-    echo "Cygwin ..."
-    if [ -e ~/.XWinrc ]; then
-        cp -f ~/.XWinrc "${BACKUPDIR}"
-    fi
-    install -m 0644 dot_XWinrc ~/.XWinrc
-
-    git clone https://github.com/transcode-open/apt-cyg.git apt-cyg
-    install -m 0755 apt-cyg/apt-cyg ~/.local/bin
-fi
 
 # Cron setup
 echo "cron ..."
@@ -1128,15 +1204,38 @@ if has_prog crontab; then
     rm -f "${tmpcrontab}"
 fi
 
-# Fonts
-echo "fonts ..."
-install -d ~/.fonts
-install -d ~/.local/share/fonts
-if has_prog fc-cache; then
-    if [ ! -e ~/.local/share/fonts/power-line ]; then
-        git clone https://github.com/powerline/fonts.git \
-              ~/.local/share/fonts/power-line
-        fc-cache -f ~/.local/share/fonts
+# Cygwin
+if [[ "${os_name}" == CYGWIN* ]]; then
+    echo "Cygwin ..."
+    if [ -e ~/.XWinrc ]; then
+        cp -f ~/.XWinrc "${BACKUPDIR}"
+    fi
+    install -m 0644 dot_XWinrc ~/.XWinrc
+
+    git clone https://github.com/transcode-open/apt-cyg.git apt-cyg
+    install -m 0755 apt-cyg/apt-cyg ~/.local/bin
+fi
+
+# XWindow
+if has_prog xterm; then
+    echo "XWindow ..."
+    if [ -e ~/.Xresources ]; then
+        cp -f ~/.Xresources "${BACKUPDIR}"
+    fi
+    install -m 0644 dot_Xresources ~/.Xresources
+
+    # Fonts
+    echo "nerd fonts ..."
+    install -d ~/.fonts
+    install -d ~/.local/share/fonts
+    if has_prog fc-cache; then
+        if [ ! -d ~/.local/share/fonts/nerd-fonts ]; then
+            install -d ~/.local/share/fonts/nerd-fonts
+            git clone https://github.com/ryanoasis/nerd-fonts.git
+            cp -r nerd-fonts/patched-fonts/DejaVuSansMono \
+                       ~/.local/share/fonts/nerd-fonts/
+            fc-cache -f ~/.local/share/fonts
+        fi
     fi
 fi
 
@@ -1159,7 +1258,7 @@ install -m 0644 dot_tmux_conf ~/.tmux.conf
 
 echo "terminfo ..."
 if has_prog tic; then
-    has_tmux256_terminfo=
+    has_tmux256_terminfo=""
     if [ -e /lib/terminfo/t/tmux-256color ]; then
         has_tmux256_terminfo="y"
     fi
@@ -1223,7 +1322,7 @@ if ! has_prog gnulib-tool; then
     ln -s ~/.local/share/gnulib/gnulib-tool ~/.local/bin/gnulib-tool
 fi
 
-#TeX
+# TeX
 echo "TeX ..."
 if has_prog kpsewhich; then
     texmf_home=$(kpsewhich -var-value TEXMFHOME)
