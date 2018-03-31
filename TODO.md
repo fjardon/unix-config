@@ -1,6 +1,10 @@
 TODO
 ====
 [ ] Tmux: include https://github.com/erikw/tmux-powerline
+  [ ] split the configuration file in pieces
+    [ ] One configuration file for theming
+    [ ] One configuration file for bindings
+    [ ] Main configuration file not editable by user and putting pieces together
 
 [ ] Fonts
   [ ] fonts and Xresources installed only if `xterm` is present on host

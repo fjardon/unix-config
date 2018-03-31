@@ -51,8 +51,8 @@ cat <<'SETUP_SHAR_EOF'> setup.shar
 # To extract the files from this archive, save it to some FILE, remove
 # everything before the '#!/bin/sh' line above, then type 'sh FILE'.
 #
-lock_dir=_sh12180
-# Made on 2018-03-31 13:30 CEST by <frede@darthvader>.
+lock_dir=_sh11304
+# Made on 2018-03-31 19:34 CEST by <frede@darthvader>.
 # Source directory was '/home/frede/Documents/workspace/github/unix-config/src'.
 #
 # Existing files will *not* be overwritten, unless '-c' is specified.
@@ -63,7 +63,7 @@ lock_dir=_sh12180
 #    456 -rw-r--r-- dot_bash_profile
 #   3087 -rw-r--r-- dot_bashrc
 #   2158 -rw-r--r-- dot_profile
-#   2889 -rw-r--r-- dot_tmux_conf
+#   3008 -rw-r--r-- dot_tmux_conf
 #   4933 -rw-r--r-- dot_vimrc
 #    625 -rw-r--r-- dot_Xresources
 #   4076 -rw-r--r-- dot_XWinrc
@@ -458,72 +458,74 @@ begin 600 dot_tmux_conf
 M(R`M+2T@9V5N97)A;"`M+2TM+2TM+2TM+2TM+2TM+2TM+2TM+2TM+2TM+2TM
 M+2TM+2TM+2TM+2TM+2TM+2TM+2TM+2TM"G-E="`M9R!D969A=6QT+71E<FUI
 M;F%L(")T;75X+3(U-F-O;&]R(@IS971W("UG('AT97)M+6ME>7,@;VX*<V5T
-M=R`M9R!M;V1E+6ME>7,@=FD@("`@("`@("`@("`@(`IS970@+7,@9F]C=7,M
-M979E;G1S(&]N"@HC<V5T("UQ("UG('-T871U<RUU=&8X(&]N"G-E='<@+7$@
-M+6<@=71F."!O;@H*(R!C,"UC:&%N9V4M:6YT97)V86P@:6YT97)V86P@(R!P
-M<F5V96YT<R!F;&]O9&EN9R!T;R!B<F5A:R!#=')L*T,*(R!C,"UC:&%N9V4M
-M=')I9V=E<B!T<FEG9V5R("`@(R`*"B,@+2TM(&1I<W!L87D@+2TM+2TM+2TM
-M+2TM+2TM+2TM+2TM+2TM+2TM+2TM+2TM+2TM+2TM+2TM+2TM+2TM+2TM+2TM
-M+0IS970@+6<@8F%S92UI;F1E>"`Q("`@("`@("`@(R!S=&%R="!W:6YD;W<@
-M;G5M8F5R:6YG(&%T(#$*<V5T=R`M9R!P86YE+6)A<V4M:6YD97@@,2`@(",@
-M<W1A<G0@<&%N92!N=6UB97)I;F<@870@,0H*<V5T=R`M9R!A=71O;6%T:6,M
-M<F5N86UE(&]N(",@<F5N86UE('=I;F1O=R!T;R!C=7)R96YT('!R;V=R86T*
-M<V5T("UG(')E;G5M8F5R+7=I;F1O=W,@;VX@(",@<F5N86UE('=I;F1O=R!W
-M:&5N('=I;F1O=R!I<R!C;&]S960*"G-E="`M9R!S970M=&ET;&5S(&]N("`@
-M("`@("`C('-E="!T97)M:6YA;"!T:71L90IS970@+6<@<V5T+71I=&QE<RUS
-M=')I;F<@)R-H("`@(U,@("`C22`C5R<*"G-E="`M9R!D:7-P;&%Y+7!A;F5S
-M+71I;64@.#`P(",@;&]N9V5R('!A;F4@:6YD:6-A=&]R(&1I<W!L87D@=&EM
-M90IS970@+6<@9&ES<&QA>2UT:6UE(#$P,#`@("`@("`C(&QO;F=E<B!S=&%T
-M=7,@:6YD:6-A=&]R(&1I<W!L87D@=&EM90IS970@+6<@<W1A='5S+6EN=&5R
-M=F%L(#$P("`@("`C(')E9G)E<V@@<W1A='5S(&5V97)Y(#$P('-E8V]N9',*
-M"B,@86-T:79I='D*<V5T("UG(&UO;FET;W(M86-T:79I='D@;VX*<V5T("UG
-M('9I<W5A;"UA8W1I=FET>2!O9F8*"B,@+2TM('-T871U<R!T:&5M92`M+2TM
-M+2TM+2TM+2TM+2TM+2TM+2TM+2TM+2TM+2TM+2TM+2TM+2TM+2TM+2TM+2TM
-M+0IS970@+6<@<W1A='5S+6)G("=C;VQO=7(R,S4G"G-E="`M9R!M97-S86=E
-M+6-O;6UA;F0M9F<@)V-O;&]U<C(R,B<*<V5T("UG('-T871U<RUJ=7-T:69Y
-M("=C96YT<F4G"G-E="`M9R!S=&%T=7,M;&5F="UL96YG=&@@)S$P,"<*<V5T
-M("UG('-T871U<R`G;VXG"G-E="`M9R!P86YE+6%C=&EV92UB;W)D97(M9F<@
-M)V-O;&]U<C$U-"<*<V5T("UG(&UE<W-A9V4M8F<@)V-O;&]U<C(S."<*<V5T
-M("UG('-T871U<RUR:6=H="UL96YG=&@@)S$P,"<*<V5T("UG('-T871U<RUR
-M:6=H="UA='1R("=N;VYE)PIS970@+6<@;65S<V%G92UF9R`G8V]L;W5R,C(R
-M)PIS970@+6<@;65S<V%G92UC;VUM86YD+6)G("=C;VQO=7(R,S@G"G-E="`M
-M9R!S=&%T=7,M871T<B`G;F]N92<*<V5T("UG('!A;F4M8F]R9&5R+69G("=C
-M;VQO=7(R,S@G"G-E="`M9R!S=&%T=7,M;&5F="UA='1R("=N;VYE)PIS971W
-M("UG('=I;F1O=RUS=&%T=7,M9F<@)V-O;&]U<C$R,2<*<V5T=R`M9R!W:6YD
-M;W<M<W1A='5S+6%T='(@)VYO;F4G"G-E='<@+6<@=VEN9&]W+7-T871U<RUA
-M8W1I=FET>2UB9R`G8V]L;W5R,C,U)PIS971W("UG('=I;F1O=RUS=&%T=7,M
-M86-T:79I='DM871T<B`G;F]N92<*<V5T=R`M9R!W:6YD;W<M<W1A='5S+6%C
-M=&EV:71Y+69G("=C;VQO=7(Q-30G"G-E='<@+6<@=VEN9&]W+7-T871U<RUS
-M97!A<F%T;W(@)R<*<V5T=R`M9R!W:6YD;W<M<W1A='5S+6)G("=C;VQO=7(R
-M,S4G"G-E="`M9R!S=&%T=7,M;&5F="`G(UMF9SUC;VQO=7(R,S(L8F<]8V]L
-M;W5R,34T72`C4R`C6V9G/6-O;&]U<C$U-"QB9SUC;VQO=7(R,S@L;F]B;VQD
-M+&YO=6YD97)S8V]R92QN;VET86QI8W-=[H*P(UMF9SUC;VQO=7(R,C(L8F<]
-M8V]L;W5R,C,X72`C5R`C6V9G/6-O;&]U<C(S."QB9SUC;VQO=7(R,S4L;F]B
-M;VQD+&YO=6YD97)S8V]R92QN;VET86QI8W-=[H*P(UMF9SUC;VQO=7(Q,C$L
-M8F<]8V]L;W5R,C,U72`C*'=H;V%M:2D@[H*Q(",H=7!T:6UE("!\(&-U="`M
-M9"`B("(@+68@,2PR+#,I("-;9F<]8V]L;W5R,C,U+&)G/6-O;&]U<C(S-2QN
-M;V)O;&0L;F]U;F1E<G-C;W)E+&YO:71A;&EC<UWN@K`G"G-E="`M9R!S=&%T
-M=7,M<FEG:'0@)R-;9F<]8V]L;W5R,C,U+&)G/6-O;&]U<C(S-2QN;V)O;&0L
-M;F]U;F1E<G-C;W)E+&YO:71A;&EC<UWN@K(C6V9G/6-O;&]U<C$R,2QB9SUC
-M;VQO=7(R,S5=("5R(.Z"LR`E82#N@K,@)5D@(UMF9SUC;VQO=7(R,S@L8F<]
-M8V]L;W5R,C,U+&YO8F]L9"QN;W5N9&5R<V-O<F4L;F]I=&%L:6-S7>Z"LB-;
-M9F<]8V]L;W5R,C(R+&)G/6-O;&]U<C(S.%T@(T@@(UMF9SUC;VQO=7(Q-30L
-M8F<]8V]L;W5R,C,X+&YO8F]L9"QN;W5N9&5R<V-O<F4L;F]I=&%L:6-S7>Z"
-MLB-;9F<]8V]L;W5R,C,R+&)G/6-O;&]U<C$U-%T@(RAR86EN8F%R9B`M+6)A
-M='1E<GD@+2UR96UA:6YI;F<@+2UN;RUR9V(I("<*<V5T=R`M9R!W:6YD;W<M
-M<W1A='5S+69O<FUA="`G(UMF9SUC;VQO=7(R,S4L8F<]8V]L;W5R,C,U+&YO
-M8F]L9"QN;W5N9&5R<V-O<F4L;F]I=&%L:6-S7>Z"L"-;9&5F875L=%T@(TD@
-M[H*Q("-7("-;9F<]8V]L;W5R,C,U+&)G/6-O;&]U<C(S-2QN;V)O;&0L;F]U
-M;F1E<G-C;W)E+&YO:71A;&EC<UWN@K`G"G-E='<@+6<@=VEN9&]W+7-T871U
-M<RUC=7)R96YT+69O<FUA="`G(UMF9SUC;VQO=7(R,S4L8F<]8V]L;W5R,C,X
-M+&YO8F]L9"QN;W5N9&5R<V-O<F4L;F]I=&%L:6-S7>Z"L"-;9F<]8V]L;W5R
-M,C(R+&)G/6-O;&]U<C(S.%T@(TD@[H*Q("-7(.Z"L2`C1B`C6V9G/6-O;&]U
-M<C(S."QB9SUC;VQO=7(R,S4L;F]B;VQD+&YO=6YD97)S8V]R92QN;VET86QI
-)8W-=[H*P)PH*
+M=R`M9R!M;V1E+6ME>7,@=FD*<V5T("US(&9O8W5S+65V96YT<R!O;@H*(W-E
+M="`M<2`M9R!S=&%T=7,M=71F."!O;@IS971W("UQ("UG('5T9C@@;VX*"B,@
+M8S`M8VAA;F=E+6EN=&5R=F%L(&EN=&5R=F%L(",@<')E=F5N=',@9FQO;V1I
+M;F<@=&\@8G)E86L@0W1R;"M#"B,@8S`M8VAA;F=E+71R:6=G97(@=')I9V=E
+M<B`@(",*"B,@+2TM(&1I<W!L87D@+2TM+2TM+2TM+2TM+2TM+2TM+2TM+2TM
+M+2TM+2TM+2TM+2TM+2TM+2TM+2TM+2TM+2TM+2TM+0IS970@+6<@8F%S92UI
+M;F1E>"`Q("`@("`@("`@(R!S=&%R="!W:6YD;W<@;G5M8F5R:6YG(&%T(#$*
+M<V5T=R`M9R!P86YE+6)A<V4M:6YD97@@,2`@(",@<W1A<G0@<&%N92!N=6UB
+M97)I;F<@870@,0H*<V5T=R`M9R!A=71O;6%T:6,M<F5N86UE(&]N(",@<F5N
+M86UE('=I;F1O=R!T;R!C=7)R96YT('!R;V=R86T*<V5T("UG(')E;G5M8F5R
+M+7=I;F1O=W,@;VX@(",@<F5N86UE('=I;F1O=R!W:&5N('=I;F1O=R!I<R!C
+M;&]S960*"G-E="`M9R!S970M=&ET;&5S(&]N("`@("`@("`C('-E="!T97)M
+M:6YA;"!T:71L90IS970@+6<@<V5T+71I=&QE<RUS=')I;F<@)R-H("`@(U,@
+M("`C22`C5R<*"G-E="`M9R!D:7-P;&%Y+7!A;F5S+71I;64@.#`P(",@;&]N
+M9V5R('!A;F4@:6YD:6-A=&]R(&1I<W!L87D@=&EM90IS970@+6<@9&ES<&QA
+M>2UT:6UE(#$P,#`@("`@("`C(&QO;F=E<B!S=&%T=7,@:6YD:6-A=&]R(&1I
+M<W!L87D@=&EM90IS970@+6<@<W1A='5S+6EN=&5R=F%L(#$P("`@("`C(')E
+M9G)E<V@@<W1A='5S(&5V97)Y(#$P('-E8V]N9',*"B,@86-T:79I='D*<V5T
+M("UG(&UO;FET;W(M86-T:79I='D@;VX*<V5T("UG('9I<W5A;"UA8W1I=FET
+M>2!O9F8*"B,@+2TM('-T871U<R!T:&5M92`M+2TM+2TM+2TM+2TM+2TM+2TM
+M+2TM+2TM+2TM+2TM+2TM+2TM+2TM+2TM+2TM+2TM+0IS970@+6<@<W1A='5S
+M+6)G("=C;VQO=7(R,S4G"G-E="`M9R!M97-S86=E+6-O;6UA;F0M9F<@)V-O
+M;&]U<C(R,B<*<V5T("UG('-T871U<RUJ=7-T:69Y("=C96YT<F4G"G-E="`M
+M9R!S=&%T=7,M;&5F="UL96YG=&@@)S$P,"<*<V5T("UG('-T871U<R`G;VXG
+M"G-E="`M9R!P86YE+6%C=&EV92UB;W)D97(M9F<@)V-O;&]U<C$U-"<*<V5T
+M("UG(&UE<W-A9V4M8F<@)V-O;&]U<C(S."<*<V5T("UG('-T871U<RUR:6=H
+M="UL96YG=&@@)S$P,"<*<V5T("UG('-T871U<RUR:6=H="UA='1R("=N;VYE
+M)PIS970@+6<@;65S<V%G92UF9R`G8V]L;W5R,C(R)PIS970@+6<@;65S<V%G
+M92UC;VUM86YD+6)G("=C;VQO=7(R,S@G"G-E="`M9R!S=&%T=7,M871T<B`G
+M;F]N92<*<V5T("UG('!A;F4M8F]R9&5R+69G("=C;VQO=7(R,S@G"G-E="`M
+M9R!S=&%T=7,M;&5F="UA='1R("=N;VYE)PIS971W("UG('=I;F1O=RUS=&%T
+M=7,M9F<@)V-O;&]U<C$R,2<*<V5T=R`M9R!W:6YD;W<M<W1A='5S+6%T='(@
+M)VYO;F4G"G-E='<@+6<@=VEN9&]W+7-T871U<RUA8W1I=FET>2UB9R`G8V]L
+M;W5R,C,U)PIS971W("UG('=I;F1O=RUS=&%T=7,M86-T:79I='DM871T<B`G
+M;F]N92<*<V5T=R`M9R!W:6YD;W<M<W1A='5S+6%C=&EV:71Y+69G("=C;VQO
+M=7(Q-30G"G-E='<@+6<@=VEN9&]W+7-T871U<RUS97!A<F%T;W(@)R<*<V5T
+M=R`M9R!W:6YD;W<M<W1A='5S+6)G("=C;VQO=7(R,S4G"@IS970@+6<@('-T
+M871U<RUL969T("<C6V9G/6-O;&]U<C(S,BQB9SUC;VQO=7(Q-31=[X.H(U,G
+M(",@<V5S<VEO;B!N86UE"G-E="`M9V$@<W1A='5S+6QE9G0@)R-;9F<]8V]L
+M;W5R,34T+&)G/6-O;&]U<C(S."QN;V)O;&0L;F]U;F1E<G-C;W)E+&YO:71A
+M;&EC<UWN@K@G"G-E="`M9V$@<W1A='5S+6QE9G0@)R-;9F<]8V]L;W(R,C(L
+M8F<]8V]L;W5R,C,X7>^)K"-7)R`C('=I;F1O=R!N86UE"G-E="`M9V$@<W1A
+M='5S+6QE9G0@)R-;9F<]8V]L;W5R,C,X+&)G/6-O;&]U<C(S-2QN;V)O;&0L
+M;F]U;F1E<G-C;W)E+&YO:71A;&EC<UWN@K@G"G-E="`M9V$@<W1A='5S+6QE
+M9G0@)R-;9F<]8V]L;W5R,C(R+&)G/6-O;&]U<C(S-5WO@(<C*'=H;V%M:2DG
+M(",@=VEN9&]W(&YA;64*<V5T("UG82!S=&%T=7,M;&5F="`G(UMF9SUC;VQO
+M=7(R,S4L8F<]8V]L;W5R,C,U+&YO8F]L9"QN;W5N9&5R<V-O<F4L;F]I=&%L
+M:6-S7>Z"N"<*"G-E="`M9R`@<W1A='5S+7)I9VAT("<C6V9G/6-O;&]U<C(S
+M-2QB9SUC;VQO=7(R,S4L;F]B;VQD+&YO=6YD97)S8V]R92QN;VET86QI8W-=
+M[H*Z)PIS970@+6=A('-T871U<RUR:6=H="`G(UMF9SUC;VQO=7(Q,C$L8F<]
+M8V]L;W5R,C,U7>^9CR`E<B<@(R!H;W5R+"!D87DL('EE87(*<V5T("UG82!S
+M=&%T=7,M<FEG:'0@)R-;9F<]8V]L;W5R,C,X+&)G/6-O;&]U<C(S-2QN;V)O
+M;&0L;F]U;F1E<G-C;W)E+&YO:71A;&EC<UWN@KHG"G-E="`M9V$@<W1A='5S
+M+7)I9VAT("<C6V9G/6-O;&]U<C(R,BQB9SUC;VQO=7(R,SA=[Y&S(T@G(",@
+M:&]S=&YA;64*"G-E='<@+6<@('=I;F1O=RUS=&%T=7,M9F]R;6%T("<C6V9G
+M/6-O;&]U<C(R,EWN@KLC22`C5^Z"N2<*<V5T=R`M9V$@=VEN9&]W+7-T871U
+M<RUF;W)M870@)R-;;F]B;VQD+&YO=6YD97)S8V]R92QN;VET86QI8W-=)PH*
+M<V5T=R`M9R`@=VEN9&]W+7-T871U<RUC=7)R96YT+69O<FUA="`G(UMF9SUC
+M;VQO=7(R,SA=[H*Z)PIS971W("UG82!W:6YD;W<M<W1A='5S+6-U<G)E;G0M
+M9F]R;6%T("<C6V9G/6-O;&]U<C$U-"QB9SUC;VQO=7(R,SA=(TD@(U<C1B<*
+M<V5T=R`M9V$@=VEN9&]W+7-T871U<RUC=7)R96YT+69O<FUA="`G(UMF9SUC
+M;VQO=7(R,S@L8F<]8V]L;W5R,C,U7>Z"N"<*<V5T=R`M9V$@=VEN9&]W+7-T
+M871U<RUC=7)R96YT+69O<FUA="`G(UMF9SUC;VQO=7(R,S@L8F<]8V]L;W5R
+F,C,U+&YO8F]L9"QN;W5N9&5R<V-O<F4L;F]I=&%L:6-S72<*"@H]
 `
 end
 SHAR_EOF
-  (set 20 18 03 31 11 41 59 'dot_tmux_conf'
+  (set 20 18 03 31 19 33 21 'dot_tmux_conf'
    eval "${shar_touch}") && \
   chmod 0644 'dot_tmux_conf'
 if test $? -ne 0
@@ -533,12 +535,12 @@ fi
   then (
        ${MD5SUM} -c >/dev/null 2>&1 || ${echo} 'dot_tmux_conf': 'MD5 check failed'
        ) << \SHAR_EOF
-7f2bd72c0c11481a1daa9626be005c3d  dot_tmux_conf
+9338223beddb7b798fc1548277a1c469  dot_tmux_conf
 SHAR_EOF
 
 else
-test `LC_ALL=C wc -c < 'dot_tmux_conf'` -ne 2889 && \
-  ${echo} "restoration warning:  size of 'dot_tmux_conf' is not 2889"
+test `LC_ALL=C wc -c < 'dot_tmux_conf'` -ne 3008 && \
+  ${echo} "restoration warning:  size of 'dot_tmux_conf' is not 3008"
   fi
 fi
 # ============= dot_vimrc ==============

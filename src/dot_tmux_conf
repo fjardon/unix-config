@@ -1,14 +1,14 @@
 # --- general -------------------------------------------------------
 set -g default-terminal "tmux-256color"
 setw -g xterm-keys on
-setw -g mode-keys vi              
+setw -g mode-keys vi
 set -s focus-events on
 
 #set -q -g status-utf8 on
 setw -q -g utf8 on
 
 # c0-change-interval interval # prevents flooding to break Ctrl+C
-# c0-change-trigger trigger   # 
+# c0-change-trigger trigger   #
 
 # --- display -------------------------------------------------------
 set -g base-index 1         # start window numbering at 1
@@ -50,8 +50,25 @@ setw -g window-status-activity-attr 'none'
 setw -g window-status-activity-fg 'colour154'
 setw -g window-status-separator ''
 setw -g window-status-bg 'colour235'
-set -g status-left '#[fg=colour232,bg=colour154] #S #[fg=colour154,bg=colour238,nobold,nounderscore,noitalics]#[fg=colour222,bg=colour238] #W #[fg=colour238,bg=colour235,nobold,nounderscore,noitalics]#[fg=colour121,bg=colour235] #(whoami)  #(uptime  | cut -d " " -f 1,2,3) #[fg=colour235,bg=colour235,nobold,nounderscore,noitalics]'
-set -g status-right '#[fg=colour235,bg=colour235,nobold,nounderscore,noitalics]#[fg=colour121,bg=colour235] %r  %a  %Y #[fg=colour238,bg=colour235,nobold,nounderscore,noitalics]#[fg=colour222,bg=colour238] #H #[fg=colour154,bg=colour238,nobold,nounderscore,noitalics]#[fg=colour232,bg=colour154] #(rainbarf --battery --remaining --no-rgb) '
-setw -g window-status-format '#[fg=colour235,bg=colour235,nobold,nounderscore,noitalics]#[default] #I  #W #[fg=colour235,bg=colour235,nobold,nounderscore,noitalics]'
-setw -g window-status-current-format '#[fg=colour235,bg=colour238,nobold,nounderscore,noitalics]#[fg=colour222,bg=colour238] #I  #W  #F #[fg=colour238,bg=colour235,nobold,nounderscore,noitalics]'
+
+set -g  status-left '#[fg=colour232,bg=colour154]#S' # session name
+set -ga status-left '#[fg=colour154,bg=colour238,nobold,nounderscore,noitalics]'
+set -ga status-left '#[fg=color222,bg=colour238]#W' # window name
+set -ga status-left '#[fg=colour238,bg=colour235,nobold,nounderscore,noitalics]'
+set -ga status-left '#[fg=colour222,bg=colour235]#(whoami)' # window name
+set -ga status-left '#[fg=colour235,bg=colour235,nobold,nounderscore,noitalics]'
+
+set -g  status-right '#[fg=colour235,bg=colour235,nobold,nounderscore,noitalics]'
+set -ga status-right '#[fg=colour121,bg=colour235] %r' # hour, day, year
+set -ga status-right '#[fg=colour238,bg=colour235,nobold,nounderscore,noitalics]'
+set -ga status-right '#[fg=colour222,bg=colour238]#H' # hostname
+
+setw -g  window-status-format '#[fg=colour222]#I #W'
+setw -ga window-status-format '#[nobold,nounderscore,noitalics]'
+
+setw -g  window-status-current-format '#[fg=colour238]'
+setw -ga window-status-current-format '#[fg=colour154,bg=colour238]#I #W#F'
+setw -ga window-status-current-format '#[fg=colour238,bg=colour235]'
+setw -ga window-status-current-format '#[fg=colour238,bg=colour235,nobold,nounderscore,noitalics]'
+
 
