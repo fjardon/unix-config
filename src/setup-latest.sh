@@ -51,8 +51,8 @@ cat <<'SETUP_SHAR_EOF'> setup.shar
 # To extract the files from this archive, save it to some FILE, remove
 # everything before the '#!/bin/sh' line above, then type 'sh FILE'.
 #
-lock_dir=_sh04368
-# Made on 2018-03-31 21:16 CEST by <frede@darthvader>.
+lock_dir=_sh02600
+# Made on 2018-03-31 21:22 CEST by <frede@darthvader>.
 # Source directory was '/home/frede/Documents/workspace/github/unix-config/src'.
 #
 # Existing files will *not* be overwritten, unless '-c' is specified.
@@ -63,7 +63,7 @@ lock_dir=_sh04368
 #    456 -rw-r--r-- dot_bash_profile
 #   3087 -rw-r--r-- dot_bashrc
 #   2158 -rw-r--r-- dot_profile
-#   3008 -rw-r--r-- dot_tmux_conf
+#   3130 -rw-r--r-- dot_tmux_conf
 #   4933 -rw-r--r-- dot_vimrc
 #    625 -rw-r--r-- dot_Xresources
 #   4076 -rw-r--r-- dot_XWinrc
@@ -514,19 +514,22 @@ M=&%T=7,M<FEG:'0@)R-;9F<]8V]L;W5R,C,X+&)G/6-O;&]U<C(S-2QN;V)O
 M;&0L;F]U;F1E<G-C;W)E+&YO:71A;&EC<UWN@KHG"G-E="`M9V$@<W1A='5S
 M+7)I9VAT("<C6V9G/6-O;&]U<C(R,BQB9SUC;VQO=7(R,SA=[Y&S(T@G(",@
 M:&]S=&YA;64*"G-E='<@+6<@('=I;F1O=RUS=&%T=7,M9F]R;6%T("<C6V9G
-M/6-O;&]U<C(R,EWN@KLC22`C5^Z"N2<*<V5T=R`M9V$@=VEN9&]W+7-T871U
-M<RUF;W)M870@)R-;;F]B;VQD+&YO=6YD97)S8V]R92QN;VET86QI8W-=)PH*
-M<V5T=R`M9R`@=VEN9&]W+7-T871U<RUC=7)R96YT+69O<FUA="`G(UMF9SUC
-M;VQO=7(R,SA=[H*Z)PIS971W("UG82!W:6YD;W<M<W1A='5S+6-U<G)E;G0M
-M9F]R;6%T("<C6V9G/6-O;&]U<C$U-"QB9SUC;VQO=7(R,SA=(TD@(U<C1B<*
-M<V5T=R`M9V$@=VEN9&]W+7-T871U<RUC=7)R96YT+69O<FUA="`G(UMF9SUC
-M;VQO=7(R,S@L8F<]8V]L;W5R,C,U7>Z"N"<*<V5T=R`M9V$@=VEN9&]W+7-T
-M871U<RUC=7)R96YT+69O<FUA="`G(UMF9SUC;VQO=7(R,S@L8F<]8V]L;W5R
-F,C,U+&YO8F]L9"QN;W5N9&5R<V-O<F4L;F]I=&%L:6-S72<*"@H]
+M/6-O;&]U<C(S.%WN@KHG"G-E='<@+6=A('=I;F1O=RUS=&%T=7,M9F]R;6%T
+M("<C6V9G/6-O;&]U<C(R,BQB9SUC;VQO=7(R,SA=(TD@(U<G"G-E='<@+6=A
+M('=I;F1O=RUS=&%T=7,M9F]R;6%T("<C6V9G/6-O;&]U<C(S."QB9SUC;VQO
+M=7(R,S5=[H*X)PIS971W("UG82!W:6YD;W<M<W1A='5S+69O<FUA="`G(UMN
+M;V)O;&0L;F]U;F1E<G-C;W)E+&YO:71A;&EC<UTG"@IS971W("UG("!W:6YD
+M;W<M<W1A='5S+6-U<G)E;G0M9F]R;6%T("<C6V9G/6-O;&]U<C$U-%WN@KHG
+M"G-E='<@+6=A('=I;F1O=RUS=&%T=7,M8W5R<F5N="UF;W)M870@)R-;9F<]
+M8V]L;W5R,C,R+&)G/6-O;&]U<C$U-%TC22`C5R-&)PIS971W("UG82!W:6YD
+M;W<M<W1A='5S+6-U<G)E;G0M9F]R;6%T("<C6V9G/6-O;&]U<C$U-"QB9SUC
+M;VQO=7(R,S5=[H*X)PIS971W("UG82!W:6YD;W<M<W1A='5S+6-U<G)E;G0M
+M9F]R;6%T("<C6V9G/6-O;&]U<C(S."QB9SUC;VQO=7(R,S4L;F]B;VQD+&YO
+9=6YD97)S8V]R92QN;VET86QI8W-=)PH*"CUC
 `
 end
 SHAR_EOF
-  (set 20 18 03 31 19 33 21 'dot_tmux_conf'
+  (set 20 18 03 31 21 22 07 'dot_tmux_conf'
    eval "${shar_touch}") && \
   chmod 0644 'dot_tmux_conf'
 if test $? -ne 0
@@ -536,12 +539,12 @@ fi
   then (
        ${MD5SUM} -c >/dev/null 2>&1 || ${echo} 'dot_tmux_conf': 'MD5 check failed'
        ) << \SHAR_EOF
-9338223beddb7b798fc1548277a1c469  dot_tmux_conf
+0a4f3bdfbab5993bcb59437906ae0e7f  dot_tmux_conf
 SHAR_EOF
 
 else
-test `LC_ALL=C wc -c < 'dot_tmux_conf'` -ne 3008 && \
-  ${echo} "restoration warning:  size of 'dot_tmux_conf' is not 3008"
+test `LC_ALL=C wc -c < 'dot_tmux_conf'` -ne 3130 && \
+  ${echo} "restoration warning:  size of 'dot_tmux_conf' is not 3130"
   fi
 fi
 # ============= dot_vimrc ==============
