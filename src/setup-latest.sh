@@ -51,8 +51,8 @@ cat <<'SETUP_SHAR_EOF'> setup.shar
 # To extract the files from this archive, save it to some FILE, remove
 # everything before the '#!/bin/sh' line above, then type 'sh FILE'.
 #
-lock_dir=_sh11304
-# Made on 2018-03-31 19:34 CEST by <frede@darthvader>.
+lock_dir=_sh04368
+# Made on 2018-03-31 21:16 CEST by <frede@darthvader>.
 # Source directory was '/home/frede/Documents/workspace/github/unix-config/src'.
 #
 # Existing files will *not* be overwritten, unless '-c' is specified.
@@ -67,6 +67,7 @@ lock_dir=_sh11304
 #   4933 -rw-r--r-- dot_vimrc
 #    625 -rw-r--r-- dot_Xresources
 #   4076 -rw-r--r-- dot_XWinrc
+#   5824 -rwxr-xr-x msvc-shell
 #   2836 -rw-r--r-- tmux-256color.tinfo
 #    901 -rwxr-xr-x runcron
 #
@@ -963,6 +964,235 @@ test `LC_ALL=C wc -c < 'dot_XWinrc'` -ne 4076 && \
   ${echo} "restoration warning:  size of 'dot_XWinrc' is not 4076"
   fi
 fi
+# ============= msvc-shell ==============
+if test -n "${keep_file}" && test -f 'msvc-shell'
+then
+${echo} "x - SKIPPING msvc-shell (file already exists)"
+
+else
+${echo} "x - extracting msvc-shell (text)"
+  sed 's/^X//' << 'SHAR_EOF' > 'msvc-shell' &&
+#!/usr/bin/env perl
+X
+use 5.008000;
+use strict;
+use warnings;
+X
+use Carp;
+use Cwd;
+use File::Basename;
+use File::Temp;
+use Getopt::Long qw(GetOptionsFromArray :config no_ignore_case);
+use Pod::Usage;
+use Storable;
+X
+sub call_vcvarsall {
+X    my ($opts) = @_;
+X
+X    # save current context to restore it later
+X    my %saved_ENV = (%ENV);
+X    my $cwd = getcwd;
+X
+X    # Get environment
+X    my $env = $opts->{ENV};
+X    $env //= \%ENV;
+X
+X    # Get path to comspec
+X    my $comspec_win=$env->{'COMSPEC'};
+X    croak("Unable to find 'COMSPEC' in the environment!")
+X        if(!defined($comspec_win));
+X    my $comspec_path = Cygwin::win_to_posix_path($comspec_win);
+X
+X    # get path to vcvarsall.bat
+X    my $vcvarsall_bat_path = $opts->{vcvarsall_bat_path};
+X    croak("'vcvarsall_bat_path' parameter is mandatory")
+X        if(!defined($vcvarsall_bat_path));
+X
+X    # Get vcvarsall.bat arguments
+X    my $vcvarsall_args = $opts->{args};
+X    $vcvarsall_args  //= [];
+X
+X    # Get paths to scripts and bash
+X    my $bat_dir      = dirname($vcvarsall_bat_path);
+X    my $bat_dir_win  = Cygwin::posix_to_win_path($bat_dir);
+X    my $bash_dir     ='/usr/bin';
+X    my $bash_dir_win = Cygwin::posix_to_win_path($bash_dir);
+X
+X    # Prepare a temporary file to store environment
+X    my $tmp_env_handle   = File::Temp->new();
+X    my $tmp_env_filename = "$tmp_env_handle";
+X    # Close the temporary file handle to avoid 'text file is busy' errors
+X    close($tmp_env_handle);
+X
+X    # Write .bat to a temporary file
+X    my $tmp_bat_handle = File::Temp->new(SUFFIX => '.bat');
+X    my $tmp_bat        = "$tmp_bat_handle";
+X    my $tmp_bat_win    = Cygwin::posix_to_win_path($tmp_bat);
+X    my $tmp_bat_dir    = dirname($tmp_bat);
+X    # Close the temporary file handle to avoid 'text file is busy' errors
+X    close($tmp_bat_handle);
+X
+X    # Compute parameters
+X    my $vcvarsall_params = join(' ', @{$vcvarsall_args});
+X
+X    open(my $fh, '>', $tmp_bat) or
+X        croak("Unable to create batch file");
+X    print $fh <<BATCH;
+\@ECHO OFF
+CD "$bat_dir_win"
+CALL vcvarsall.bat $vcvarsall_params
+CD "$bash_dir_win"
+bash -l -c "perl -MStorable -e 'Cygwin::sync_winenv();' -e 'Storable::store \\%%ENV, \\\"$tmp_env_filename\\\";'"
+BATCH
+X    chmod 0755, $tmp_bat;
+X    chdir $tmp_bat_dir;
+X    system $comspec_path, '/C', $tmp_bat_win;
+X
+X    # Read modified environment
+X    my %vc_env = %{retrieve($tmp_env_filename)};
+X
+X    # Check for errors
+X    croak("Error while setuping VC++ environment")
+X        if(! exists($vc_env{VSCMD_VER}) || $vc_env{VSCMD_VER} eq '');
+X
+X    # Start subshell with modified environment
+X    %ENV = %vc_env;
+X    $ENV{VS_KIT}=join('-', 'msvc', $vc_env{VSCMD_VER}, @{$vcvarsall_args});
+X    system 'bash', '-l', '-i';
+X
+X    # Restore saved environment
+X    chdir $cwd;
+X    %ENV = %saved_ENV;
+}
+X
+X
+# Load the full windows environment
+Cygwin::sync_winenv();
+X
+# Parse options
+my ($opt_help, $opt_p);
+GetOptionsFromArray(
+X    \@ARGV,
+X    'help|h'             => \$opt_help,
+X    'p|vcvarsall-path=s' => \$opt_p,
+) or croak('Error parsing command line arguments');
+X
+# Handle help option
+pod2usage(-exitval => 0) if $opt_help;
+X
+# Clean -p option
+$opt_p = Cygwin::win_to_posix_path($opt_p)
+X    if(defined($opt_p));
+my @default_vs_paths = ();
+push(@default_vs_paths, $ENV{'ProgramW6432'})
+X    if(exists($ENV{'ProgramW6432'}));
+push(@default_vs_paths, $ENV{'ProgramFiles(x86)'})
+X    if(exists($ENV{'ProgramFiles(x86)'}));
+@default_vs_paths = map { Cygwin::win_to_posix_path($_) } @default_vs_paths;
+@default_vs_paths = map { $_.'/Microsoft Visual Studio/2017' } @default_vs_paths;
+@default_vs_paths = map { $_.'/Community', $_.'/Enterprise' } @default_vs_paths;
+@default_vs_paths = map { $_.'/VC/Auxiliary/Build/vcvarsall.bat' } @default_vs_paths;
+if(! defined($opt_p)) {
+X    my @found_vcvars = grep { -f $_ } @default_vs_paths;
+X    if(@found_vcvars) {
+X        $opt_p = $found_vcvars[0];
+X        print "Using 'vcvarsall.bat' found in path: ".dirname($opt_p)."\n";
+X    }
+}
+if(! defined($opt_p)) {
+X    print STDERR "Unable to find a suitable path to 'vcvarsall.bat'. Please use option '-p'\n";
+X    pod2usage(-exitval => 1);
+}
+if(! -f $opt_p) {
+X    print STDERR "The path specified by option '-p' is not valid.\n";
+X    pod2usage(-exitval => 1);
+}
+X
+call_vcvarsall({
+X        vcvarsall_bat_path => $opt_p,
+X        args => \@ARGV,
+X    });
+X
+__END__
+=head1 NAME
+X
+msvc-shell - MS-VC++ build environment shell spawner
+X
+=head1 SYNOPSIS
+X
+B<msvc-shell> B<-h>|B<--help>
+X
+B<msvc-shell> [B<OPTIONS>] [B<VC_OPTIONS>]
+X
+=head1 DESCRIPTION
+X
+This tool wraps the B<vcvarsall.bat> batch script provided with visual studio
+to setup the build environment. Calling this script allows to spawn a shell
+with the same configuration that B<vcvarsall.bat> setup when called in a
+windows console.
+X
+The tool also setup a B<VS_KIT> environment variable in the spawned shell to
+indicate the parameters that were passed to B<vcvarsall.bat>.
+X
+=head1 OPTIONS
+X
+=over
+X
+=item B<-h>|B<--help>
+X
+Print the usage, help and version information for this program and exit.
+X
+=item B<-p> I<path/to/vcvarsall.bat>|B<--vcvarsall-path>=I<path/to/vcvarsall.bat>
+X
+Sets the path to the B<vcvarsall.bat> batch script. Before Visual Studio 2017
+it was possible to deduce the path to this script from the environment variable
+set at install time, but this is no longer the case.
+X
+=back
+X
+=head1 VC_OPTIONS
+X
+The B<vcvarsall.bat> script accepts parameters to indicate which architecture,
+platform, SDK, etc. is targeted by the environment it sets up.
+X
+Run the script without B<VC_OPTIONS> to get more information in the error
+message printed by B<vcvarsall.bat>.
+X
+=head1 SEE ALSO
+X
+X
+=head1 AUTHOR
+X
+Frederic JARDON <frederic.jardon@gmail.com>
+X
+=head1 COPYRIGHT AND LICENSE
+X
+Copyright (C) 2017 by Frederic JARDON <frederic.jardon@gmail.com>
+X
+This program is free software; you can redistribute it and/or modify
+it under the MIT license.
+X
+=cut
+X
+SHAR_EOF
+  (set 20 18 03 31 21 16 07 'msvc-shell'
+   eval "${shar_touch}") && \
+  chmod 0755 'msvc-shell'
+if test $? -ne 0
+then ${echo} "restore of msvc-shell failed"
+fi
+  if ${md5check}
+  then (
+       ${MD5SUM} -c >/dev/null 2>&1 || ${echo} 'msvc-shell': 'MD5 check failed'
+       ) << \SHAR_EOF
+55994b1a58bab8c23f56819795e7b306  msvc-shell
+SHAR_EOF
+
+else
+test `LC_ALL=C wc -c < 'msvc-shell'` -ne 5824 && \
+  ${echo} "restoration warning:  size of 'msvc-shell' is not 5824"
+  fi
+fi
 # ============= tmux-256color.tinfo ==============
 if test -n "${keep_file}" && test -f 'tmux-256color.tinfo'
 then
@@ -1213,8 +1443,9 @@ if [[ "${os_name}" == CYGWIN* ]]; then
         cp -f ~/.XWinrc "${BACKUPDIR}"
     fi
     install -m 0644 dot_XWinrc ~/.XWinrc
+    install -m 0755 msvc-shell ~/.local/bin
 
-    git clone https://github.com/transcode-open/apt-cyg.git apt-cyg
+    git clone https://github.com/transcode-open/apt-cyg.git apt-cyg > install.log 2>&1
     install -m 0755 apt-cyg/apt-cyg ~/.local/bin
 fi
 
@@ -1233,9 +1464,8 @@ if has_prog xterm; then
     if has_prog fc-cache; then
         if [ ! -d ~/.local/share/fonts/nerd-fonts ]; then
             install -d ~/.local/share/fonts/nerd-fonts
-            git clone https://github.com/ryanoasis/nerd-fonts.git
-            cp -r nerd-fonts/patched-fonts/DejaVuSansMono \
-                       ~/.local/share/fonts/nerd-fonts/
+            curl -O 'https://raw.githubusercontent.com/ryanoasis/nerd-fonts/blob/master/patched-fonts/DejaVuSansMono/Regular/complete/DejaVu Sans Mono Nerd Font Complete.ttf' > install.log 2>&1
+            install -m 0644 'DejaVu Sans Mono Nerd Font Complete.ttf' ~/.local/share/fonts/nerd-fonts/
             fc-cache -f ~/.local/share/fonts
         fi
     fi
@@ -1247,7 +1477,7 @@ if [ -e ~/.vimrc ]; then
     cp -f ~/.vimrc "${BACKUPDIR}"
 fi
 if [ ! -e ~/.vim/bundle/Vundle.vim ]; then
-    git clone https://github.com/gmarik/Vundle.vim.git ~/.vim/bundle/Vundle.vim
+    git clone https://github.com/gmarik/Vundle.vim.git ~/.vim/bundle/Vundle.vim > install.log 2>&1
 fi
 install -m 0644 dot_vimrc ~/.vimrc
 
@@ -1282,7 +1512,7 @@ if ! has_prog pip3; then
     easy_install_prog=$(compgen -c 'easy_install-3' | head -n 1)
     if has_prog "${easy_install_prog}"; then
         if ! has_prog pip3; then
-             "${easy_install_prog}" --user pip
+             "${easy_install_prog}" --user pip > install.log 2>&1
         fi
     fi
 fi
@@ -1290,13 +1520,13 @@ if ! has_prog pip2; then
     easy_install_prog=$(compgen -c 'easy_install-2' | head -n 1)
     if has_prog "${easy_install_prog}"; then
         if ! has_prog pip2; then
-             "${easy_install_prog}" --user pip
+             "${easy_install_prog}" --user pip > install.log 2>&1
         fi
     fi
 fi
 if ! has_prog cppman; then
     if has_prog pip3; then
-        pip3 install --user cppman
+        pip3 install --user cppman > install.log 2>&1
     fi
 fi
 
@@ -1307,8 +1537,8 @@ if [ ! -e ~/.local/share/perl5 ]; then
     curl -O "http://www.cpan.org/authors/id/H/HA/HAARG/${perl_local_lib}.tar.gz"
     tar zxvf "${perl_local_lib}.tar.gz"
     cd  "${perl_local_lib}"
-    perl Makefile.PL "--bootstrap=${HOME}/.local/share/perl5"
-    make test && make install
+    perl Makefile.PL "--bootstrap=${HOME}/.local/share/perl5" > install.log 2>&1
+    make test > install.log 2>&1 && make install > install.log 2>&1
     cd ..
     perl "-I${HOME}/.local/share/perl5/lib/perl5" "-Mlocal::lib=${HOME}/.local/share/perl5" \
         > ~/.local/etc/profile.d/perl5.sh
@@ -1319,7 +1549,7 @@ fi
 echo "Gnulib ..."
 if ! has_prog gnulib-tool; then
     if [ ! -e ~/.local/share/gnulib ]; then
-        git clone git://git.savannah.gnu.org/gnulib.git ~/.local/share/gnulib
+        git clone git://git.savannah.gnu.org/gnulib.git ~/.local/share/gnulib > install.log 2>&1
     fi
     ln -s ~/.local/share/gnulib/gnulib-tool ~/.local/bin/gnulib-tool
 fi
@@ -1330,7 +1560,7 @@ if has_prog kpsewhich; then
     texmf_home=$(kpsewhich -var-value TEXMFHOME)
     if [ ! -e "${texmf_home}/tex/latex/createspace" ]; then
         mkdir -p "${texmf_home}/tex/latex/"
-        git clone https://github.com/aginiewicz/createspace.git "${texmf_home}/tex/latex/createspace"
+        git clone https://github.com/aginiewicz/createspace.git "${texmf_home}/tex/latex/createspace" > install.log 2>&1
     fi
 fi
 

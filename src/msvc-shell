@@ -1,0 +1,202 @@
+#!/usr/bin/env perl
+
+use 5.008000;
+use strict;
+use warnings;
+
+use Carp;
+use Cwd;
+use File::Basename;
+use File::Temp;
+use Getopt::Long qw(GetOptionsFromArray :config no_ignore_case);
+use Pod::Usage;
+use Storable;
+
+sub call_vcvarsall {
+    my ($opts) = @_;
+
+    # save current context to restore it later
+    my %saved_ENV = (%ENV);
+    my $cwd = getcwd;
+
+    # Get environment
+    my $env = $opts->{ENV};
+    $env //= \%ENV;
+
+    # Get path to comspec
+    my $comspec_win=$env->{'COMSPEC'};
+    croak("Unable to find 'COMSPEC' in the environment!")
+        if(!defined($comspec_win));
+    my $comspec_path = Cygwin::win_to_posix_path($comspec_win);
+
+    # get path to vcvarsall.bat
+    my $vcvarsall_bat_path = $opts->{vcvarsall_bat_path};
+    croak("'vcvarsall_bat_path' parameter is mandatory")
+        if(!defined($vcvarsall_bat_path));
+
+    # Get vcvarsall.bat arguments
+    my $vcvarsall_args = $opts->{args};
+    $vcvarsall_args  //= [];
+
+    # Get paths to scripts and bash
+    my $bat_dir      = dirname($vcvarsall_bat_path);
+    my $bat_dir_win  = Cygwin::posix_to_win_path($bat_dir);
+    my $bash_dir     ='/usr/bin';
+    my $bash_dir_win = Cygwin::posix_to_win_path($bash_dir);
+
+    # Prepare a temporary file to store environment
+    my $tmp_env_handle   = File::Temp->new();
+    my $tmp_env_filename = "$tmp_env_handle";
+    # Close the temporary file handle to avoid 'text file is busy' errors
+    close($tmp_env_handle);
+
+    # Write .bat to a temporary file
+    my $tmp_bat_handle = File::Temp->new(SUFFIX => '.bat');
+    my $tmp_bat        = "$tmp_bat_handle";
+    my $tmp_bat_win    = Cygwin::posix_to_win_path($tmp_bat);
+    my $tmp_bat_dir    = dirname($tmp_bat);
+    # Close the temporary file handle to avoid 'text file is busy' errors
+    close($tmp_bat_handle);
+
+    # Compute parameters
+    my $vcvarsall_params = join(' ', @{$vcvarsall_args});
+
+    open(my $fh, '>', $tmp_bat) or
+        croak("Unable to create batch file");
+    print $fh <<BATCH;
+\@ECHO OFF
+CD "$bat_dir_win"
+CALL vcvarsall.bat $vcvarsall_params
+CD "$bash_dir_win"
+bash -l -c "perl -MStorable -e 'Cygwin::sync_winenv();' -e 'Storable::store \\%%ENV, \\\"$tmp_env_filename\\\";'"
+BATCH
+    chmod 0755, $tmp_bat;
+    chdir $tmp_bat_dir;
+    system $comspec_path, '/C', $tmp_bat_win;
+
+    # Read modified environment
+    my %vc_env = %{retrieve($tmp_env_filename)};
+
+    # Check for errors
+    croak("Error while setuping VC++ environment")
+        if(! exists($vc_env{VSCMD_VER}) || $vc_env{VSCMD_VER} eq '');
+
+    # Start subshell with modified environment
+    %ENV = %vc_env;
+    $ENV{VS_KIT}=join('-', 'msvc', $vc_env{VSCMD_VER}, @{$vcvarsall_args});
+    system 'bash', '-l', '-i';
+
+    # Restore saved environment
+    chdir $cwd;
+    %ENV = %saved_ENV;
+}
+
+
+# Load the full windows environment
+Cygwin::sync_winenv();
+
+# Parse options
+my ($opt_help, $opt_p);
+GetOptionsFromArray(
+    \@ARGV,
+    'help|h'             => \$opt_help,
+    'p|vcvarsall-path=s' => \$opt_p,
+) or croak('Error parsing command line arguments');
+
+# Handle help option
+pod2usage(-exitval => 0) if $opt_help;
+
+# Clean -p option
+$opt_p = Cygwin::win_to_posix_path($opt_p)
+    if(defined($opt_p));
+my @default_vs_paths = ();
+push(@default_vs_paths, $ENV{'ProgramW6432'})
+    if(exists($ENV{'ProgramW6432'}));
+push(@default_vs_paths, $ENV{'ProgramFiles(x86)'})
+    if(exists($ENV{'ProgramFiles(x86)'}));
+@default_vs_paths = map { Cygwin::win_to_posix_path($_) } @default_vs_paths;
+@default_vs_paths = map { $_.'/Microsoft Visual Studio/2017' } @default_vs_paths;
+@default_vs_paths = map { $_.'/Community', $_.'/Enterprise' } @default_vs_paths;
+@default_vs_paths = map { $_.'/VC/Auxiliary/Build/vcvarsall.bat' } @default_vs_paths;
+if(! defined($opt_p)) {
+    my @found_vcvars = grep { -f $_ } @default_vs_paths;
+    if(@found_vcvars) {
+        $opt_p = $found_vcvars[0];
+        print "Using 'vcvarsall.bat' found in path: ".dirname($opt_p)."\n";
+    }
+}
+if(! defined($opt_p)) {
+    print STDERR "Unable to find a suitable path to 'vcvarsall.bat'. Please use option '-p'\n";
+    pod2usage(-exitval => 1);
+}
+if(! -f $opt_p) {
+    print STDERR "The path specified by option '-p' is not valid.\n";
+    pod2usage(-exitval => 1);
+}
+
+call_vcvarsall({
+        vcvarsall_bat_path => $opt_p,
+        args => \@ARGV,
+    });
+
+__END__
+=head1 NAME
+
+msvc-shell - MS-VC++ build environment shell spawner
+
+=head1 SYNOPSIS
+
+B<msvc-shell> B<-h>|B<--help>
+
+B<msvc-shell> [B<OPTIONS>] [B<VC_OPTIONS>]
+
+=head1 DESCRIPTION
+
+This tool wraps the B<vcvarsall.bat> batch script provided with visual studio
+to setup the build environment. Calling this script allows to spawn a shell
+with the same configuration that B<vcvarsall.bat> setup when called in a
+windows console.
+
+The tool also setup a B<VS_KIT> environment variable in the spawned shell to
+indicate the parameters that were passed to B<vcvarsall.bat>.
+
+=head1 OPTIONS
+
+=over
+
+=item B<-h>|B<--help>
+
+Print the usage, help and version information for this program and exit.
+
+=item B<-p> I<path/to/vcvarsall.bat>|B<--vcvarsall-path>=I<path/to/vcvarsall.bat>
+
+Sets the path to the B<vcvarsall.bat> batch script. Before Visual Studio 2017
+it was possible to deduce the path to this script from the environment variable
+set at install time, but this is no longer the case.
+
+=back
+
+=head1 VC_OPTIONS
+
+The B<vcvarsall.bat> script accepts parameters to indicate which architecture,
+platform, SDK, etc. is targeted by the environment it sets up.
+
+Run the script without B<VC_OPTIONS> to get more information in the error
+message printed by B<vcvarsall.bat>.
+
+=head1 SEE ALSO
+
+
+=head1 AUTHOR
+
+Frederic JARDON <frederic.jardon@gmail.com>
+
+=head1 COPYRIGHT AND LICENSE
+
+Copyright (C) 2017 by Frederic JARDON <frederic.jardon@gmail.com>
+
+This program is free software; you can redistribute it and/or modify
+it under the MIT license.
+
+=cut
+
