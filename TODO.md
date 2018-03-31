@@ -2,6 +2,11 @@ TODO
 ====
 [ ] Tmux: include https://github.com/erikw/tmux-powerline
 
+[ ] Fonts
+  [ ] fonts and Xresources installed only if `xterm` is present on host
+  [ ] Ask user if he wants to patch his own fonts instead of installing nerd
+  [ ] update Xresources usin the name coming from fc-list instead of hard coding
+
 [ ] Better detection of prerequisites
   [ ] gcc (for gnu global)
   [ ] perl (for substitution and templating)
