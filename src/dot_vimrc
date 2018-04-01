@@ -176,3 +176,7 @@ let g:tagbar_autofocus = 0
 
 map <F3> :NERDTreeToggle<CR>
 map <F2> :TaskList<CR>
+
+" syntastic passive mode
+let g:syntastic_mode_map = { 'mode': 'passive', 'active_filetypes': [],'passive_filetypes': [] }
+nnoremap <C-w>E :SyntasticCheck<CR> :SyntasticToggleMode<CR>
