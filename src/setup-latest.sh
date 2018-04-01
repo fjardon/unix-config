@@ -51,8 +51,8 @@ cat <<'SETUP_SHAR_EOF'> setup.shar
 # To extract the files from this archive, save it to some FILE, remove
 # everything before the '#!/bin/sh' line above, then type 'sh FILE'.
 #
-lock_dir=_sh10144
-# Made on 2018-04-01 10:31 CEST by <frede@darthvader>.
+lock_dir=_sh07472
+# Made on 2018-04-01 15:37 CEST by <frede@darthvader>.
 # Source directory was '/home/frede/Documents/workspace/github/unix-config/src'.
 #
 # Existing files will *not* be overwritten, unless '-c' is specified.
@@ -64,10 +64,11 @@ lock_dir=_sh10144
 #   3087 -rw-r--r-- dot_bashrc
 #   2158 -rw-r--r-- dot_profile
 #   3128 -rw-r--r-- dot_tmux_conf
-#   4933 -rw-r--r-- dot_vimrc
+#   5117 -rw-r--r-- dot_vimrc
 #    814 -rw-r--r-- dot_Xresources
 #   4076 -rw-r--r-- dot_XWinrc
-#   5824 -rwxr-xr-x msvc-shell
+#   5830 -rwxr-xr-x msvc-shell
+#   4128 -rwxr-xr-x yank
 #   2836 -rw-r--r-- tmux-256color.tinfo
 #    901 -rwxr-xr-x runcron
 #
@@ -733,8 +734,12 @@ let g:tagbar_autofocus = 0
 X
 map <F3> :NERDTreeToggle<CR>
 map <F2> :TaskList<CR>
+X
+" syntastic passive mode
+let g:syntastic_mode_map = { 'mode': 'passive', 'active_filetypes': [],'passive_filetypes': [] }
+nnoremap <C-w>E :SyntasticCheck<CR> :SyntasticToggleMode<CR>
 SHAR_EOF
-  (set 20 18 03 31 10 51 09 'dot_vimrc'
+  (set 20 18 04 01 15 36 40 'dot_vimrc'
    eval "${shar_touch}") && \
   chmod 0644 'dot_vimrc'
 if test $? -ne 0
@@ -744,12 +749,12 @@ fi
   then (
        ${MD5SUM} -c >/dev/null 2>&1 || ${echo} 'dot_vimrc': 'MD5 check failed'
        ) << \SHAR_EOF
-ec36a3912e6494d33abc780035137632  dot_vimrc
+84ed12e78965cc2b8fb62a567f2d5c30  dot_vimrc
 SHAR_EOF
 
 else
-test `LC_ALL=C wc -c < 'dot_vimrc'` -ne 4933 && \
-  ${echo} "restoration warning:  size of 'dot_vimrc' is not 4933"
+test `LC_ALL=C wc -c < 'dot_vimrc'` -ne 5117 && \
+  ${echo} "restoration warning:  size of 'dot_vimrc' is not 5117"
   fi
 fi
 # ============= dot_Xresources ==============
@@ -982,7 +987,7 @@ ${echo} "x - extracting msvc-shell (text)"
 X
 use 5.008000;
 use strict;
-use warnings;
+use warnings 'all';
 X
 use Carp;
 use Cwd;
@@ -1181,7 +1186,7 @@ X
 =cut
 X
 SHAR_EOF
-  (set 20 18 03 31 21 16 07 'msvc-shell'
+  (set 20 18 04 01 10 45 12 'msvc-shell'
    eval "${shar_touch}") && \
   chmod 0755 'msvc-shell'
 if test $? -ne 0
@@ -1191,12 +1196,211 @@ fi
   then (
        ${MD5SUM} -c >/dev/null 2>&1 || ${echo} 'msvc-shell': 'MD5 check failed'
        ) << \SHAR_EOF
-55994b1a58bab8c23f56819795e7b306  msvc-shell
+c60ef462b321c259aacd9a68bd3d8c76  msvc-shell
 SHAR_EOF
 
 else
-test `LC_ALL=C wc -c < 'msvc-shell'` -ne 5824 && \
-  ${echo} "restoration warning:  size of 'msvc-shell' is not 5824"
+test `LC_ALL=C wc -c < 'msvc-shell'` -ne 5830 && \
+  ${echo} "restoration warning:  size of 'msvc-shell' is not 5830"
+  fi
+fi
+# ============= yank ==============
+if test -n "${keep_file}" && test -f 'yank'
+then
+${echo} "x - SKIPPING yank (file already exists)"
+
+else
+${echo} "x - extracting yank (text)"
+  sed 's/^X//' << 'SHAR_EOF' > 'yank' &&
+#!/usr/bin/env perl
+X
+use strict;
+use warnings 'all';
+X
+use Carp;
+use Getopt::Long qw(GetOptionsFromArray :config no_ignore_case);
+use MIME::Base64 qw(encode_base64);
+use Pod::Usage;
+X
+sub get_tmux_tty {
+X    my $pty = `tmux list-panes -F "#{pane_tty}"`;
+X    return undef if($?);
+X    return $pty;
+}
+X
+# Parse options
+my ($opt_help, $opt_t, $opt_tmux_tty, $opt_l);
+GetOptionsFromArray(
+X    \@ARGV,
+X    'help|h'       => \$opt_help,
+X    'l|inception-level=s' => \$opt_l,
+X    't|terminal=s' => \$opt_t,
+X    'tmux-tty'     => \$opt_tmux_tty,
+) or croak('Error parsing command line arguments');
+X
+# Handle help option
+pod2usage(-exitval => 0) if $opt_help;
+X
+# get terminal
+my ($terminal);
+$terminal //= get_tmux_tty if(defined($opt_tmux_tty));
+$terminal //= $opt_t if(defined($opt_t));
+$terminal //= '/dev/tty';
+X
+# inception level
+$opt_l //= 1 if(exists($ENV{'TMUX'}));
+$opt_l //= 0;
+X
+# read input
+my $max_byte_size = 74994;
+my $msg = '';
+while(length($msg) < $max_byte_size) {
+X    my $line = <STDIN>;
+X    last if(!defined($line));
+X    $msg = $msg.$line;
+}
+croak('Error: message is too big')
+X    if(length($msg) > $max_byte_size);
+my ($b64, $osc52);
+$b64   = encode_base64($msg);
+$b64   =~ s/[\r\n]//g;
+X
+# OSC 5-2 is to modify the operating system selection (copy/paste buffer)
+$osc52 = "\033]52;c;$b64\a";
+X
+# In case we are incepted in TMUX, use a tmux specific DCS to pass the OSC to
+# the outer tty
+for(my $l=0; $l<$opt_l; ++$l) {
+X    my $dcs_payload = $osc52;
+X    $dcs_payload =~ s/\033/\033\033/g;
+X    $osc52 = "\033Ptmux;$dcs_payload\033\\";
+}
+X
+# output to tty
+open(my $tty, '>', $terminal) or croak("Unable to open tty: $terminal\n");
+print $tty $osc52;
+close($tty);
+X
+__END__
+=head1 NAME
+X
+yank - Script converting input into OSC 5-2 escape sequence
+X
+=head1 SYNOPSIS
+X
+B<yank> B<-h>|B<--help>
+X
+B<yank> [B<OPTIONS>]
+X
+echo "Text To Copy" | B<yank>
+X
+=head1 DESCRIPTION
+X
+This tool converts standard input into B<OSC 5-2> escape sequence and outputs
+it to a terminal. These escape sequences are interpreted by terminals to set
+their B<selection> buffer. For B<XTerm> it means the B<X11> copy/paste buffer.
+X
+The script can used to provide seamless copy/paste capabilities between a host
+and a remote session. For instance a user running B<vim> through B<tmux> on a
+remote host connected by B<ssh> running on its B<Windows> laptop.
+X
+The output of the program should be directed to a terminal. In case no terminal
+is specified, the script will use F</dev/tty>.
+X
+=head1 OPTIONS
+X
+=over
+X
+=item B<-h>|B<--help>
+X
+Print the usage, help and version information for this program and exit.
+X
+=item B<-t> I<TERMINAL>|B<--terminal>=I<TERMINAL>
+X
+Sets the terminal used to output the OSC 5-2 escape sequence. In case the
+terminal is not specified, the default value is: F</dev/tty>.
+X
+=item B<--tmux-tty>
+X
+Sets the terminal used to output the OSC 5-2 escape sequence to the B<tmux> pane
+tty. In case the program is unable to find out B<tmux> pane's tty, the value of
+the B<--terminal> option is taken into account.
+X
+=item B<-l>=I<INCEPTION>|B<--inception-level>=I<INCEPTION>
+X
+Sets the B<tmux> inception level. This is needed in case you connect to another
+B<tmux> session from within a B<tmux> session. Default value is 0 unless the
+B<TMUX> environment variable is set, in which case the default value is 1.
+X
+=back
+X
+=head1 LIMITATIONS
+X
+No more than 74994 bytes of data can be transmitted through the OSC 5-2 escape
+sequence.
+X
+=head1 ENVIRONMENT VARIABLES
+X
+=over
+X
+=item TMUX
+X
+The B<TMUX> environment variable is used to find out if we are running inside
+a B<tmux> pane.
+X
+=back
+X
+X
+=head1 SEE ALSO
+X
+xterm(1), tmux(1)
+X
+=over
+X
+=item I<XTerm Control Sequences>
+X
+X    https://invisible-island.net/xterm/ctlseqs/ctlseqs.html#h2-Operating-System-Commands
+X
+=item I<Device Control String Sequences>
+X
+X    https://vt100.net/docs/vt510-rm/chapter4.html
+X
+=item I<TMux DCS Sequences>
+X
+X    see tmux changelog
+X
+=back
+X
+=head1 AUTHOR
+X
+Frederic JARDON <frederic.jardon@gmail.com>
+X
+=head1 COPYRIGHT AND LICENSE
+X
+Copyright (C) 2017 by Frederic JARDON <frederic.jardon@gmail.com>
+X
+This program is free software; you can redistribute it and/or modify
+it under the MIT license.
+X
+=cut
+X
+SHAR_EOF
+  (set 20 18 04 01 15 36 07 'yank'
+   eval "${shar_touch}") && \
+  chmod 0755 'yank'
+if test $? -ne 0
+then ${echo} "restore of yank failed"
+fi
+  if ${md5check}
+  then (
+       ${MD5SUM} -c >/dev/null 2>&1 || ${echo} 'yank': 'MD5 check failed'
+       ) << \SHAR_EOF
+b5528cfbfa7966be5377b78960cd2e28  yank
+SHAR_EOF
+
+else
+test `LC_ALL=C wc -c < 'yank'` -ne 4128 && \
+  ${echo} "restoration warning:  size of 'yank' is not 4128"
   fi
 fi
 # ============= tmux-256color.tinfo ==============
@@ -1493,6 +1697,7 @@ if [ -e ~/.tmux.conf ]; then
     cp -f ~/.tmux.conf "${BACKUPDIR}"
 fi
 install -m 0644 dot_tmux_conf ~/.tmux.conf
+install -m 0755 yank ~/.local/bin
 
 echo "terminfo ..."
 if has_prog tic; then
