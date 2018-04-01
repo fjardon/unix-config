@@ -51,8 +51,8 @@ cat <<'SETUP_SHAR_EOF'> setup.shar
 # To extract the files from this archive, save it to some FILE, remove
 # everything before the '#!/bin/sh' line above, then type 'sh FILE'.
 #
-lock_dir=_sh07472
-# Made on 2018-04-01 15:37 CEST by <frede@darthvader>.
+lock_dir=_sh12352
+# Made on 2018-04-01 15:47 CEST by <frede@darthvader>.
 # Source directory was '/home/frede/Documents/workspace/github/unix-config/src'.
 #
 # Existing files will *not* be overwritten, unless '-c' is specified.
@@ -64,7 +64,7 @@ lock_dir=_sh07472
 #   3087 -rw-r--r-- dot_bashrc
 #   2158 -rw-r--r-- dot_profile
 #   3128 -rw-r--r-- dot_tmux_conf
-#   5117 -rw-r--r-- dot_vimrc
+#   5396 -rw-r--r-- dot_vimrc
 #    814 -rw-r--r-- dot_Xresources
 #   4076 -rw-r--r-- dot_XWinrc
 #   5830 -rwxr-xr-x msvc-shell
@@ -735,11 +735,20 @@ X
 map <F3> :NERDTreeToggle<CR>
 map <F2> :TaskList<CR>
 X
-" syntastic passive mode
+" Disable syntastic by default
 let g:syntastic_mode_map = { 'mode': 'passive', 'active_filetypes': [],'passive_filetypes': [] }
 nnoremap <C-w>E :SyntasticCheck<CR> :SyntasticToggleMode<CR>
+X
+" copy the current text selection to the system clipboard
+if has('gui_running') || has('nvim') && exists('$DISPLAY')
+X  noremap <Leader>y "+y
+else
+X  " copy to attached terminal using the yank(1) script:
+X  noremap <silent> <Leader>y y:call system('yank', @0)<Return>
+endif
+X
 SHAR_EOF
-  (set 20 18 04 01 15 36 40 'dot_vimrc'
+  (set 20 18 04 01 15 44 55 'dot_vimrc'
    eval "${shar_touch}") && \
   chmod 0644 'dot_vimrc'
 if test $? -ne 0
@@ -749,12 +758,12 @@ fi
   then (
        ${MD5SUM} -c >/dev/null 2>&1 || ${echo} 'dot_vimrc': 'MD5 check failed'
        ) << \SHAR_EOF
-84ed12e78965cc2b8fb62a567f2d5c30  dot_vimrc
+c225bf51ef93cf0d5fa88619a7caa1e8  dot_vimrc
 SHAR_EOF
 
 else
-test `LC_ALL=C wc -c < 'dot_vimrc'` -ne 5117 && \
-  ${echo} "restoration warning:  size of 'dot_vimrc' is not 5117"
+test `LC_ALL=C wc -c < 'dot_vimrc'` -ne 5396 && \
+  ${echo} "restoration warning:  size of 'dot_vimrc' is not 5396"
   fi
 fi
 # ============= dot_Xresources ==============
