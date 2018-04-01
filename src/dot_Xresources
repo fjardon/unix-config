@@ -9,6 +9,9 @@ XTerm*toolBar: false
 XTerm*utf8: 2
 XTerm*utf8Fonts: true
 XTerm*utf8Title: true
+! Contrary to what the statement looks like, it is enabling the SetSelection
+! window operation. The default value is: 20,21,SetXprop,SetSelection
+XTerm*disallowedWindowOps: 20,21,SetXprop
 XTerm*vt100.initialFont: 3
 ! Fix for the infamous Ctrl+H issue
 ! see: http://www.hypexr.org/linux_ruboff.php

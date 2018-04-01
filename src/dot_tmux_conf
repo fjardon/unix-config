@@ -1,10 +1,10 @@
 # --- general -------------------------------------------------------
 set -g default-terminal "tmux-256color"
 setw -g xterm-keys on
+set -g set-clipboard on
 setw -g mode-keys vi
 set -s focus-events on
 
-#set -q -g status-utf8 on
 setw -q -g utf8 on
 
 # c0-change-interval interval # prevents flooding to break Ctrl+C
