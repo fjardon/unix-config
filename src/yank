@@ -1,0 +1,172 @@
+#!/usr/bin/env perl
+
+use strict;
+use warnings 'all';
+
+use Carp;
+use Getopt::Long qw(GetOptionsFromArray :config no_ignore_case);
+use MIME::Base64 qw(encode_base64);
+use Pod::Usage;
+
+sub get_tmux_tty {
+    my $pty = `tmux list-panes -F "#{pane_tty}"`;
+    return undef if($?);
+    return $pty;
+}
+
+# Parse options
+my ($opt_help, $opt_t, $opt_tmux_tty, $opt_l);
+GetOptionsFromArray(
+    \@ARGV,
+    'help|h'       => \$opt_help,
+    'l|inception-level=s' => \$opt_l,
+    't|terminal=s' => \$opt_t,
+    'tmux-tty'     => \$opt_tmux_tty,
+) or croak('Error parsing command line arguments');
+
+# Handle help option
+pod2usage(-exitval => 0) if $opt_help;
+
+# get terminal
+my ($terminal);
+$terminal //= get_tmux_tty if(defined($opt_tmux_tty));
+$terminal //= $opt_t if(defined($opt_t));
+$terminal //= '/dev/tty';
+
+# inception level
+$opt_l //= 1 if(exists($ENV{'TMUX'}));
+$opt_l //= 0;
+
+# read input
+my $max_byte_size = 74994;
+my $msg = '';
+while(length($msg) < $max_byte_size) {
+    my $line = <STDIN>;
+    last if(!defined($line));
+    $msg = $msg.$line;
+}
+croak('Error: message is too big')
+    if(length($msg) > $max_byte_size);
+my ($b64, $osc52);
+$b64   = encode_base64($msg);
+$b64   =~ s/[\r\n]//g;
+
+# OSC 5-2 is to modify the operating system selection (copy/paste buffer)
+$osc52 = "\033]52;c;$b64\a";
+
+# In case we are incepted in TMUX, use a tmux specific DCS to pass the OSC to
+# the outer tty
+for(my $l=0; $l<$opt_l; ++$l) {
+    my $dcs_payload = $osc52;
+    $dcs_payload =~ s/\033/\033\033/g;
+    $osc52 = "\033Ptmux;$dcs_payload\033\\";
+}
+
+# output to tty
+open(my $tty, '>', $terminal) or croak("Unable to open tty: $terminal\n");
+print $tty $osc52;
+close($tty);
+
+__END__
+=head1 NAME
+
+yank - Script converting input into OSC 5-2 escape sequence
+
+=head1 SYNOPSIS
+
+B<yank> B<-h>|B<--help>
+
+B<yank> [B<OPTIONS>]
+
+echo "Text To Copy" | B<yank>
+
+=head1 DESCRIPTION
+
+This tool converts standard input into B<OSC 5-2> escape sequence and outputs
+it to a terminal. These escape sequences are interpreted by terminals to set
+their B<selection> buffer. For B<XTerm> it means the B<X11> copy/paste buffer.
+
+The script can used to provide seamless copy/paste capabilities between a host
+and a remote session. For instance a user running B<vim> through B<tmux> on a
+remote host connected by B<ssh> running on its B<Windows> laptop.
+
+The output of the program should be directed to a terminal. In case no terminal
+is specified, the script will use F</dev/tty>.
+
+=head1 OPTIONS
+
+=over
+
+=item B<-h>|B<--help>
+
+Print the usage, help and version information for this program and exit.
+
+=item B<-t> I<TERMINAL>|B<--terminal>=I<TERMINAL>
+
+Sets the terminal used to output the OSC 5-2 escape sequence. In case the
+terminal is not specified, the default value is: F</dev/tty>.
+
+=item B<--tmux-tty>
+
+Sets the terminal used to output the OSC 5-2 escape sequence to the B<tmux> pane
+tty. In case the program is unable to find out B<tmux> pane's tty, the value of
+the B<--terminal> option is taken into account.
+
+=item B<-l>=I<INCEPTION>|B<--inception-level>=I<INCEPTION>
+
+Sets the B<tmux> inception level. This is needed in case you connect to another
+B<tmux> session from within a B<tmux> session. Default value is 0 unless the
+B<TMUX> environment variable is set, in which case the default value is 1.
+
+=back
+
+=head1 LIMITATIONS
+
+No more than 74994 bytes of data can be transmitted through the OSC 5-2 escape
+sequence.
+
+=head1 ENVIRONMENT VARIABLES
+
+=over
+
+=item TMUX
+
+The B<TMUX> environment variable is used to find out if we are running inside
+a B<tmux> pane.
+
+=back
+
+
+=head1 SEE ALSO
+
+xterm(1), tmux(1)
+
+=over
+
+=item I<XTerm Control Sequences>
+
+    https://invisible-island.net/xterm/ctlseqs/ctlseqs.html#h2-Operating-System-Commands
+
+=item I<Device Control String Sequences>
+
+    https://vt100.net/docs/vt510-rm/chapter4.html
+
+=item I<TMux DCS Sequences>
+
+    see tmux changelog
+
+=back
+
+=head1 AUTHOR
+
+Frederic JARDON <frederic.jardon@gmail.com>
+
+=head1 COPYRIGHT AND LICENSE
+
+Copyright (C) 2017 by Frederic JARDON <frederic.jardon@gmail.com>
+
+This program is free software; you can redistribute it and/or modify
+it under the MIT license.
+
+=cut
+

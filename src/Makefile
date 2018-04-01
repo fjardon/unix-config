@@ -14,6 +14,7 @@ SHAR_FILES = dot_bash_profile \
 						 dot_Xresources \
 						 dot_XWinrc \
 						 msvc-shell \
+						 yank \
 						 tmux-256color.tinfo \
 						 runcron
 
