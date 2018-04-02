@@ -92,6 +92,7 @@ echo "local ..."
 install -m 0755 -d ~/.local/bin
 install -m 0755 -d ~/.local/lib
 install -m 0755 -d ~/.local/share
+install -m 0755 -d ~/.local/share/man/man1
 install -m 0755 -d ~/.local/var/lock
 install -m 0755 -d ~/.local/var/log
 install -m 0755 -d ~/.local/var/run
@@ -143,6 +144,7 @@ if [[ "${os_name}" == CYGWIN* ]]; then
     fi
     install -m 0644 dot_XWinrc ~/.XWinrc
     install -m 0755 msvc-shell ~/.local/bin
+    install -m 0644 msvc-shell.1 ~/.local/share/man/man1
 
     git clone https://github.com/transcode-open/apt-cyg.git apt-cyg > install.log 2>&1
     install -m 0755 apt-cyg/apt-cyg ~/.local/bin
@@ -187,6 +189,7 @@ if [ -e ~/.tmux.conf ]; then
 fi
 install -m 0644 dot_tmux_conf ~/.tmux.conf
 install -m 0755 yank ~/.local/bin
+install -m 0644 yank ~/.local/share/man/man1
 
 echo "terminfo ..."
 if has_prog tic; then

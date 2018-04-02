@@ -14,9 +14,17 @@ SHAR_FILES = dot_bash_profile \
 						 dot_Xresources \
 						 dot_XWinrc \
 						 msvc-shell \
+						 msvc-shell.1 \
 						 yank \
+						 yank.1 \
 						 tmux-256color.tinfo \
 						 runcron
+
+msvc-shell.1 : msvc-shell
+	pod2man $< > $@
+
+yank.1 : yank
+	pod2man $< > $@
 
 setup-files.shar: $(SHAR_FILES)
 	shar $^ > $@
