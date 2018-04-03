@@ -150,6 +150,33 @@ if [[ "${os_name}" == CYGWIN* ]]; then
     install -m 0755 apt-cyg/apt-cyg ~/.local/bin
 fi
 
+# Python
+echo "Python ..."
+if ! has_prog pip3; then
+    easy_install_prog=$(compgen -c 'easy_install-3' | head -n 1)
+    if has_prog "${easy_install_prog}"; then
+        if ! has_prog pip3; then
+             "${easy_install_prog}" --user pip > install.log 2>&1
+        fi
+    fi
+fi
+if ! has_prog pip2; then
+    easy_install_prog=$(compgen -c 'easy_install-2' | head -n 1)
+    if has_prog "${easy_install_prog}"; then
+        if ! has_prog pip2; then
+             "${easy_install_prog}" --user pip > install.log 2>&1
+        fi
+    fi
+fi
+if has_prog pip3; then
+    pip3 install --user neovim > install.log 2>&1
+fi
+if ! has_prog cppman; then
+    if has_prog pip3; then
+        pip3 install --user cppman > install.log 2>&1
+    fi
+fi
+
 # XWindow
 if has_prog xterm; then
     echo "XWindow ..."
@@ -181,6 +208,7 @@ if [ ! -e ~/.vim/bundle/Vundle.vim ]; then
     git clone https://github.com/gmarik/Vundle.vim.git ~/.vim/bundle/Vundle.vim > install.log 2>&1
 fi
 install -m 0644 dot_vimrc ~/.vimrc
+vim +PluginInstall +qall
 
 # tmux
 echo "tmux ..."
@@ -209,30 +237,6 @@ if has_prog tic; then
     fi
 fi
 
-# Python
-echo "Python ..."
-if ! has_prog pip3; then
-    easy_install_prog=$(compgen -c 'easy_install-3' | head -n 1)
-    if has_prog "${easy_install_prog}"; then
-        if ! has_prog pip3; then
-             "${easy_install_prog}" --user pip > install.log 2>&1
-        fi
-    fi
-fi
-if ! has_prog pip2; then
-    easy_install_prog=$(compgen -c 'easy_install-2' | head -n 1)
-    if has_prog "${easy_install_prog}"; then
-        if ! has_prog pip2; then
-             "${easy_install_prog}" --user pip > install.log 2>&1
-        fi
-    fi
-fi
-if ! has_prog cppman; then
-    if has_prog pip3; then
-        pip3 install --user cppman > install.log 2>&1
-    fi
-fi
-
 # Perl
 echo "Perl ..."
 if [ ! -e ~/.local/share/perl5 ]; then
@@ -247,6 +251,12 @@ if [ ! -e ~/.local/share/perl5 ]; then
         > ~/.local/etc/profile.d/perl5.sh
     . ~/.local/etc/profile.d/perl5.sh
 fi
+
+# Screencast tools
+install -m 0755 byzanz-helper ~/.local/bin
+install -m 0644 byzanz-helper.1 ~/.local/share/man/man1
+install -m 0755 ffmpeg-helper ~/.local/bin
+install -m 0644 ffmpeg-helper.1 ~/.local/share/man/man1
 
 # Gnulib
 echo "Gnulib ..."

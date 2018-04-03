@@ -15,6 +15,8 @@ SHAR_FILES = dot_bash_profile \
 						 dot_XWinrc \
 						 byzanz-helper \
 						 byzanz-helper.1 \
+						 ffmpeg-helper \
+						 ffmpeg-helper.1 \
 						 msvc-shell \
 						 msvc-shell.1 \
 						 yank \
@@ -26,6 +28,9 @@ msvc-shell.1 : msvc-shell
 	pod2man $< > $@
 
 yank.1 : yank
+	pod2man $< > $@
+
+ffmpeg-helper.1 : ffmpeg-helper
 	pod2man $< > $@
 
 byzanz-helper.1 : byzanz-helper

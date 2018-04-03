@@ -51,8 +51,8 @@ cat <<'SETUP_SHAR_EOF'> setup.shar
 # To extract the files from this archive, save it to some FILE, remove
 # everything before the '#!/bin/sh' line above, then type 'sh FILE'.
 #
-lock_dir=_sh07392
-# Made on 2018-04-02 10:11 CEST by <frede@darthvader>.
+lock_dir=_sh09704
+# Made on 2018-04-03 20:59 CEST by <frede@darthvader>.
 # Source directory was '/home/frede/Documents/workspace/github/unix-config/src'.
 #
 # Existing files will *not* be overwritten, unless '-c' is specified.
@@ -64,9 +64,13 @@ lock_dir=_sh07392
 #   3087 -rw-r--r-- dot_bashrc
 #   2158 -rw-r--r-- dot_profile
 #   3128 -rw-r--r-- dot_tmux_conf
-#   5396 -rw-r--r-- dot_vimrc
+#   5575 -rw-r--r-- dot_vimrc
 #    814 -rw-r--r-- dot_Xresources
 #   4076 -rw-r--r-- dot_XWinrc
+#   2541 -rwxr-xr-x byzanz-helper
+#   5659 -rw-r--r-- byzanz-helper.1
+#   3766 -rwxr-xr-x ffmpeg-helper
+#   5615 -rw-r--r-- ffmpeg-helper.1
 #   5830 -rwxr-xr-x msvc-shell
 #   5821 -rw-r--r-- msvc-shell.1
 #   4128 -rwxr-xr-x yank
@@ -615,45 +619,51 @@ Plugin 'gmarik/Vundle.vim'
 X
 " Code/project navigation
 Plugin 'scrooloose/nerdtree' 	    	" Project and file navigation
-Plugin 'majutsushi/tagbar'          	" Class/module browser
-Plugin 'ervandew/supertab'
-Plugin 'BufOnly.vim'
-Plugin 'wesQ3/vim-windowswap'
-Plugin 'SirVer/ultisnips'
-Plugin 'junegunn/fzf.vim'
-Plugin 'junegunn/fzf'
+"Plugin 'majutsushi/tagbar'          	" Class/module browser
+"Plugin 'ervandew/supertab'
+"Plugin 'BufOnly.vim'
+"Plugin 'wesQ3/vim-windowswap'
+"Plugin 'SirVer/ultisnips'
+"Plugin 'junegunn/fzf.vim'
+"Plugin 'junegunn/fzf'
 Plugin 'godlygeek/tabular'
-Plugin 'ctrlpvim/ctrlp.vim'
-Plugin 'benmills/vimux'
-Plugin 'jeetsukumaran/vim-buffergator'
-Plugin 'gilsondev/searchtasks.vim'
-Plugin 'Shougo/neocomplete.vim'
-Plugin 'tpope/vim-dispatch'
+"Plugin 'ctrlpvim/ctrlp.vim'
+"Plugin 'benmills/vimux'
+"Plugin 'jeetsukumaran/vim-buffergator'
+"Plugin 'gilsondev/searchtasks.vim'
+"Plugin 'tpope/vim-dispatch'
 X
 " Programming
-Plugin 'honza/vim-snippets'
-Plugin 'Townk/vim-autoclose'
-Plugin 'vim-syntastic/syntastic'
-Plugin 'neomake/neomake'
+"Plugin 'honza/vim-snippets'
+"Plugin 'Townk/vim-autoclose'
+"Plugin 'vim-syntastic/syntastic'
+"Plugin 'neomake/neomake'
+if has('nvim')
+X  Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
+else
+X  Plugin 'Shougo/deoplete.nvim'
+X  Plugin 'roxma/nvim-yarp'
+X  Plugin 'roxma/vim-hug-neovim-rpc'
+endif
+"let g:deoplete#enable_at_startup = 1
 X
 " Markdown / Writting
-Plugin 'reedes/vim-pencil'
-Plugin 'tpope/vim-markdown'
-Plugin 'jtratner/vim-flavored-markdown'
-Plugin 'LanguageTool'
+"Plugin 'reedes/vim-pencil'
+Plugin 'vim-pandoc/vim-pandoc'
+"Plugin 'LanguageTool'
 X
 " Theming
 Plugin 'ryanoasis/vim-devicons'
 Plugin 'vim-airline/vim-airline'   	" Lean & mean status/tabline for vim
 Plugin 'vim-airline/vim-airline-themes'
-Plugin 'fisadev/FixedTaskList.vim'  	" Pending tasks list
-Plugin 'rosenfeld/conque-term'      	" Consoles as buffers
+"Plugin 'fisadev/FixedTaskList.vim'  	" Pending tasks list
+"Plugin 'rosenfeld/conque-term'      	" Consoles as buffers
 Plugin 'tpope/vim-surround'	   	" Parentheses, brackets, quotes, XML tags, and more
-Plugin 'ctags.vim'
+"Plugin 'ctags.vim'
 X
 " language support
-Plugin 'elixir-lang/vim-elixir'
-Plugin 'leafgarland/typescript-vim'
+"Plugin 'elixir-lang/vim-elixir'
+"Plugin 'leafgarland/typescript-vim'
 X
 " solarized color theme
 Plugin 'altercation/vim-colors-solarized'
@@ -663,10 +673,10 @@ Plugin 'tpope/vim-fugitive'
 Plugin 'airblade/vim-gitgutter'
 X
 " Abolish (completion, typo fixes, casing)
-Plugin 'tpope/vim-abolish'
+"Plugin 'tpope/vim-abolish'
 X
 " Repeat (repeat plugin commands)
-Plugin 'tpope/vim-repeat'
+"Plugin 'tpope/vim-repeat'
 X
 " Project support
 Plugin 'vim-scripts/project.tar.gz'
@@ -750,7 +760,7 @@ X  noremap <silent> <Leader>y y:call system('yank', @0)<Return>
 endif
 X
 SHAR_EOF
-  (set 20 18 04 01 15 44 55 'dot_vimrc'
+  (set 20 18 04 03 20 59 48 'dot_vimrc'
    eval "${shar_touch}") && \
   chmod 0644 'dot_vimrc'
 if test $? -ne 0
@@ -760,12 +770,12 @@ fi
   then (
        ${MD5SUM} -c >/dev/null 2>&1 || ${echo} 'dot_vimrc': 'MD5 check failed'
        ) << \SHAR_EOF
-c225bf51ef93cf0d5fa88619a7caa1e8  dot_vimrc
+e05aec3ecdffaa1783f55104358c47a0  dot_vimrc
 SHAR_EOF
 
 else
-test `LC_ALL=C wc -c < 'dot_vimrc'` -ne 5396 && \
-  ${echo} "restoration warning:  size of 'dot_vimrc' is not 5396"
+test `LC_ALL=C wc -c < 'dot_vimrc'` -ne 5575 && \
+  ${echo} "restoration warning:  size of 'dot_vimrc' is not 5575"
   fi
 fi
 # ============= dot_Xresources ==============
@@ -984,6 +994,721 @@ SHAR_EOF
 else
 test `LC_ALL=C wc -c < 'dot_XWinrc'` -ne 4076 && \
   ${echo} "restoration warning:  size of 'dot_XWinrc' is not 4076"
+  fi
+fi
+# ============= byzanz-helper ==============
+if test -n "${keep_file}" && test -f 'byzanz-helper'
+then
+${echo} "x - SKIPPING byzanz-helper (file already exists)"
+
+else
+${echo} "x - extracting byzanz-helper (text)"
+  sed 's/^X//' << 'SHAR_EOF' > 'byzanz-helper' &&
+#!/usr/bin/env perl
+X
+use 5.008000;
+use strict;
+use warnings 'all';
+X
+use Carp;
+use Cwd;
+use File::Basename;
+use File::Temp;
+use Getopt::Long qw(GetOptionsFromArray :config no_ignore_case);
+use Pod::Usage;
+X
+X
+# Parse options
+my ($opt_help, $opt_t, $opt_o);
+GetOptionsFromArray(
+X    \@ARGV,
+X    'help|h'       => \$opt_help,
+X    't|duration=s' => \$opt_t,
+X    'o|output=s'   => \$opt_o,
+) or croak('Error parsing command line arguments');
+X
+# Handle help option
+pod2usage(-exitval => 0) if ($opt_help);
+X
+if(!defined($opt_o) || $opt_o eq '') {
+X    print STDERR "Option '-o' or '--output' is mandatory\n";
+X    pod2usage(-exitval => 1);
+}
+X
+# Default option values
+$opt_t //= 30;
+X
+# Get the recorded window parameters
+my $xwin_info = `xwininfo`;
+croak('Error getting X-Window information') if($?);
+X
+my ($x, $y, $width, $height);
+$xwin_info =~ m/Absolute upper-left X:\s*(\d+)/g;
+$x = $1;
+$xwin_info =~ m/Absolute upper-left Y:\s*(\d+)/g;
+$y = $1;
+$xwin_info =~ m/Width:\s*(\d+)/g;
+$width = $1;
+$xwin_info =~ m/Height:\s*(\d+)/g;
+$height = $1;
+X
+print "Recording area: [$x,$y -> $width,$height]\n";
+exec "byzanz-record", "-d", $opt_t, "-x", $x, "-y", $y, "-w", $width, "-h", $height, $opt_o;
+X
+__END__
+=head1 NAME
+X
+byzanz-helper - Helper script to record an X-Window with byzanz-record
+X
+=head1 SYNOPSIS
+X
+B<byzanz-helper> B<-h>|B<--help>
+X
+B<byzanz-helper> [B<OPTIONS>] B<-o> I<FILE>
+X
+=head1 DESCRIPTION
+X
+This tool helps record a specific B<X11> window using B<byzanz-record>. When
+run, the script will ask the user to pick the desired X-Window using the mouse.
+The recording will then start for the specified duration.
+X
+Internally the script uses B<xwininfo> to obtain the position and size of the
+recorded video. These parameters are not updated while the video is recorded.
+It the recorded window is moved it will leave the area of recording and be
+only partially visible in the resulting video.
+X
+=head1 OPTIONS
+X
+=over
+X
+=item B<-h>|B<--help>
+X
+Print the usage, help and version information for this program and exit.
+X
+=item B<-o> I<FILE>|B<--output>=I<FILE>
+X
+Sets the output file for the recorded video.
+X
+=item B<-t> I<DURATION>|B<--duration>=I<DURATION>
+X
+Sets the recording duration in seconds. Default is 30 seconds.
+X
+=back
+X
+=head1 SEE ALSO
+X
+byzanz-record(1), byzanz-playback(1), xwininfo(1)
+X
+=head1 AUTHOR
+X
+Frederic JARDON <frederic.jardon@gmail.com>
+X
+=head1 COPYRIGHT AND LICENSE
+X
+Copyright (C) 2018 by Frederic JARDON <frederic.jardon@gmail.com>
+X
+This program is free software; you can redistribute it and/or modify
+it under the MIT license.
+X
+=cut
+SHAR_EOF
+  (set 20 18 04 03 08 04 45 'byzanz-helper'
+   eval "${shar_touch}") && \
+  chmod 0755 'byzanz-helper'
+if test $? -ne 0
+then ${echo} "restore of byzanz-helper failed"
+fi
+  if ${md5check}
+  then (
+       ${MD5SUM} -c >/dev/null 2>&1 || ${echo} 'byzanz-helper': 'MD5 check failed'
+       ) << \SHAR_EOF
+ba44a6190023b1b48776340b2bb6a277  byzanz-helper
+SHAR_EOF
+
+else
+test `LC_ALL=C wc -c < 'byzanz-helper'` -ne 2541 && \
+  ${echo} "restoration warning:  size of 'byzanz-helper' is not 2541"
+  fi
+fi
+# ============= byzanz-helper.1 ==============
+if test -n "${keep_file}" && test -f 'byzanz-helper.1'
+then
+${echo} "x - SKIPPING byzanz-helper.1 (file already exists)"
+
+else
+${echo} "x - extracting byzanz-helper.1 (text)"
+  sed 's/^X//' << 'SHAR_EOF' > 'byzanz-helper.1' &&
+X.\" Automatically generated by Pod::Man 4.09 (Pod::Simple 3.35)
+X.\"
+X.\" Standard preamble:
+X.\" ========================================================================
+X.de Sp \" Vertical space (when we can't use .PP)
+X.if t .sp .5v
+X.if n .sp
+X..
+X.de Vb \" Begin verbatim text
+X.ft CW
+X.nf
+X.ne \\$1
+X..
+X.de Ve \" End verbatim text
+X.ft R
+X.fi
+X..
+X.\" Set up some character translations and predefined strings.  \*(-- will
+X.\" give an unbreakable dash, \*(PI will give pi, \*(L" will give a left
+X.\" double quote, and \*(R" will give a right double quote.  \*(C+ will
+X.\" give a nicer C++.  Capital omega is used to do unbreakable dashes and
+X.\" therefore won't be available.  \*(C` and \*(C' expand to `' in nroff,
+X.\" nothing in troff, for use with C<>.
+X.tr \(*W-
+X.ds C+ C\v'-.1v'\h'-1p'\s-2+\h'-1p'+\s0\v'.1v'\h'-1p'
+X.ie n \{\
+X.    ds -- \(*W-
+X.    ds PI pi
+X.    if (\n(.H=4u)&(1m=24u) .ds -- \(*W\h'-12u'\(*W\h'-12u'-\" diablo 10 pitch
+X.    if (\n(.H=4u)&(1m=20u) .ds -- \(*W\h'-12u'\(*W\h'-8u'-\"  diablo 12 pitch
+X.    ds L" ""
+X.    ds R" ""
+X.    ds C` ""
+X.    ds C' ""
+'br\}
+X.el\{\
+X.    ds -- \|\(em\|
+X.    ds PI \(*p
+X.    ds L" ``
+X.    ds R" ''
+X.    ds C`
+X.    ds C'
+'br\}
+X.\"
+X.\" Escape single quotes in literal strings from groff's Unicode transform.
+X.ie \n(.g .ds Aq \(aq
+X.el       .ds Aq '
+X.\"
+X.\" If the F register is >0, we'll generate index entries on stderr for
+X.\" titles (.TH), headers (.SH), subsections (.SS), items (.Ip), and index
+X.\" entries marked with X<> in POD.  Of course, you'll have to process the
+X.\" output yourself in some meaningful fashion.
+X.\"
+X.\" Avoid warning from groff about undefined register 'F'.
+X.de IX
+X..
+X.if !\nF .nr F 0
+X.if \nF>0 \{\
+X.    de IX
+X.    tm Index:\\$1\t\\n%\t"\\$2"
+X..
+X.    if !\nF==2 \{\
+X.        nr % 0
+X.        nr F 2
+X.    \}
+X.\}
+X.\"
+X.\" Accent mark definitions (@(#)ms.acc 1.5 88/02/08 SMI; from UCB 4.2).
+X.\" Fear.  Run.  Save yourself.  No user-serviceable parts.
+X.    \" fudge factors for nroff and troff
+X.if n \{\
+X.    ds #H 0
+X.    ds #V .8m
+X.    ds #F .3m
+X.    ds #[ \f1
+X.    ds #] \fP
+X.\}
+X.if t \{\
+X.    ds #H ((1u-(\\\\n(.fu%2u))*.13m)
+X.    ds #V .6m
+X.    ds #F 0
+X.    ds #[ \&
+X.    ds #] \&
+X.\}
+X.    \" simple accents for nroff and troff
+X.if n \{\
+X.    ds ' \&
+X.    ds ` \&
+X.    ds ^ \&
+X.    ds , \&
+X.    ds ~ ~
+X.    ds /
+X.\}
+X.if t \{\
+X.    ds ' \\k:\h'-(\\n(.wu*8/10-\*(#H)'\'\h"|\\n:u"
+X.    ds ` \\k:\h'-(\\n(.wu*8/10-\*(#H)'\`\h'|\\n:u'
+X.    ds ^ \\k:\h'-(\\n(.wu*10/11-\*(#H)'^\h'|\\n:u'
+X.    ds , \\k:\h'-(\\n(.wu*8/10)',\h'|\\n:u'
+X.    ds ~ \\k:\h'-(\\n(.wu-\*(#H-.1m)'~\h'|\\n:u'
+X.    ds / \\k:\h'-(\\n(.wu*8/10-\*(#H)'\z\(sl\h'|\\n:u'
+X.\}
+X.    \" troff and (daisy-wheel) nroff accents
+X.ds : \\k:\h'-(\\n(.wu*8/10-\*(#H+.1m+\*(#F)'\v'-\*(#V'\z.\h'.2m+\*(#F'.\h'|\\n:u'\v'\*(#V'
+X.ds 8 \h'\*(#H'\(*b\h'-\*(#H'
+X.ds o \\k:\h'-(\\n(.wu+\w'\(de'u-\*(#H)/2u'\v'-.3n'\*(#[\z\(de\v'.3n'\h'|\\n:u'\*(#]
+X.ds d- \h'\*(#H'\(pd\h'-\w'~'u'\v'-.25m'\f2\(hy\fP\v'.25m'\h'-\*(#H'
+X.ds D- D\\k:\h'-\w'D'u'\v'-.11m'\z\(hy\v'.11m'\h'|\\n:u'
+X.ds th \*(#[\v'.3m'\s+1I\s-1\v'-.3m'\h'-(\w'I'u*2/3)'\s-1o\s+1\*(#]
+X.ds Th \*(#[\s+2I\s-2\h'-\w'I'u*3/5'\v'-.3m'o\v'.3m'\*(#]
+X.ds ae a\h'-(\w'a'u*4/10)'e
+X.ds Ae A\h'-(\w'A'u*4/10)'E
+X.    \" corrections for vroff
+X.if v .ds ~ \\k:\h'-(\\n(.wu*9/10-\*(#H)'\s-2\u~\d\s+2\h'|\\n:u'
+X.if v .ds ^ \\k:\h'-(\\n(.wu*10/11-\*(#H)'\v'-.4m'^\v'.4m'\h'|\\n:u'
+X.    \" for low resolution devices (crt and lpr)
+X.if \n(.H>23 .if \n(.V>19 \
+\{\
+X.    ds : e
+X.    ds 8 ss
+X.    ds o a
+X.    ds d- d\h'-1'\(ga
+X.    ds D- D\h'-1'\(hy
+X.    ds th \o'bp'
+X.    ds Th \o'LP'
+X.    ds ae ae
+X.    ds Ae AE
+X.\}
+X.rm #[ #] #H #V #F C
+X.\" ========================================================================
+X.\"
+X.IX Title "BYZANZ-HELPER 1"
+X.TH BYZANZ-HELPER 1 "2018-04-03" "perl v5.26.1" "User Contributed Perl Documentation"
+X.\" For nroff, turn off justification.  Always turn off hyphenation; it makes
+X.\" way too many mistakes in technical documents.
+X.if n .ad l
+X.nh
+X.SH "NAME"
+byzanz\-helper \- Helper script to record an X\-Window with byzanz\-record
+X.SH "SYNOPSIS"
+X.IX Header "SYNOPSIS"
+\&\fBbyzanz-helper\fR \fB\-h\fR|\fB\-\-help\fR
+X.PP
+\&\fBbyzanz-helper\fR [\fB\s-1OPTIONS\s0\fR] \fB\-o\fR \fI\s-1FILE\s0\fR
+X.SH "DESCRIPTION"
+X.IX Header "DESCRIPTION"
+This tool helps record a specific \fBX11\fR window using \fBbyzanz-record\fR. When
+run, the script will ask the user to pick the desired X\-Window using the mouse.
+The recording will then start for the specified duration.
+X.PP
+Internally the script uses \fBxwininfo\fR to obtain the position and size of the
+recorded video. These parameters are not updated while the video is recorded.
+It the recorded window is moved it will leave the area of recording and be
+only partially visible in the resulting video.
+X.SH "OPTIONS"
+X.IX Header "OPTIONS"
+X.IP "\fB\-h\fR|\fB\-\-help\fR" 4
+X.IX Item "-h|--help"
+Print the usage, help and version information for this program and exit.
+X.IP "\fB\-o\fR \fI\s-1FILE\s0\fR|\fB\-\-output\fR=\fI\s-1FILE\s0\fR" 4
+X.IX Item "-o FILE|--output=FILE"
+Sets the output file for the recorded video.
+X.IP "\fB\-t\fR \fI\s-1DURATION\s0\fR|\fB\-\-duration\fR=\fI\s-1DURATION\s0\fR" 4
+X.IX Item "-t DURATION|--duration=DURATION"
+Sets the recording duration in seconds. Default is 30 seconds.
+X.SH "SEE ALSO"
+X.IX Header "SEE ALSO"
+\&\fIbyzanz\-record\fR\|(1), \fIbyzanz\-playback\fR\|(1), \fIxwininfo\fR\|(1)
+X.SH "AUTHOR"
+X.IX Header "AUTHOR"
+Frederic \s-1JARDON\s0 <frederic.jardon@gmail.com>
+X.SH "COPYRIGHT AND LICENSE"
+X.IX Header "COPYRIGHT AND LICENSE"
+Copyright (C) 2018 by Frederic \s-1JARDON\s0 <frederic.jardon@gmail.com>
+X.PP
+This program is free software; you can redistribute it and/or modify
+it under the \s-1MIT\s0 license.
+SHAR_EOF
+  (set 20 18 04 03 08 38 32 'byzanz-helper.1'
+   eval "${shar_touch}") && \
+  chmod 0644 'byzanz-helper.1'
+if test $? -ne 0
+then ${echo} "restore of byzanz-helper.1 failed"
+fi
+  if ${md5check}
+  then (
+       ${MD5SUM} -c >/dev/null 2>&1 || ${echo} 'byzanz-helper.1': 'MD5 check failed'
+       ) << \SHAR_EOF
+8fe3574b525ea7ec5706d35ba085046b  byzanz-helper.1
+SHAR_EOF
+
+else
+test `LC_ALL=C wc -c < 'byzanz-helper.1'` -ne 5659 && \
+  ${echo} "restoration warning:  size of 'byzanz-helper.1' is not 5659"
+  fi
+fi
+# ============= ffmpeg-helper ==============
+if test -n "${keep_file}" && test -f 'ffmpeg-helper'
+then
+${echo} "x - SKIPPING ffmpeg-helper (file already exists)"
+
+else
+${echo} "x - extracting ffmpeg-helper (text)"
+  sed 's/^X//' << 'SHAR_EOF' > 'ffmpeg-helper' &&
+#!/usr/bin/env perl
+X
+use 5.008000;
+use strict;
+use warnings 'all';
+X
+use Carp;
+use Cwd;
+use File::Basename;
+use File::Temp;
+use Getopt::Long qw(GetOptionsFromArray :config no_ignore_case);
+use Pod::Usage;
+use POSIX qw(uname);
+X
+X
+# Parse options
+my ($opt_help, $opt_t, $opt_o);
+GetOptionsFromArray(
+X    \@ARGV,
+X    'help|h'       => \$opt_help,
+X    't|duration=s' => \$opt_t,
+X    'o|output=s'   => \$opt_o,
+) or croak('Error parsing command line arguments');
+X
+# Handle help option
+pod2usage(-exitval => 0) if ($opt_help);
+X
+if(!defined($opt_o) || $opt_o eq '') {
+X    print STDERR "Option '-o' or '--output' is mandatory\n";
+X    pod2usage(-exitval => 1);
+}
+X
+# Default option values
+$opt_t //= 30;
+X
+# Get the recorded window parameters
+my $xwin_info = `xwininfo`;
+croak('Error getting X-Window information') if($?);
+X
+my ($title, $x, $y, $width, $height);
+$xwin_info =~ m/Window id:\s+\w+\s+"([^"]+)"/g;
+$title = $1;
+$xwin_info =~ m/Absolute upper-left X:\s*(\d+)/g;
+$x = $1;
+$xwin_info =~ m/Absolute upper-left Y:\s*(\d+)/g;
+$y = $1;
+$xwin_info =~ m/Width:\s*(\d+)/g;
+$width = $1;
+$xwin_info =~ m/Height:\s*(\d+)/g;
+$height = $1;
+X
+my $tmp = File::Temp->new(SUFFIX => '.mkv');
+close($tmp);
+my $mkv = "$tmp";
+X
+my ($sysname) = uname;
+if($sysname =~ m/CYGWIN/) {
+X    my @args = ("ffmpeg");
+X    push(@args, '-video_size', $width.'x'.$height);
+X    push(@args, '-framerate', '25');
+X    push(@args, '-f', 'gdigrab');
+X    push(@args, '-i', 'title='.$title);
+X    push(@args, '-c:v', 'libx264', '-crf', '0', '-preset', 'ultrafast');
+X    push(@args, $mkv);
+X    my $cmd_cli = "'".join("' '", @args)."'";
+X    print "system $cmd_cli\n";
+X    system @args == 0
+X        or die("Unable to execute command: $cmd_cli");
+} else {
+X    my @args = ("ffmpeg");
+X    push(@args, '-video_size', $width.'x'.$height);
+X    push(@args, '-framerate', '25');
+X    push(@args, '-f', 'x11grab');
+X    push(@args, '-i', ':0.0+'.$x.','.$y);
+X    push(@args, '-c:v', 'libx264', '-crf', '0', '-preset', 'ultrafast');
+X    push(@args, $mkv);
+X    my $cmd_cli = "'".join("' '", @args)."'";
+X    print "system $cmd_cli\n";
+X    system @args == 0
+X        or die("Unable to execute command: $cmd_cli");
+}
+X
+my @args = ();
+push(@args, 'ffmpeg');
+push(@args, '-i', $mkv);
+push(@args, '-c:v', 'libvpx-vp9', '-crf', '0', '-preset', 'veryslow');
+push(@args, $opt_o);
+my $cmd_cli = "'".join("' '", @args)."'";
+print "system $cmd_cli\n";
+system @args == 0
+X    or die("Unable to execute command: $cmd_cli");
+X
+__END__
+=head1 NAME
+X
+ffmpeg-helper - Helper script to record an X-Window with ffmpeg-record
+X
+=head1 SYNOPSIS
+X
+B<ffmpeg-helper> B<-h>|B<--help>
+X
+B<ffmpeg-helper> [B<OPTIONS>] B<-o> I<FILE>
+X
+=head1 DESCRIPTION
+X
+This tool helps record a specific B<X11> window using B<ffmpeg>. When
+run, the script will ask the user to pick the desired X-Window using the mouse.
+The recording will then start for the specified duration.
+X
+Internally the script uses B<xwininfo> to obtain the position and size of the
+recorded video. These parameters are not updated while the video is recorded.
+It the recorded window is moved it will leave the area of recording and be
+only partially visible in the resulting video.
+X
+=head1 OPTIONS
+X
+=over
+X
+=item B<-h>|B<--help>
+X
+Print the usage, help and version information for this program and exit.
+X
+=item B<-o> I<FILE>|B<--output>=I<FILE>
+X
+Sets the output file for the recorded video.
+X
+=item B<-t> I<DURATION>|B<--duration>=I<DURATION>
+X
+Sets the recording duration in seconds. Default is 30 seconds.
+X
+=back
+X
+=head1 SEE ALSO
+X
+ffmpeg(1), xwininfo(1)
+X
+=head1 AUTHOR
+X
+Frederic JARDON <frederic.jardon@gmail.com>
+X
+=head1 COPYRIGHT AND LICENSE
+X
+Copyright (C) 2018 by Frederic JARDON <frederic.jardon@gmail.com>
+X
+This program is free software; you can redistribute it and/or modify
+it under the MIT license.
+X
+=cut
+SHAR_EOF
+  (set 20 18 04 03 19 52 23 'ffmpeg-helper'
+   eval "${shar_touch}") && \
+  chmod 0755 'ffmpeg-helper'
+if test $? -ne 0
+then ${echo} "restore of ffmpeg-helper failed"
+fi
+  if ${md5check}
+  then (
+       ${MD5SUM} -c >/dev/null 2>&1 || ${echo} 'ffmpeg-helper': 'MD5 check failed'
+       ) << \SHAR_EOF
+730d1c68192b332ed5091a88717971de  ffmpeg-helper
+SHAR_EOF
+
+else
+test `LC_ALL=C wc -c < 'ffmpeg-helper'` -ne 3766 && \
+  ${echo} "restoration warning:  size of 'ffmpeg-helper' is not 3766"
+  fi
+fi
+# ============= ffmpeg-helper.1 ==============
+if test -n "${keep_file}" && test -f 'ffmpeg-helper.1'
+then
+${echo} "x - SKIPPING ffmpeg-helper.1 (file already exists)"
+
+else
+${echo} "x - extracting ffmpeg-helper.1 (text)"
+  sed 's/^X//' << 'SHAR_EOF' > 'ffmpeg-helper.1' &&
+X.\" Automatically generated by Pod::Man 4.09 (Pod::Simple 3.35)
+X.\"
+X.\" Standard preamble:
+X.\" ========================================================================
+X.de Sp \" Vertical space (when we can't use .PP)
+X.if t .sp .5v
+X.if n .sp
+X..
+X.de Vb \" Begin verbatim text
+X.ft CW
+X.nf
+X.ne \\$1
+X..
+X.de Ve \" End verbatim text
+X.ft R
+X.fi
+X..
+X.\" Set up some character translations and predefined strings.  \*(-- will
+X.\" give an unbreakable dash, \*(PI will give pi, \*(L" will give a left
+X.\" double quote, and \*(R" will give a right double quote.  \*(C+ will
+X.\" give a nicer C++.  Capital omega is used to do unbreakable dashes and
+X.\" therefore won't be available.  \*(C` and \*(C' expand to `' in nroff,
+X.\" nothing in troff, for use with C<>.
+X.tr \(*W-
+X.ds C+ C\v'-.1v'\h'-1p'\s-2+\h'-1p'+\s0\v'.1v'\h'-1p'
+X.ie n \{\
+X.    ds -- \(*W-
+X.    ds PI pi
+X.    if (\n(.H=4u)&(1m=24u) .ds -- \(*W\h'-12u'\(*W\h'-12u'-\" diablo 10 pitch
+X.    if (\n(.H=4u)&(1m=20u) .ds -- \(*W\h'-12u'\(*W\h'-8u'-\"  diablo 12 pitch
+X.    ds L" ""
+X.    ds R" ""
+X.    ds C` ""
+X.    ds C' ""
+'br\}
+X.el\{\
+X.    ds -- \|\(em\|
+X.    ds PI \(*p
+X.    ds L" ``
+X.    ds R" ''
+X.    ds C`
+X.    ds C'
+'br\}
+X.\"
+X.\" Escape single quotes in literal strings from groff's Unicode transform.
+X.ie \n(.g .ds Aq \(aq
+X.el       .ds Aq '
+X.\"
+X.\" If the F register is >0, we'll generate index entries on stderr for
+X.\" titles (.TH), headers (.SH), subsections (.SS), items (.Ip), and index
+X.\" entries marked with X<> in POD.  Of course, you'll have to process the
+X.\" output yourself in some meaningful fashion.
+X.\"
+X.\" Avoid warning from groff about undefined register 'F'.
+X.de IX
+X..
+X.if !\nF .nr F 0
+X.if \nF>0 \{\
+X.    de IX
+X.    tm Index:\\$1\t\\n%\t"\\$2"
+X..
+X.    if !\nF==2 \{\
+X.        nr % 0
+X.        nr F 2
+X.    \}
+X.\}
+X.\"
+X.\" Accent mark definitions (@(#)ms.acc 1.5 88/02/08 SMI; from UCB 4.2).
+X.\" Fear.  Run.  Save yourself.  No user-serviceable parts.
+X.    \" fudge factors for nroff and troff
+X.if n \{\
+X.    ds #H 0
+X.    ds #V .8m
+X.    ds #F .3m
+X.    ds #[ \f1
+X.    ds #] \fP
+X.\}
+X.if t \{\
+X.    ds #H ((1u-(\\\\n(.fu%2u))*.13m)
+X.    ds #V .6m
+X.    ds #F 0
+X.    ds #[ \&
+X.    ds #] \&
+X.\}
+X.    \" simple accents for nroff and troff
+X.if n \{\
+X.    ds ' \&
+X.    ds ` \&
+X.    ds ^ \&
+X.    ds , \&
+X.    ds ~ ~
+X.    ds /
+X.\}
+X.if t \{\
+X.    ds ' \\k:\h'-(\\n(.wu*8/10-\*(#H)'\'\h"|\\n:u"
+X.    ds ` \\k:\h'-(\\n(.wu*8/10-\*(#H)'\`\h'|\\n:u'
+X.    ds ^ \\k:\h'-(\\n(.wu*10/11-\*(#H)'^\h'|\\n:u'
+X.    ds , \\k:\h'-(\\n(.wu*8/10)',\h'|\\n:u'
+X.    ds ~ \\k:\h'-(\\n(.wu-\*(#H-.1m)'~\h'|\\n:u'
+X.    ds / \\k:\h'-(\\n(.wu*8/10-\*(#H)'\z\(sl\h'|\\n:u'
+X.\}
+X.    \" troff and (daisy-wheel) nroff accents
+X.ds : \\k:\h'-(\\n(.wu*8/10-\*(#H+.1m+\*(#F)'\v'-\*(#V'\z.\h'.2m+\*(#F'.\h'|\\n:u'\v'\*(#V'
+X.ds 8 \h'\*(#H'\(*b\h'-\*(#H'
+X.ds o \\k:\h'-(\\n(.wu+\w'\(de'u-\*(#H)/2u'\v'-.3n'\*(#[\z\(de\v'.3n'\h'|\\n:u'\*(#]
+X.ds d- \h'\*(#H'\(pd\h'-\w'~'u'\v'-.25m'\f2\(hy\fP\v'.25m'\h'-\*(#H'
+X.ds D- D\\k:\h'-\w'D'u'\v'-.11m'\z\(hy\v'.11m'\h'|\\n:u'
+X.ds th \*(#[\v'.3m'\s+1I\s-1\v'-.3m'\h'-(\w'I'u*2/3)'\s-1o\s+1\*(#]
+X.ds Th \*(#[\s+2I\s-2\h'-\w'I'u*3/5'\v'-.3m'o\v'.3m'\*(#]
+X.ds ae a\h'-(\w'a'u*4/10)'e
+X.ds Ae A\h'-(\w'A'u*4/10)'E
+X.    \" corrections for vroff
+X.if v .ds ~ \\k:\h'-(\\n(.wu*9/10-\*(#H)'\s-2\u~\d\s+2\h'|\\n:u'
+X.if v .ds ^ \\k:\h'-(\\n(.wu*10/11-\*(#H)'\v'-.4m'^\v'.4m'\h'|\\n:u'
+X.    \" for low resolution devices (crt and lpr)
+X.if \n(.H>23 .if \n(.V>19 \
+\{\
+X.    ds : e
+X.    ds 8 ss
+X.    ds o a
+X.    ds d- d\h'-1'\(ga
+X.    ds D- D\h'-1'\(hy
+X.    ds th \o'bp'
+X.    ds Th \o'LP'
+X.    ds ae ae
+X.    ds Ae AE
+X.\}
+X.rm #[ #] #H #V #F C
+X.\" ========================================================================
+X.\"
+X.IX Title "FFMPEG-HELPER 1"
+X.TH FFMPEG-HELPER 1 "2018-04-03" "perl v5.26.1" "User Contributed Perl Documentation"
+X.\" For nroff, turn off justification.  Always turn off hyphenation; it makes
+X.\" way too many mistakes in technical documents.
+X.if n .ad l
+X.nh
+X.SH "NAME"
+ffmpeg\-helper \- Helper script to record an X\-Window with ffmpeg\-record
+X.SH "SYNOPSIS"
+X.IX Header "SYNOPSIS"
+\&\fBffmpeg-helper\fR \fB\-h\fR|\fB\-\-help\fR
+X.PP
+\&\fBffmpeg-helper\fR [\fB\s-1OPTIONS\s0\fR] \fB\-o\fR \fI\s-1FILE\s0\fR
+X.SH "DESCRIPTION"
+X.IX Header "DESCRIPTION"
+This tool helps record a specific \fBX11\fR window using \fBffmpeg\fR. When
+run, the script will ask the user to pick the desired X\-Window using the mouse.
+The recording will then start for the specified duration.
+X.PP
+Internally the script uses \fBxwininfo\fR to obtain the position and size of the
+recorded video. These parameters are not updated while the video is recorded.
+It the recorded window is moved it will leave the area of recording and be
+only partially visible in the resulting video.
+X.SH "OPTIONS"
+X.IX Header "OPTIONS"
+X.IP "\fB\-h\fR|\fB\-\-help\fR" 4
+X.IX Item "-h|--help"
+Print the usage, help and version information for this program and exit.
+X.IP "\fB\-o\fR \fI\s-1FILE\s0\fR|\fB\-\-output\fR=\fI\s-1FILE\s0\fR" 4
+X.IX Item "-o FILE|--output=FILE"
+Sets the output file for the recorded video.
+X.IP "\fB\-t\fR \fI\s-1DURATION\s0\fR|\fB\-\-duration\fR=\fI\s-1DURATION\s0\fR" 4
+X.IX Item "-t DURATION|--duration=DURATION"
+Sets the recording duration in seconds. Default is 30 seconds.
+X.SH "SEE ALSO"
+X.IX Header "SEE ALSO"
+\&\fIffmpeg\fR\|(1), \fIxwininfo\fR\|(1)
+X.SH "AUTHOR"
+X.IX Header "AUTHOR"
+Frederic \s-1JARDON\s0 <frederic.jardon@gmail.com>
+X.SH "COPYRIGHT AND LICENSE"
+X.IX Header "COPYRIGHT AND LICENSE"
+Copyright (C) 2018 by Frederic \s-1JARDON\s0 <frederic.jardon@gmail.com>
+X.PP
+This program is free software; you can redistribute it and/or modify
+it under the \s-1MIT\s0 license.
+SHAR_EOF
+  (set 20 18 04 03 19 56 12 'ffmpeg-helper.1'
+   eval "${shar_touch}") && \
+  chmod 0644 'ffmpeg-helper.1'
+if test $? -ne 0
+then ${echo} "restore of ffmpeg-helper.1 failed"
+fi
+  if ${md5check}
+  then (
+       ${MD5SUM} -c >/dev/null 2>&1 || ${echo} 'ffmpeg-helper.1': 'MD5 check failed'
+       ) << \SHAR_EOF
+aafd63c6eab91148338a83780593c29c  ffmpeg-helper.1
+SHAR_EOF
+
+else
+test `LC_ALL=C wc -c < 'ffmpeg-helper.1'` -ne 5615 && \
+  ${echo} "restoration warning:  size of 'ffmpeg-helper.1' is not 5615"
   fi
 fi
 # ============= msvc-shell ==============
@@ -2119,6 +2844,33 @@ if [[ "${os_name}" == CYGWIN* ]]; then
     install -m 0755 apt-cyg/apt-cyg ~/.local/bin
 fi
 
+# Python
+echo "Python ..."
+if ! has_prog pip3; then
+    easy_install_prog=$(compgen -c 'easy_install-3' | head -n 1)
+    if has_prog "${easy_install_prog}"; then
+        if ! has_prog pip3; then
+             "${easy_install_prog}" --user pip > install.log 2>&1
+        fi
+    fi
+fi
+if ! has_prog pip2; then
+    easy_install_prog=$(compgen -c 'easy_install-2' | head -n 1)
+    if has_prog "${easy_install_prog}"; then
+        if ! has_prog pip2; then
+             "${easy_install_prog}" --user pip > install.log 2>&1
+        fi
+    fi
+fi
+if has_prog pip3; then
+    pip3 install --user neovim > install.log 2>&1
+fi
+if ! has_prog cppman; then
+    if has_prog pip3; then
+        pip3 install --user cppman > install.log 2>&1
+    fi
+fi
+
 # XWindow
 if has_prog xterm; then
     echo "XWindow ..."
@@ -2150,6 +2902,7 @@ if [ ! -e ~/.vim/bundle/Vundle.vim ]; then
     git clone https://github.com/gmarik/Vundle.vim.git ~/.vim/bundle/Vundle.vim > install.log 2>&1
 fi
 install -m 0644 dot_vimrc ~/.vimrc
+vim +PluginInstall +qall
 
 # tmux
 echo "tmux ..."
@@ -2178,30 +2931,6 @@ if has_prog tic; then
     fi
 fi
 
-# Python
-echo "Python ..."
-if ! has_prog pip3; then
-    easy_install_prog=$(compgen -c 'easy_install-3' | head -n 1)
-    if has_prog "${easy_install_prog}"; then
-        if ! has_prog pip3; then
-             "${easy_install_prog}" --user pip > install.log 2>&1
-        fi
-    fi
-fi
-if ! has_prog pip2; then
-    easy_install_prog=$(compgen -c 'easy_install-2' | head -n 1)
-    if has_prog "${easy_install_prog}"; then
-        if ! has_prog pip2; then
-             "${easy_install_prog}" --user pip > install.log 2>&1
-        fi
-    fi
-fi
-if ! has_prog cppman; then
-    if has_prog pip3; then
-        pip3 install --user cppman > install.log 2>&1
-    fi
-fi
-
 # Perl
 echo "Perl ..."
 if [ ! -e ~/.local/share/perl5 ]; then
@@ -2216,6 +2945,12 @@ if [ ! -e ~/.local/share/perl5 ]; then
         > ~/.local/etc/profile.d/perl5.sh
     . ~/.local/etc/profile.d/perl5.sh
 fi
+
+# Screencast tools
+install -m 0755 byzanz-helper ~/.local/bin
+install -m 0644 byzanz-helper.1 ~/.local/share/man/man1
+install -m 0755 ffmpeg-helper ~/.local/bin
+install -m 0644 ffmpeg-helper.1 ~/.local/share/man/man1
 
 # Gnulib
 echo "Gnulib ..."

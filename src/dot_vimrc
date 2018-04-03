@@ -55,45 +55,51 @@ Plugin 'gmarik/Vundle.vim'
 
 " Code/project navigation
 Plugin 'scrooloose/nerdtree' 	    	" Project and file navigation
-Plugin 'majutsushi/tagbar'          	" Class/module browser
-Plugin 'ervandew/supertab'
-Plugin 'BufOnly.vim'
-Plugin 'wesQ3/vim-windowswap'
-Plugin 'SirVer/ultisnips'
-Plugin 'junegunn/fzf.vim'
-Plugin 'junegunn/fzf'
+"Plugin 'majutsushi/tagbar'          	" Class/module browser
+"Plugin 'ervandew/supertab'
+"Plugin 'BufOnly.vim'
+"Plugin 'wesQ3/vim-windowswap'
+"Plugin 'SirVer/ultisnips'
+"Plugin 'junegunn/fzf.vim'
+"Plugin 'junegunn/fzf'
 Plugin 'godlygeek/tabular'
-Plugin 'ctrlpvim/ctrlp.vim'
-Plugin 'benmills/vimux'
-Plugin 'jeetsukumaran/vim-buffergator'
-Plugin 'gilsondev/searchtasks.vim'
-Plugin 'Shougo/neocomplete.vim'
-Plugin 'tpope/vim-dispatch'
+"Plugin 'ctrlpvim/ctrlp.vim'
+"Plugin 'benmills/vimux'
+"Plugin 'jeetsukumaran/vim-buffergator'
+"Plugin 'gilsondev/searchtasks.vim'
+"Plugin 'tpope/vim-dispatch'
 
 " Programming
-Plugin 'honza/vim-snippets'
-Plugin 'Townk/vim-autoclose'
-Plugin 'vim-syntastic/syntastic'
-Plugin 'neomake/neomake'
+"Plugin 'honza/vim-snippets'
+"Plugin 'Townk/vim-autoclose'
+"Plugin 'vim-syntastic/syntastic'
+"Plugin 'neomake/neomake'
+if has('nvim')
+  Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
+else
+  Plugin 'Shougo/deoplete.nvim'
+  Plugin 'roxma/nvim-yarp'
+  Plugin 'roxma/vim-hug-neovim-rpc'
+endif
+"let g:deoplete#enable_at_startup = 1
 
 " Markdown / Writting
-Plugin 'reedes/vim-pencil'
-Plugin 'tpope/vim-markdown'
-Plugin 'jtratner/vim-flavored-markdown'
-Plugin 'LanguageTool'
+"Plugin 'reedes/vim-pencil'
+Plugin 'vim-pandoc/vim-pandoc'
+"Plugin 'LanguageTool'
 
 " Theming
 Plugin 'ryanoasis/vim-devicons'
 Plugin 'vim-airline/vim-airline'   	" Lean & mean status/tabline for vim
 Plugin 'vim-airline/vim-airline-themes'
-Plugin 'fisadev/FixedTaskList.vim'  	" Pending tasks list
-Plugin 'rosenfeld/conque-term'      	" Consoles as buffers
+"Plugin 'fisadev/FixedTaskList.vim'  	" Pending tasks list
+"Plugin 'rosenfeld/conque-term'      	" Consoles as buffers
 Plugin 'tpope/vim-surround'	   	" Parentheses, brackets, quotes, XML tags, and more
-Plugin 'ctags.vim'
+"Plugin 'ctags.vim'
 
 " language support
-Plugin 'elixir-lang/vim-elixir'
-Plugin 'leafgarland/typescript-vim'
+"Plugin 'elixir-lang/vim-elixir'
+"Plugin 'leafgarland/typescript-vim'
 
 " solarized color theme
 Plugin 'altercation/vim-colors-solarized'
@@ -103,10 +109,10 @@ Plugin 'tpope/vim-fugitive'
 Plugin 'airblade/vim-gitgutter'
 
 " Abolish (completion, typo fixes, casing)
-Plugin 'tpope/vim-abolish'
+"Plugin 'tpope/vim-abolish'
 
 " Repeat (repeat plugin commands)
-Plugin 'tpope/vim-repeat'
+"Plugin 'tpope/vim-repeat'
 
 " Project support
 Plugin 'vim-scripts/project.tar.gz'
