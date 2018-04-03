@@ -13,6 +13,8 @@ SHAR_FILES = dot_bash_profile \
 						 dot_vimrc \
 						 dot_Xresources \
 						 dot_XWinrc \
+						 byzanz-helper \
+						 byzanz-helper.1 \
 						 msvc-shell \
 						 msvc-shell.1 \
 						 yank \
@@ -24,6 +26,9 @@ msvc-shell.1 : msvc-shell
 	pod2man $< > $@
 
 yank.1 : yank
+	pod2man $< > $@
+
+byzanz-helper.1 : byzanz-helper
 	pod2man $< > $@
 
 setup-files.shar: $(SHAR_FILES)

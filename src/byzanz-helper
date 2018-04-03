@@ -1,0 +1,107 @@
+#!/usr/bin/env perl
+
+use 5.008000;
+use strict;
+use warnings 'all';
+
+use Carp;
+use Cwd;
+use File::Basename;
+use File::Temp;
+use Getopt::Long qw(GetOptionsFromArray :config no_ignore_case);
+use Pod::Usage;
+
+
+# Parse options
+my ($opt_help, $opt_t, $opt_o);
+GetOptionsFromArray(
+    \@ARGV,
+    'help|h'       => \$opt_help,
+    't|duration=s' => \$opt_t,
+    'o|output=s'   => \$opt_o,
+) or croak('Error parsing command line arguments');
+
+# Handle help option
+pod2usage(-exitval => 0) if ($opt_help);
+
+if(!defined($opt_o) || $opt_o eq '') {
+    print STDERR "Option '-o' or '--output' is mandatory\n";
+    pod2usage(-exitval => 1);
+}
+
+# Default option values
+$opt_t //= 30;
+
+# Get the recorded window parameters
+my $xwin_info = `xwininfo`;
+croak('Error getting X-Window information') if($?);
+
+my ($x, $y, $width, $height);
+$xwin_info =~ m/Absolute upper-left X:\s*(\d+)/g;
+$x = $1;
+$xwin_info =~ m/Absolute upper-left Y:\s*(\d+)/g;
+$y = $1;
+$xwin_info =~ m/Width:\s*(\d+)/g;
+$width = $1;
+$xwin_info =~ m/Height:\s*(\d+)/g;
+$height = $1;
+
+print "Recording area: [$x,$y -> $width,$height]\n";
+exec "byzanz-record", "-d", $opt_t, "-x", $x, "-y", $y, "-w", $width, "-h", $height, $opt_o;
+
+__END__
+=head1 NAME
+
+byzanz-helper - Helper script to record an X-Window with byzanz-record
+
+=head1 SYNOPSIS
+
+B<byzanz-helper> B<-h>|B<--help>
+
+B<byzanz-helper> [B<OPTIONS>] B<-o> I<FILE>
+
+=head1 DESCRIPTION
+
+This tool helps record a specific B<X11> window using B<byzanz-record>. When
+run, the script will ask the user to pick the desired X-Window using the mouse.
+The recording will then start for the specified duration.
+
+Internally the script uses B<xwininfo> to obtain the position and size of the
+recorded video. These parameters are not updated while the video is recorded.
+It the recorded window is moved it will leave the area of recording and be
+only partially visible in the resulting video.
+
+=head1 OPTIONS
+
+=over
+
+=item B<-h>|B<--help>
+
+Print the usage, help and version information for this program and exit.
+
+=item B<-o> I<FILE>|B<--output>=I<FILE>
+
+Sets the output file for the recorded video.
+
+=item B<-t> I<DURATION>|B<--duration>=I<DURATION>
+
+Sets the recording duration in seconds. Default is 30 seconds.
+
+=back
+
+=head1 SEE ALSO
+
+byzanz-record(1), byzanz-playback(1), xwininfo(1)
+
+=head1 AUTHOR
+
+Frederic JARDON <frederic.jardon@gmail.com>
+
+=head1 COPYRIGHT AND LICENSE
+
+Copyright (C) 2018 by Frederic JARDON <frederic.jardon@gmail.com>
+
+This program is free software; you can redistribute it and/or modify
+it under the MIT license.
+
+=cut
