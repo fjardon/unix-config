@@ -16,6 +16,15 @@ the configuration manager. The `font-config` name of the font is given by the
 
 # Iconic unicode glyphs
 
+Patched fonts are fonts where some rarely used unicode codepoints are reassigned
+to icons, such as those used by Material Design, bootstrap, and other web
+framework. These unicode codepoint can then used in diverse terminal contexts,
+like:
+
+- PS1 to configure the shell prompt
+- tmux status line
+- vim status bar or file browser
+
 ## List of iconic unicode glyphs
 
 | Symbol Name                                 | Hexadecimal Code | Example   |
