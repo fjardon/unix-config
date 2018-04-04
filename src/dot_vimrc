@@ -18,7 +18,6 @@ set tabstop=4 shiftwidth=4 expandtab
 autocmd FileType *      set formatoptions=tcql nocindent comments&
 autocmd FileType c,cpp  set formatoptions=croql cindent comments=sr:/*,mb:*,ex:*/,://
 set autoindent
-filetype plugin indent on
 
 " Highlight searched targets
 set hlsearch
@@ -44,112 +43,79 @@ nnoremap <Leader>c :set cursorcolumn!
 set nocompatible              " be iMproved, required
 filetype off                  " required
 
-" set the runtime path to include Vundle and initialize
-set rtp+=~/.vim/bundle/Vundle.vim
-call vundle#begin()
-" alternatively, pass a path where Vundle should install plugins
-"call vundle#begin('~/some/path/here')
-
-" let Vundle manage Vundle, required
-Plugin 'gmarik/Vundle.vim'
-
+call plug#begin()
 " Code/project navigation
-Plugin 'scrooloose/nerdtree' 	    	" Project and file navigation
-"Plugin 'majutsushi/tagbar'          	" Class/module browser
-"Plugin 'ervandew/supertab'
-"Plugin 'BufOnly.vim'
-"Plugin 'wesQ3/vim-windowswap'
-"Plugin 'SirVer/ultisnips'
-"Plugin 'junegunn/fzf.vim'
-"Plugin 'junegunn/fzf'
-Plugin 'godlygeek/tabular'
-"Plugin 'ctrlpvim/ctrlp.vim'
-"Plugin 'benmills/vimux'
-"Plugin 'jeetsukumaran/vim-buffergator'
-"Plugin 'gilsondev/searchtasks.vim'
-"Plugin 'tpope/vim-dispatch'
+Plug 'scrooloose/nerdtree', { 'on': 'NERDTreeToggle' }
+"Plug 'majutsushi/tagbar'          	" Class/module browser
+"Plug 'ervandew/supertab'
+"Plug 'BufOnly.vim'
+"Plug 'wesQ3/vim-windowswap'
+"Plug 'SirVer/ultisnips'
+"Plug 'junegunn/fzf.vim'
+"Plug 'junegunn/fzf'
+Plug 'godlygeek/tabular'
+"Plug 'ctrlpvim/ctrlp.vim'
+"Plug 'benmills/vimux'
+"Plug 'jeetsukumaran/vim-buffergator'
+"Plug 'gilsondev/searchtasks.vim'
+"Plug 'tpope/vim-dispatch'
 
 " Programming
-"Plugin 'honza/vim-snippets'
-"Plugin 'Townk/vim-autoclose'
-"Plugin 'vim-syntastic/syntastic'
-"Plugin 'neomake/neomake'
+"Plug 'honza/vim-snippets'
+"Plug 'Townk/vim-autoclose'
+"Plug 'vim-syntastic/syntastic'
+"Plug 'neomake/neomake'
 if has('nvim')
-  Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
+  Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugs' }
 else
-  Plugin 'Shougo/deoplete.nvim'
-  Plugin 'roxma/nvim-yarp'
-  Plugin 'roxma/vim-hug-neovim-rpc'
+  Plug 'Shougo/deoplete.nvim'
+  Plug 'roxma/nvim-yarp'
+  Plug 'roxma/vim-hug-neovim-rpc'
 endif
 "let g:deoplete#enable_at_startup = 1
 
 " Markdown / Writting
-"Plugin 'reedes/vim-pencil'
-Plugin 'vim-pandoc/vim-pandoc'
-"Plugin 'LanguageTool'
+"Plug 'reedes/vim-pencil'
+Plug 'vim-pandoc/vim-pandoc'
+"Plug 'LanguageTool'
 
 " Theming
-Plugin 'ryanoasis/vim-devicons'
-Plugin 'vim-airline/vim-airline'   	" Lean & mean status/tabline for vim
-Plugin 'vim-airline/vim-airline-themes'
-"Plugin 'fisadev/FixedTaskList.vim'  	" Pending tasks list
-"Plugin 'rosenfeld/conque-term'      	" Consoles as buffers
-Plugin 'tpope/vim-surround'	   	" Parentheses, brackets, quotes, XML tags, and more
-"Plugin 'ctags.vim'
+Plug 'ryanoasis/vim-devicons'
+Plug 'vim-airline/vim-airline'   	" Lean & mean status/tabline for vim
+Plug 'vim-airline/vim-airline-themes'
+"Plug 'fisadev/FixedTaskList.vim'  	" Pending tasks list
+"Plug 'rosenfeld/conque-term'      	" Consoles as buffers
+Plug 'tpope/vim-surround'	   	" Parentheses, brackets, quotes, XML tags, and more
+"Plug 'ctags.vim'
 
 " language support
-"Plugin 'elixir-lang/vim-elixir'
-"Plugin 'leafgarland/typescript-vim'
+"Plug 'elixir-lang/vim-elixir'
+"Plug 'leafgarland/typescript-vim'
 
 " solarized color theme
-Plugin 'altercation/vim-colors-solarized'
+Plug 'altercation/vim-colors-solarized'
 
 " Git support
-Plugin 'tpope/vim-fugitive'
-Plugin 'airblade/vim-gitgutter'
+Plug 'tpope/vim-fugitive'
+"Plug 'airblade/vim-gitgutter'
 
 " Abolish (completion, typo fixes, casing)
-"Plugin 'tpope/vim-abolish'
+"Plug 'tpope/vim-abolish'
 
 " Repeat (repeat plugin commands)
-"Plugin 'tpope/vim-repeat'
+"Plug 'tpope/vim-repeat'
 
 " Project support
-Plugin 'vim-scripts/project.tar.gz'
+Plug 'vim-scripts/project.tar.gz'
 
 " Scratch buffer
-Plugin 'vim-scripts/scratch.vim'
-
-" The following are examples of different formats supported.
-" Keep Plugin commands between vundle#begin/end.
-" plugin on GitHub repo
-" plugin from http://vim-scripts.org/vim/scripts.html
-" Plugin 'L9'
-" Git plugin not hosted on GitHub
-" Plugin 'git://git.wincent.com/command-t.git'
-" git repos on your local machine (i.e. when working on your own plugin)
-" Plugin 'file:///home/gmarik/path/to/plugin'
-" The sparkup vim script is in a subdirectory of this repo called vim.
-" Pass the path to set the runtimepath properly.
-" Plugin 'rstacruz/sparkup', {'rtp': 'vim/'}
-" Avoid a name conflict with L9
-" Plugin 'user/L9', {'name': 'newL9'}
+"Plug 'vim-scripts/scratch.vim'
 
 " All of your Plugins must be added before the following line
-call vundle#end()            " required
-filetype plugin indent on    " required
-" To ignore plugin indent changes, instead use:
-"filetype plugin on
-"
-" Brief help
-" :PluginList          - list configured plugins
-" :PluginInstall(!)    - install (update) plugins
-" :PluginSearch(!) foo - search (or refresh cache first) for foo
-" :PluginClean(!)      - confirm (or auto-approve) removal of unused plugins
-"
-" see :h vundle for more details or wiki for FAQ
-" Put your non-Plugin stuff after this line
-"
+call plug#end()
+
+filetype plugin indent on
+
 syntax on
 set ruler
 
@@ -181,11 +147,10 @@ map <F4> :TagbarToggle<CR>
 let g:tagbar_autofocus = 0
 
 map <F3> :NERDTreeToggle<CR>
-map <F2> :TaskList<CR>
 
 " Disable syntastic by default
-let g:syntastic_mode_map = { 'mode': 'passive', 'active_filetypes': [],'passive_filetypes': [] }
-nnoremap <C-w>E :SyntasticCheck<CR> :SyntasticToggleMode<CR>
+" let g:syntastic_mode_map = { 'mode': 'passive', 'active_filetypes': [],'passive_filetypes': [] }
+" nnoremap <C-w>E :SyntasticCheck<CR> :SyntasticToggleMode<CR>
 
 " copy the current text selection to the system clipboard
 if has('gui_running') || has('nvim') && exists('$DISPLAY')
@@ -195,3 +160,4 @@ else
   noremap <silent> <Leader>y y:call system('yank', @0)<Return>
 endif
 
+hi Terminal ctermbg=black ctermfg=white

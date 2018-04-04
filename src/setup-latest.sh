@@ -51,8 +51,8 @@ cat <<'SETUP_SHAR_EOF'> setup.shar
 # To extract the files from this archive, save it to some FILE, remove
 # everything before the '#!/bin/sh' line above, then type 'sh FILE'.
 #
-lock_dir=_sh09704
-# Made on 2018-04-03 20:59 CEST by <frede@darthvader>.
+lock_dir=_sh13860
+# Made on 2018-04-04 21:11 CEST by <frede@darthvader>.
 # Source directory was '/home/frede/Documents/workspace/github/unix-config/src'.
 #
 # Existing files will *not* be overwritten, unless '-c' is specified.
@@ -64,7 +64,7 @@ lock_dir=_sh09704
 #   3087 -rw-r--r-- dot_bashrc
 #   2158 -rw-r--r-- dot_profile
 #   3128 -rw-r--r-- dot_tmux_conf
-#   5575 -rw-r--r-- dot_vimrc
+#   4125 -rw-r--r-- dot_vimrc
 #    814 -rw-r--r-- dot_Xresources
 #   4076 -rw-r--r-- dot_XWinrc
 #   2541 -rwxr-xr-x byzanz-helper
@@ -582,7 +582,6 @@ X
 autocmd FileType *      set formatoptions=tcql nocindent comments&
 autocmd FileType c,cpp  set formatoptions=croql cindent comments=sr:/*,mb:*,ex:*/,://
 set autoindent
-filetype plugin indent on
 X
 " Highlight searched targets
 set hlsearch
@@ -608,112 +607,79 @@ X
 set nocompatible              " be iMproved, required
 filetype off                  " required
 X
-" set the runtime path to include Vundle and initialize
-set rtp+=~/.vim/bundle/Vundle.vim
-call vundle#begin()
-" alternatively, pass a path where Vundle should install plugins
-"call vundle#begin('~/some/path/here')
-X
-" let Vundle manage Vundle, required
-Plugin 'gmarik/Vundle.vim'
-X
+call plug#begin()
 " Code/project navigation
-Plugin 'scrooloose/nerdtree' 	    	" Project and file navigation
-"Plugin 'majutsushi/tagbar'          	" Class/module browser
-"Plugin 'ervandew/supertab'
-"Plugin 'BufOnly.vim'
-"Plugin 'wesQ3/vim-windowswap'
-"Plugin 'SirVer/ultisnips'
-"Plugin 'junegunn/fzf.vim'
-"Plugin 'junegunn/fzf'
-Plugin 'godlygeek/tabular'
-"Plugin 'ctrlpvim/ctrlp.vim'
-"Plugin 'benmills/vimux'
-"Plugin 'jeetsukumaran/vim-buffergator'
-"Plugin 'gilsondev/searchtasks.vim'
-"Plugin 'tpope/vim-dispatch'
+Plug 'scrooloose/nerdtree', { 'on': 'NERDTreeToggle' }
+"Plug 'majutsushi/tagbar'          	" Class/module browser
+"Plug 'ervandew/supertab'
+"Plug 'BufOnly.vim'
+"Plug 'wesQ3/vim-windowswap'
+"Plug 'SirVer/ultisnips'
+"Plug 'junegunn/fzf.vim'
+"Plug 'junegunn/fzf'
+Plug 'godlygeek/tabular'
+"Plug 'ctrlpvim/ctrlp.vim'
+"Plug 'benmills/vimux'
+"Plug 'jeetsukumaran/vim-buffergator'
+"Plug 'gilsondev/searchtasks.vim'
+"Plug 'tpope/vim-dispatch'
 X
 " Programming
-"Plugin 'honza/vim-snippets'
-"Plugin 'Townk/vim-autoclose'
-"Plugin 'vim-syntastic/syntastic'
-"Plugin 'neomake/neomake'
+"Plug 'honza/vim-snippets'
+"Plug 'Townk/vim-autoclose'
+"Plug 'vim-syntastic/syntastic'
+"Plug 'neomake/neomake'
 if has('nvim')
-X  Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
+X  Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugs' }
 else
-X  Plugin 'Shougo/deoplete.nvim'
-X  Plugin 'roxma/nvim-yarp'
-X  Plugin 'roxma/vim-hug-neovim-rpc'
+X  Plug 'Shougo/deoplete.nvim'
+X  Plug 'roxma/nvim-yarp'
+X  Plug 'roxma/vim-hug-neovim-rpc'
 endif
 "let g:deoplete#enable_at_startup = 1
 X
 " Markdown / Writting
-"Plugin 'reedes/vim-pencil'
-Plugin 'vim-pandoc/vim-pandoc'
-"Plugin 'LanguageTool'
+"Plug 'reedes/vim-pencil'
+Plug 'vim-pandoc/vim-pandoc'
+"Plug 'LanguageTool'
 X
 " Theming
-Plugin 'ryanoasis/vim-devicons'
-Plugin 'vim-airline/vim-airline'   	" Lean & mean status/tabline for vim
-Plugin 'vim-airline/vim-airline-themes'
-"Plugin 'fisadev/FixedTaskList.vim'  	" Pending tasks list
-"Plugin 'rosenfeld/conque-term'      	" Consoles as buffers
-Plugin 'tpope/vim-surround'	   	" Parentheses, brackets, quotes, XML tags, and more
-"Plugin 'ctags.vim'
+Plug 'ryanoasis/vim-devicons'
+Plug 'vim-airline/vim-airline'   	" Lean & mean status/tabline for vim
+Plug 'vim-airline/vim-airline-themes'
+"Plug 'fisadev/FixedTaskList.vim'  	" Pending tasks list
+"Plug 'rosenfeld/conque-term'      	" Consoles as buffers
+Plug 'tpope/vim-surround'	   	" Parentheses, brackets, quotes, XML tags, and more
+"Plug 'ctags.vim'
 X
 " language support
-"Plugin 'elixir-lang/vim-elixir'
-"Plugin 'leafgarland/typescript-vim'
+"Plug 'elixir-lang/vim-elixir'
+"Plug 'leafgarland/typescript-vim'
 X
 " solarized color theme
-Plugin 'altercation/vim-colors-solarized'
+Plug 'altercation/vim-colors-solarized'
 X
 " Git support
-Plugin 'tpope/vim-fugitive'
-Plugin 'airblade/vim-gitgutter'
+Plug 'tpope/vim-fugitive'
+"Plug 'airblade/vim-gitgutter'
 X
 " Abolish (completion, typo fixes, casing)
-"Plugin 'tpope/vim-abolish'
+"Plug 'tpope/vim-abolish'
 X
 " Repeat (repeat plugin commands)
-"Plugin 'tpope/vim-repeat'
+"Plug 'tpope/vim-repeat'
 X
 " Project support
-Plugin 'vim-scripts/project.tar.gz'
+Plug 'vim-scripts/project.tar.gz'
 X
 " Scratch buffer
-Plugin 'vim-scripts/scratch.vim'
-X
-" The following are examples of different formats supported.
-" Keep Plugin commands between vundle#begin/end.
-" plugin on GitHub repo
-" plugin from http://vim-scripts.org/vim/scripts.html
-" Plugin 'L9'
-" Git plugin not hosted on GitHub
-" Plugin 'git://git.wincent.com/command-t.git'
-" git repos on your local machine (i.e. when working on your own plugin)
-" Plugin 'file:///home/gmarik/path/to/plugin'
-" The sparkup vim script is in a subdirectory of this repo called vim.
-" Pass the path to set the runtimepath properly.
-" Plugin 'rstacruz/sparkup', {'rtp': 'vim/'}
-" Avoid a name conflict with L9
-" Plugin 'user/L9', {'name': 'newL9'}
+"Plug 'vim-scripts/scratch.vim'
 X
 " All of your Plugins must be added before the following line
-call vundle#end()            " required
-filetype plugin indent on    " required
-" To ignore plugin indent changes, instead use:
-"filetype plugin on
-"
-" Brief help
-" :PluginList          - list configured plugins
-" :PluginInstall(!)    - install (update) plugins
-" :PluginSearch(!) foo - search (or refresh cache first) for foo
-" :PluginClean(!)      - confirm (or auto-approve) removal of unused plugins
-"
-" see :h vundle for more details or wiki for FAQ
-" Put your non-Plugin stuff after this line
-"
+call plug#end()
+X
+filetype plugin indent on
+X
 syntax on
 set ruler
 X
@@ -745,11 +711,10 @@ map <F4> :TagbarToggle<CR>
 let g:tagbar_autofocus = 0
 X
 map <F3> :NERDTreeToggle<CR>
-map <F2> :TaskList<CR>
 X
 " Disable syntastic by default
-let g:syntastic_mode_map = { 'mode': 'passive', 'active_filetypes': [],'passive_filetypes': [] }
-nnoremap <C-w>E :SyntasticCheck<CR> :SyntasticToggleMode<CR>
+" let g:syntastic_mode_map = { 'mode': 'passive', 'active_filetypes': [],'passive_filetypes': [] }
+" nnoremap <C-w>E :SyntasticCheck<CR> :SyntasticToggleMode<CR>
 X
 " copy the current text selection to the system clipboard
 if has('gui_running') || has('nvim') && exists('$DISPLAY')
@@ -759,8 +724,9 @@ X  " copy to attached terminal using the yank(1) script:
 X  noremap <silent> <Leader>y y:call system('yank', @0)<Return>
 endif
 X
+hi Terminal ctermbg=black ctermfg=white
 SHAR_EOF
-  (set 20 18 04 03 20 59 48 'dot_vimrc'
+  (set 20 18 04 04 21 11 18 'dot_vimrc'
    eval "${shar_touch}") && \
   chmod 0644 'dot_vimrc'
 if test $? -ne 0
@@ -770,12 +736,12 @@ fi
   then (
        ${MD5SUM} -c >/dev/null 2>&1 || ${echo} 'dot_vimrc': 'MD5 check failed'
        ) << \SHAR_EOF
-e05aec3ecdffaa1783f55104358c47a0  dot_vimrc
+76aa0dafac70549c3758327970f61403  dot_vimrc
 SHAR_EOF
 
 else
-test `LC_ALL=C wc -c < 'dot_vimrc'` -ne 5575 && \
-  ${echo} "restoration warning:  size of 'dot_vimrc' is not 5575"
+test `LC_ALL=C wc -c < 'dot_vimrc'` -ne 4125 && \
+  ${echo} "restoration warning:  size of 'dot_vimrc' is not 4125"
   fi
 fi
 # ============= dot_Xresources ==============
@@ -2886,7 +2852,9 @@ if has_prog xterm; then
     if has_prog fc-cache; then
         if [ ! -d ~/.local/share/fonts/nerd-fonts ]; then
             install -d ~/.local/share/fonts/nerd-fonts
-            curl -O 'https://raw.githubusercontent.com/ryanoasis/nerd-fonts/blob/master/patched-fonts/DejaVuSansMono/Regular/complete/DejaVu Sans Mono Nerd Font Complete.ttf' > install.log 2>&1
+            curl -O 'https://raw.githubusercontent.com/ryanoasis/nerd-fonts/2.0.0/patched-fonts/DejaVuSansMono/Regular/complete/DejaVu%20Sans%20Mono%20Nerd%20Font%20Complete.ttf' \
+                > install.log 2>&1
+            mv 'DejaVu%20Sans%20Mono%20Nerd%20Font%20Complete.ttf' 'DejaVu Sans Mono Nerd Font Complete.ttf'
             install -m 0644 'DejaVu Sans Mono Nerd Font Complete.ttf' ~/.local/share/fonts/nerd-fonts/
             fc-cache -f ~/.local/share/fonts
         fi
@@ -2898,11 +2866,12 @@ echo "vim ..."
 if [ -e ~/.vimrc ]; then
     cp -f ~/.vimrc "${BACKUPDIR}"
 fi
-if [ ! -e ~/.vim/bundle/Vundle.vim ]; then
-    git clone https://github.com/gmarik/Vundle.vim.git ~/.vim/bundle/Vundle.vim > install.log 2>&1
+if [ ! -e ~/.vim/autoload/plug.vim ]; then
+    curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
+            https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
 fi
 install -m 0644 dot_vimrc ~/.vimrc
-vim +PluginInstall +qall
+vim +PlugInstall +qall
 
 # tmux
 echo "tmux ..."
