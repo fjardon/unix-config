@@ -192,7 +192,9 @@ if has_prog xterm; then
     if has_prog fc-cache; then
         if [ ! -d ~/.local/share/fonts/nerd-fonts ]; then
             install -d ~/.local/share/fonts/nerd-fonts
-            curl -O 'https://raw.githubusercontent.com/ryanoasis/nerd-fonts/blob/master/patched-fonts/DejaVuSansMono/Regular/complete/DejaVu Sans Mono Nerd Font Complete.ttf' > install.log 2>&1
+            curl -O 'https://raw.githubusercontent.com/ryanoasis/nerd-fonts/2.0.0/patched-fonts/DejaVuSansMono/Regular/complete/DejaVu%20Sans%20Mono%20Nerd%20Font%20Complete.ttf' \
+                > install.log 2>&1
+            mv 'DejaVu%20Sans%20Mono%20Nerd%20Font%20Complete.ttf' 'DejaVu Sans Mono Nerd Font Complete.ttf'
             install -m 0644 'DejaVu Sans Mono Nerd Font Complete.ttf' ~/.local/share/fonts/nerd-fonts/
             fc-cache -f ~/.local/share/fonts
         fi
