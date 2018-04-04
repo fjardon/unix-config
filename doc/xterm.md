@@ -2,7 +2,9 @@
 
 Example command line invokation of xterm in 256 colors mode.
 
-    xterm -rv -sb -rightbar -tn xterm-256color
+```
+xterm -rv -sb -rightbar -tn xterm-256color
+```
 
 ## Command Line Options
 
@@ -29,20 +31,22 @@ Lots of things can configured through Xresources:
 - geometry, Specifies the preferred size and position of the VT102 window. There is no default for this resource.
 
 
-     xterm*backarrowKeyIsErase: true
-     xterm*utf8: 2
-     xterm*utf8Fonts: true
-     xterm*utf8Title: true
-     xterm*reverseVideo: true
-     xterm*rightScrollBar: true
-     xterm*termName: xterm-256color
-     xterm*eightBitInput: true
-     xterm*faceName: Liberation
-     xterm*renderFont: true
-     xterm*vt100.initialFont: 3
-     xterm*dynamicColors: true
-     \# xterm*vt100.altSendsEscape: true
-     \# xterm*allowBoldFonts: false
+```
+xterm*backarrowKeyIsErase: true
+xterm*utf8: 2
+xterm*utf8Fonts: true
+xterm*utf8Title: true
+xterm*reverseVideo: true
+xterm*rightScrollBar: true
+xterm*termName: xterm-256color
+xterm*eightBitInput: true
+xterm*faceName: Liberation
+xterm*renderFont: true
+xterm*vt100.initialFont: 3
+xterm*dynamicColors: true
+\# xterm*vt100.altSendsEscape: true
+\# xterm*allowBoldFonts: false
+```
 
 
 ### Setting the terminal name
@@ -65,7 +69,9 @@ produce an exit code != 0.
 
 How to check if terminal has got 256 colors ?
 
-    msgcat --color=test
+```
+msgcat --color=test
+```
 
 
 ### XTerm's specific control sequences
