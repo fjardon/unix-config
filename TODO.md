@@ -2,20 +2,21 @@ TODO
 ====
 
 [ ] Plugins:
-  [ ] Move to vim-plug
+  [x] Move to vim-plug
   [ ] Install it prior to updating the .vimrc
-  [ ] Fix font download url
 
 [ ] Tmux: include https://github.com/erikw/tmux-powerline
   [ ] split the configuration file in pieces
     [ ] One configuration file for theming
     [ ] One configuration file for bindings
+    [ ] One configuration file for user settings
     [ ] Main configuration file not editable by user and putting pieces together
 
 [ ] Fonts:
+  [ ] update Xresources using the fc-list name instead of hard coding
+  [ ] Fix font download url
   [ ] fonts and Xresources installed only if `xterm` is present on host
   [ ] Ask user if he wants to patch his own fonts instead of installing nerd
-  [ ] update Xresources usin the name coming from fc-list instead of hard coding
 
 [ ] Better detection of prerequisites:
   [ ] gcc (for gnu global)
@@ -32,6 +33,10 @@ TODO
   [x] Configure XWinrc only if cygwin is detected
   [.] Add perl script to generate visual-c++ equivalent of vcvarsall.bat
       Beware install path is different depending on 32 or 64 bits
+    [ ] Add support for vs professional
+  [ ] Install a shortcut to launch X-server at startup
+      C:\cygwin64\bin\run.exe --quote /usr/bin/bash.exe -l -c "cd; exec /usr/bin/startxwin"
+      Paths can be found with cygpath -F <folder-id>
 
 [ ] Better install:
   [ ] Before replacing the .bashrc, extract customization (after the marker line
