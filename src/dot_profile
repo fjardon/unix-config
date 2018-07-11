@@ -16,33 +16,33 @@ if [ -f ~/.path_dirs ]; then
         fi
         # Set PATH so it includes user's private bin if it exists
         if [ -d "${xtrad}/bin" ]; then
-            PATH="${xtrad}/bin:${PATH}"
+            PATH="${xtrad}/bin${PATH:+:${PATH}}"
         fi
-        
+
         # Set PATH so it includes user's private lib if it exists
         if [ -d "${xtrad}/lib" ]; then
-            PATH="${xtrad}/lib:${PATH}"
-            LD_LIBRARY_PATH="${xtrad}/lib:${LD_LIBRARY_PATH}"
+            PATH="${xtrad}/lib${PATH:+:${PATH}}"
+            LD_LIBRARY_PATH="${xtrad}/lib${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}}"
         fi
-        
+
         # Set PKG_CONFIG_PATH so it includes user's private if it exists
         if [ -d "${xtrad}/lib/pkgconfig" ]; then
-            PKG_CONFIG_PATH="${xtrad}/lib/pkgconfig:${PKG_CONFIG_PATH}"
+            PKG_CONFIG_PATH="${xtrad}/lib/pkgconfig${PKG_CONFIG_PATH:+:${PKG_CONFIG_PATH}}"
         fi
-        
+
         # Set MANPATH so it includes users' private man if it exists
         if [ -d "${xtrad}/man" ]; then
-            MANPATH="${xtrad}/man:${MANPATH}"
+            MANPATH="${xtrad}/man${MANPATH:+:${MANPATH}}"
         fi
         if [ -d "${xtrad}/share/man" ]; then
-            MANPATH="${xtrad}/share/man:${MANPATH}"
+            MANPATH="${xtrad}/share/man${MANPATH:+:${MANPATH}}"
         fi
-        
+
         # Set INFOPATH so it includes users' private info if it exists
         if [ -d "${xtrad}/info" ]; then
-            INFOPATH="${xtrad}/info:${INFOPATH}"
+            INFOPATH="${xtrad}/info${INFOPATH:+:${INFOPATH}}"
         fi
-        
+
     done < ~/.path_dirs
 fi
 
@@ -58,6 +58,7 @@ fi
 
 export PATH
 export LD_LIBRARY_PATH
+export PKG_CONFIG_PATH
 export MANPATH
 export INFOPATH
 
