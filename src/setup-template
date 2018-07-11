@@ -220,7 +220,7 @@ if [ -e ~/.tmux.conf ]; then
 fi
 install -m 0644 dot_tmux_conf ~/.tmux.conf
 install -m 0755 yank ~/.local/bin
-install -m 0644 yank ~/.local/share/man/man1
+install -m 0644 yank.1 ~/.local/share/man/man1
 
 echo "terminfo ..."
 if has_prog tic; then
