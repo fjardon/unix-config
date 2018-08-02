@@ -51,8 +51,8 @@ cat <<'SETUP_SHAR_EOF'> setup.shar
 # To extract the files from this archive, save it to some FILE, remove
 # everything before the '#!/bin/sh' line above, then type 'sh FILE'.
 #
-lock_dir=_sh13860
-# Made on 2018-04-04 21:11 CEST by <frede@darthvader>.
+lock_dir=_sh13284
+# Made on 2018-08-02 22:36 CEST by <frede@darthvader>.
 # Source directory was '/home/frede/Documents/workspace/github/unix-config/src'.
 #
 # Existing files will *not* be overwritten, unless '-c' is specified.
@@ -62,8 +62,8 @@ lock_dir=_sh13860
 # ------ ---------- ------------------------------------------
 #    456 -rw-r--r-- dot_bash_profile
 #   3087 -rw-r--r-- dot_bashrc
-#   2158 -rw-r--r-- dot_profile
-#   3128 -rw-r--r-- dot_tmux_conf
+#   2236 -rw-r--r-- dot_profile
+#   3140 -rw-r--r-- dot_tmux_conf
 #   4125 -rw-r--r-- dot_vimrc
 #    814 -rw-r--r-- dot_Xresources
 #   4076 -rw-r--r-- dot_XWinrc
@@ -379,33 +379,33 @@ X            continue
 X        fi
 X        # Set PATH so it includes user's private bin if it exists
 X        if [ -d "${xtrad}/bin" ]; then
-X            PATH="${xtrad}/bin:${PATH}"
+X            PATH="${xtrad}/bin${PATH:+:${PATH}}"
 X        fi
-X        
+X
 X        # Set PATH so it includes user's private lib if it exists
 X        if [ -d "${xtrad}/lib" ]; then
-X            PATH="${xtrad}/lib:${PATH}"
-X            LD_LIBRARY_PATH="${xtrad}/lib:${LD_LIBRARY_PATH}"
+X            PATH="${xtrad}/lib${PATH:+:${PATH}}"
+X            LD_LIBRARY_PATH="${xtrad}/lib${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}}"
 X        fi
-X        
+X
 X        # Set PKG_CONFIG_PATH so it includes user's private if it exists
 X        if [ -d "${xtrad}/lib/pkgconfig" ]; then
-X            PKG_CONFIG_PATH="${xtrad}/lib/pkgconfig:${PKG_CONFIG_PATH}"
+X            PKG_CONFIG_PATH="${xtrad}/lib/pkgconfig${PKG_CONFIG_PATH:+:${PKG_CONFIG_PATH}}"
 X        fi
-X        
+X
 X        # Set MANPATH so it includes users' private man if it exists
 X        if [ -d "${xtrad}/man" ]; then
-X            MANPATH="${xtrad}/man:${MANPATH}"
+X            MANPATH="${xtrad}/man${MANPATH:+:${MANPATH}}"
 X        fi
 X        if [ -d "${xtrad}/share/man" ]; then
-X            MANPATH="${xtrad}/share/man:${MANPATH}"
+X            MANPATH="${xtrad}/share/man${MANPATH:+:${MANPATH}}"
 X        fi
-X        
+X
 X        # Set INFOPATH so it includes users' private info if it exists
 X        if [ -d "${xtrad}/info" ]; then
-X            INFOPATH="${xtrad}/info:${INFOPATH}"
+X            INFOPATH="${xtrad}/info${INFOPATH:+:${INFOPATH}}"
 X        fi
-X        
+X
 X    done < ~/.path_dirs
 fi
 X
@@ -421,6 +421,7 @@ fi
 X
 export PATH
 export LD_LIBRARY_PATH
+export PKG_CONFIG_PATH
 export MANPATH
 export INFOPATH
 X
@@ -436,7 +437,7 @@ X    done
 fi
 X
 SHAR_EOF
-  (set 20 18 02 01 18 48 58 'dot_profile'
+  (set 20 18 08 02 22 33 10 'dot_profile'
    eval "${shar_touch}") && \
   chmod 0644 'dot_profile'
 if test $? -ne 0
@@ -446,12 +447,12 @@ fi
   then (
        ${MD5SUM} -c >/dev/null 2>&1 || ${echo} 'dot_profile': 'MD5 check failed'
        ) << \SHAR_EOF
-9178fc533b6b631e75e50716c872727d  dot_profile
+754dbf1429fb49836bc6e3d6745d20ef  dot_profile
 SHAR_EOF
 
 else
-test `LC_ALL=C wc -c < 'dot_profile'` -ne 2158 && \
-  ${echo} "restoration warning:  size of 'dot_profile' is not 2158"
+test `LC_ALL=C wc -c < 'dot_profile'` -ne 2236 && \
+  ${echo} "restoration warning:  size of 'dot_profile' is not 2236"
   fi
 fi
 # ============= dot_tmux_conf ==============
@@ -486,57 +487,57 @@ M;&%Y('1I;64*<V5T("UG('-T871U<RUI;G1E<G9A;"`Q,"`@("`@(R!R969R
 M97-H('-T871U<R!E=F5R>2`Q,"!S96-O;F1S"@HC(&%C=&EV:71Y"G-E="`M
 M9R!M;VYI=&]R+6%C=&EV:71Y(&]N"G-E="`M9R!V:7-U86PM86-T:79I='D@
 M;V9F"@HC("TM+2!S=&%T=7,@=&AE;64@+2TM+2TM+2TM+2TM+2TM+2TM+2TM
-M+2TM+2TM+2TM+2TM+2TM+2TM+2TM+2TM+2TM+2T*<V5T("UG('-T871U<RUB
-M9R`G8V]L;W5R,C,U)PIS970@+6<@;65S<V%G92UC;VUM86YD+69G("=C;VQO
-M=7(R,C(G"G-E="`M9R!S=&%T=7,M:G5S=&EF>2`G8V5N=')E)PIS970@+6<@
-M<W1A='5S+6QE9G0M;&5N9W1H("<Q,#`G"G-E="`M9R!S=&%T=7,@)V]N)PIS
-M970@+6<@<&%N92UA8W1I=F4M8F]R9&5R+69G("=C;VQO=7(Q-30G"G-E="`M
-M9R!M97-S86=E+6)G("=C;VQO=7(R,S@G"G-E="`M9R!S=&%T=7,M<FEG:'0M
-M;&5N9W1H("<Q,#`G"G-E="`M9R!S=&%T=7,M<FEG:'0M871T<B`G;F]N92<*
-M<V5T("UG(&UE<W-A9V4M9F<@)V-O;&]U<C(R,B<*<V5T("UG(&UE<W-A9V4M
-M8V]M;6%N9"UB9R`G8V]L;W5R,C,X)PIS970@+6<@<W1A='5S+6%T='(@)VYO
-M;F4G"G-E="`M9R!P86YE+6)O<F1E<BUF9R`G8V]L;W5R,C,X)PIS970@+6<@
-M<W1A='5S+6QE9G0M871T<B`G;F]N92<*<V5T=R`M9R!W:6YD;W<M<W1A='5S
-M+69G("=C;VQO=7(Q,C$G"G-E='<@+6<@=VEN9&]W+7-T871U<RUA='1R("=N
-M;VYE)PIS971W("UG('=I;F1O=RUS=&%T=7,M86-T:79I='DM8F<@)V-O;&]U
-M<C(S-2<*<V5T=R`M9R!W:6YD;W<M<W1A='5S+6%C=&EV:71Y+6%T='(@)VYO
-M;F4G"G-E='<@+6<@=VEN9&]W+7-T871U<RUA8W1I=FET>2UF9R`G8V]L;W5R
-M,34T)PIS971W("UG('=I;F1O=RUS=&%T=7,M<V5P87)A=&]R("<G"G-E='<@
-M+6<@=VEN9&]W+7-T871U<RUB9R`G8V]L;W5R,C,U)PH*<V5T("UG("!S=&%T
-M=7,M;&5F="`G(UMF9SUC;VQO=7(R,S(L8F<]8V]L;W5R,34T7>^#J"-3)R`C
-M('-E<W-I;VX@;F%M90IS970@+6=A('-T871U<RUL969T("<C6V9G/6-O;&]U
-M<C$U-"QB9SUC;VQO=7(R,S@L;F]B;VQD+&YO=6YD97)S8V]R92QN;VET86QI
-M8W-=[H*X)PIS970@+6=A('-T871U<RUL969T("<C6V9G/6-O;&]R,C(R+&)G
-M/6-O;&]U<C(S.%WOB:PC5R<@(R!W:6YD;W<@;F%M90IS970@+6=A('-T871U
-M<RUL969T("<C6V9G/6-O;&]U<C(S."QB9SUC;VQO=7(R,S4L;F]B;VQD+&YO
-M=6YD97)S8V]R92QN;VET86QI8W-=[H*X)PIS970@+6=A('-T871U<RUL969T
-M("<C6V9G/6-O;&]U<C(R,BQB9SUC;VQO=7(R,S5=[X"'(RAW:&]A;6DI)R`C
-M('=I;F1O=R!N86UE"G-E="`M9V$@<W1A='5S+6QE9G0@)R-;9F<]8V]L;W5R
-M,C,U+&)G/6-O;&]U<C(S-2QN;V)O;&0L;F]U;F1E<G-C;W)E+&YO:71A;&EC
-M<UWN@K@G"@IS970@+6<@('-T871U<RUR:6=H="`G(UMF9SUC;VQO=7(R,S4L
-M8F<]8V]L;W5R,C,U+&YO8F]L9"QN;W5N9&5R<V-O<F4L;F]I=&%L:6-S7>Z"
-MNB<*<V5T("UG82!S=&%T=7,M<FEG:'0@)R-;9F<]8V]L;W5R,3(Q+&)G/6-O
-M;&]U<C(S-5WOF8\@)7(G(",@:&]U<BP@9&%Y+"!Y96%R"G-E="`M9V$@<W1A
-M='5S+7)I9VAT("<C6V9G/6-O;&]U<C(S."QB9SUC;VQO=7(R,S4L;F]B;VQD
-M+&YO=6YD97)S8V]R92QN;VET86QI8W-=[H*Z)PIS970@+6=A('-T871U<RUR
-M:6=H="`G(UMF9SUC;VQO=7(R,C(L8F<]8V]L;W5R,C,X7>^1LR-()R`C(&AO
-M<W1N86UE"@IS971W("UG("!W:6YD;W<M<W1A='5S+69O<FUA="`G(UMF9SUC
-M;VQO=7(R,SA=[H*Z)PIS971W("UG82!W:6YD;W<M<W1A='5S+69O<FUA="`G
-M(UMF9SUC;VQO=7(R,C(L8F<]8V]L;W5R,C,X72-)("-7)PIS971W("UG82!W
-M:6YD;W<M<W1A='5S+69O<FUA="`G(UMF9SUC;VQO=7(R,S@L8F<]8V]L;W5R
-M,C,U7>Z"N"<*<V5T=R`M9V$@=VEN9&]W+7-T871U<RUF;W)M870@)R-;;F]B
-M;VQD+&YO=6YD97)S8V]R92QN;VET86QI8W-=)PH*<V5T=R`M9R`@=VEN9&]W
-M+7-T871U<RUC=7)R96YT+69O<FUA="`G(UMF9SUC;VQO=7(Q-31=[H*Z)PIS
-M971W("UG82!W:6YD;W<M<W1A='5S+6-U<G)E;G0M9F]R;6%T("<C6V9G/6-O
-M;&]U<C(S,BQB9SUC;VQO=7(Q-31=(TD@(U<C1B<*<V5T=R`M9V$@=VEN9&]W
-M+7-T871U<RUC=7)R96YT+69O<FUA="`G(UMF9SUC;VQO=7(Q-30L8F<]8V]L
-M;W5R,C,U7>Z"N"<*<V5T=R`M9V$@=VEN9&]W+7-T871U<RUC=7)R96YT+69O
-M<FUA="`G(UMF9SUC;VQO=7(R,S@L8F<]8V]L;W5R,C,U+&YO8F]L9"QN;W5N
-79&5R<V-O<F4L;F]I=&%L:6-S72<*"@H]
+M+2TM+2TM+2TM+2TM+2TM+2TM+2TM+2TM+2TM+2T*<V5T("UG(&UE<W-A9V4M
+M8V]M;6%N9"UF9R`G8V]L;W5R,C(R)PIS970@+6<@;65S<V%G92UB9R`G8V]L
+M;W5R,C,X)PIS970@+6<@;65S<V%G92UF9R`G8V]L;W5R,C(R)PIS970@+6<@
+M;65S<V%G92UC;VUM86YD+6)G("=C;VQO=7(R,S@G"@IS970@+6<@<&%N92UA
+M8W1I=F4M8F]R9&5R+69G("=C;VQO=7(Q-30G"G-E="`M9R!P86YE+6)O<F1E
+M<BUF9R`G8V]L;W5R,C,X)PH*<V5T("UG('-T871U<RUB9R`G8V]L;W5R,C,U
+M)PIS970@+6<@<W1A='5S+6IU<W1I9GD@)V-E;G1R92<*<V5T("UG('-T871U
+M<RUL969T+6QE;F=T:"`G,3`P)PIS970@+6<@<W1A='5S("=O;B<*<V5T("UG
+M('-T871U<RUR:6=H="UL96YG=&@@)S$P,"<*<V5T("UG('-T871U<RUR:6=H
+M="UA='1R("=N;VYE)PIS970@+6<@<W1A='5S+6%T='(@)VYO;F4G"G-E="`M
+M9R!S=&%T=7,M;&5F="UA='1R("=N;VYE)PH*<V5T=R`M9R!W:6YD;W<M<W1A
+M='5S+69G("=C;VQO=7(Q,C$G"G-E='<@+6<@=VEN9&]W+7-T871U<RUA='1R
+M("=N;VYE)PIS971W("UG('=I;F1O=RUS=&%T=7,M86-T:79I='DM8F<@)V-O
+M;&]U<C(S-2<*<V5T=R`M9R!W:6YD;W<M<W1A='5S+6%C=&EV:71Y+6%T='(@
+M)VYO;F4G"G-E='<@+6<@=VEN9&]W+7-T871U<RUA8W1I=FET>2UF9R`G8V]L
+M;W5R,34T)PIS971W("UG('=I;F1O=RUS=&%T=7,M<V5P87)A=&]R("<G"G-E
+M='<@+6<@=VEN9&]W+7-T871U<RUB9R`G8V]L;W5R,C,U)PH*<V5T("UG("!S
+M=&%T=7,M;&5F="`G(UMF9SUC;VQO=7(R,S(L8F<]8V]L;W5R,34T7>^#J"`C
+M4R<@(R!S97-S:6]N(&YA;64*<V5T("UG82!S=&%T=7,M;&5F="`G(UMF9SUC
+M;VQO=7(Q-30L8F<]8V]L;W5R,C,X+&YO8F]L9"QN;W5N9&5R<V-O<F4L;F]I
+M=&%L:6-S7>Z"N"`G"G-E="`M9V$@<W1A='5S+6QE9G0@)R-;9F<]8V]L;W(R
+M,C(L8F<]8V]L;W5R,C,X7>^)K"`C5R<@(R!W:6YD;W<@;F%M90IS970@+6=A
+M('-T871U<RUL969T("<C6V9G/6-O;&]U<C(S."QB9SUC;VQO=7(R,S4L;F]B
+M;VQD+&YO=6YD97)S8V]R92QN;VET86QI8W-=[H*X("<*<V5T("UG82!S=&%T
+M=7,M;&5F="`G(UMF9SUC;VQO=7(R,C(L8F<]8V]L;W5R,C,U7>^`AR`C*'=H
+M;V%M:2DG(",@=VEN9&]W(&YA;64*<V5T("UG82!S=&%T=7,M;&5F="`G(UMF
+M9SUC;VQO=7(R,S4L8F<]8V]L;W5R,C,U+&YO8F]L9"QN;W5N9&5R<V-O<F4L
+M;F]I=&%L:6-S7>Z"N"`G"@IS970@+6<@('-T871U<RUR:6=H="`G(UMF9SUC
+M;VQO=7(R,S4L8F<]8V]L;W5R,C,U+&YO8F]L9"QN;W5N9&5R<V-O<F4L;F]I
+M=&%L:6-S7>Z"NB`G"G-E="`M9V$@<W1A='5S+7)I9VAT("<C6V9G/6-O;&]U
+M<C$R,2QB9SUC;VQO=7(R,S5=[YF/("5R)R`C(&AO=7(L(&1A>2P@>65A<@IS
+M970@+6=A('-T871U<RUR:6=H="`G(UMF9SUC;VQO=7(R,S@L8F<]8V]L;W5R
+M,C,U+&YO8F]L9"QN;W5N9&5R<V-O<F4L;F]I=&%L:6-S7>Z"NB`G"G-E="`M
+M9V$@<W1A='5S+7)I9VAT("<C6V9G/6-O;&]U<C(R,BQB9SUC;VQO=7(R,SA=
+M[Y&S("-()R`C(&AO<W1N86UE"@IS971W("UG("!W:6YD;W<M<W1A='5S+69O
+M<FUA="`G(UMF9SUC;VQO=7(R,SA=[H*Z)PIS971W("UG82!W:6YD;W<M<W1A
+M='5S+69O<FUA="`G(UMF9SUC;VQO=7(R,C(L8F<]8V]L;W5R,C,X72-)("-7
+M)PIS971W("UG82!W:6YD;W<M<W1A='5S+69O<FUA="`G(UMF9SUC;VQO=7(R
+M,S@L8F<]8V]L;W5R,C,U7>Z"N"<*<V5T=R`M9V$@=VEN9&]W+7-T871U<RUF
+M;W)M870@)R-;;F]B;VQD+&YO=6YD97)S8V]R92QN;VET86QI8W-=)PH*<V5T
+M=R`M9R`@=VEN9&]W+7-T871U<RUC=7)R96YT+69O<FUA="`G(UMF9SUC;VQO
+M=7(Q-31=[H*Z)PIS971W("UG82!W:6YD;W<M<W1A='5S+6-U<G)E;G0M9F]R
+M;6%T("<C6V9G/6-O;&]U<C(S,BQB9SUC;VQO=7(Q-31=(TD@(U<C1B<*<V5T
+M=R`M9V$@=VEN9&]W+7-T871U<RUC=7)R96YT+69O<FUA="`G(UMF9SUC;VQO
+M=7(Q-30L8F<]8V]L;W5R,C,U7>Z"N"<*<V5T=R`M9V$@=VEN9&]W+7-T871U
+M<RUC=7)R96YT+69O<FUA="`G(UMF9SUC;VQO=7(R,S@L8F<]8V]L;W5R,C,U
+C+&YO8F]L9"QN;W5N9&5R<V-O<F4L;F]I=&%L:6-S72<*"@H]
 `
 end
 SHAR_EOF
-  (set 20 18 04 01 10 26 32 'dot_tmux_conf'
+  (set 20 18 08 02 22 33 10 'dot_tmux_conf'
    eval "${shar_touch}") && \
   chmod 0644 'dot_tmux_conf'
 if test $? -ne 0
@@ -546,12 +547,12 @@ fi
   then (
        ${MD5SUM} -c >/dev/null 2>&1 || ${echo} 'dot_tmux_conf': 'MD5 check failed'
        ) << \SHAR_EOF
-31298247dc553c4acc1362e9769d7d14  dot_tmux_conf
+684f6c62e10035c5bbc86d06d30df210  dot_tmux_conf
 SHAR_EOF
 
 else
-test `LC_ALL=C wc -c < 'dot_tmux_conf'` -ne 3128 && \
-  ${echo} "restoration warning:  size of 'dot_tmux_conf' is not 3128"
+test `LC_ALL=C wc -c < 'dot_tmux_conf'` -ne 3140 && \
+  ${echo} "restoration warning:  size of 'dot_tmux_conf' is not 3140"
   fi
 fi
 # ============= dot_vimrc ==============
@@ -2880,7 +2881,7 @@ if [ -e ~/.tmux.conf ]; then
 fi
 install -m 0644 dot_tmux_conf ~/.tmux.conf
 install -m 0755 yank ~/.local/bin
-install -m 0644 yank ~/.local/share/man/man1
+install -m 0644 yank.1 ~/.local/share/man/man1
 
 echo "terminfo ..."
 if has_prog tic; then
