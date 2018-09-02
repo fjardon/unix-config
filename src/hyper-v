@@ -1,0 +1,91 @@
+#!/usr/bin/env perl
+
+use 5.008000;
+use strict;
+use warnings 'all';
+
+use Carp;
+use Cwd;
+use File::Basename;
+use File::Temp;
+use Getopt::Long qw(GetOptionsFromArray :config no_ignore_case);
+use Pod::Usage;
+
+# Parse options
+my ($opt_help, $opt_start, $opt_stop);
+my $ret = GetOptionsFromArray(
+    \@ARGV,
+    'help|h' => \$opt_help,
+    'start'  => \$opt_start,
+    'stop'   => \$opt_stop,
+);
+pod2usage(-exitval => 1, -message => 'Unknown options: '.join(', ', @ARGV)) if(@ARGV);
+pod2usage(-exitval => 1) if(!$ret);
+
+# Handle help option
+pod2usage(-exitval => 0) if $opt_help;
+
+# Handle bad arguments
+pod2usage(-exitval => 1)
+    if(!$opt_start && !$opt_stop);
+pod2usage(-exitval => 1, -message => '--start and --stop are exclusive')
+    if($opt_start && $opt_stop);
+
+my @command = ('bcdedit', '/set', 'hypervisorlaunchtype');
+push(@command, 'auto') if ($opt_start);
+push(@command, 'off')  if ($opt_stop);
+
+system (@command);
+
+__END__
+=head1 NAME
+
+hyper-v - Starts and stop the hyper-v windows hypervisor
+
+=head1 SYNOPSIS
+
+B<hyper-v> B<-h>|B<--help>
+
+B<hyper-v> --start
+
+B<hyper-v> --stop
+
+=head1 DESCRIPTION
+
+This tools enables or disables the hyper-v service on Windows 10. Note that for
+the change to take effect one has to reboot the computer.
+
+=head1 OPTIONS
+
+=over
+
+=item B<-h>|B<--help>
+
+Print the usage, help and version information for this program and exit.
+
+=item B<start>
+
+Mark the hyper-v service as running the next time windows starts.
+
+=item B<stop>
+
+Mark the hyper-v service as not running the next time windows starts.
+
+=back
+
+=head1 SEE ALSO
+
+
+=head1 AUTHOR
+
+Frederic JARDON <frederic.jardon@gmail.com>
+
+=head1 COPYRIGHT AND LICENSE
+
+Copyright (C) 2018 by Frederic JARDON <frederic.jardon@gmail.com>
+
+This program is free software; you can redistribute it and/or modify
+it under the MIT license.
+
+=cut
+

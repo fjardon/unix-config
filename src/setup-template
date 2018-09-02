@@ -143,6 +143,8 @@ if [[ "${os_name}" == CYGWIN* ]]; then
         cp -f ~/.XWinrc "${BACKUPDIR}"
     fi
     install -m 0644 dot_XWinrc ~/.XWinrc
+    install -m 0755 hyper-v ~/.local/bin
+    install -m 0644 hyper-v.1 ~/.local/share/man/man1
     install -m 0755 msvc-shell ~/.local/bin
     install -m 0644 msvc-shell.1 ~/.local/share/man/man1
 

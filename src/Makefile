@@ -17,6 +17,8 @@ SHAR_FILES = dot_bash_profile \
 						 byzanz-helper.1 \
 						 ffmpeg-helper \
 						 ffmpeg-helper.1 \
+						 hyper-v \
+						 hyper-v.1 \
 						 msvc-shell \
 						 msvc-shell.1 \
 						 yank \
@@ -24,16 +26,19 @@ SHAR_FILES = dot_bash_profile \
 						 tmux-256color.tinfo \
 						 runcron
 
-msvc-shell.1 : msvc-shell
-	pod2man $< > $@
-
-yank.1 : yank
+byzanz-helper.1 : byzanz-helper
 	pod2man $< > $@
 
 ffmpeg-helper.1 : ffmpeg-helper
 	pod2man $< > $@
 
-byzanz-helper.1 : byzanz-helper
+hyper-v.1 : hyper-v
+	pod2man $< > $@
+
+msvc-shell.1 : msvc-shell
+	pod2man $< > $@
+
+yank.1 : yank
 	pod2man $< > $@
 
 setup-files.shar: $(SHAR_FILES)
