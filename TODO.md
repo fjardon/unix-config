@@ -1,6 +1,10 @@
 TODO
 ====
 
+
+[ ] apt-cyg should be embedded in installer
+  [ ] checkout the file at make time and embedd in the shar
+
 [x] Vim Plugins:
   [x] Move to vim-plug
   [x] Install it prior to updating the .vimrc

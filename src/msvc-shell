@@ -116,7 +116,7 @@ push(@default_vs_paths, $ENV{'ProgramFiles(x86)'})
     if(exists($ENV{'ProgramFiles(x86)'}));
 @default_vs_paths = map { Cygwin::win_to_posix_path($_) } @default_vs_paths;
 @default_vs_paths = map { $_.'/Microsoft Visual Studio/2017' } @default_vs_paths;
-@default_vs_paths = map { $_.'/Community', $_.'/Enterprise' } @default_vs_paths;
+@default_vs_paths = map { $_.'/Community', $_.'/Professional', $_.'/Enterprise' } @default_vs_paths;
 @default_vs_paths = map { $_.'/VC/Auxiliary/Build/vcvarsall.bat' } @default_vs_paths;
 if(! defined($opt_p)) {
     my @found_vcvars = grep { -f $_ } @default_vs_paths;
@@ -148,7 +148,7 @@ msvc-shell - MS-VC++ build environment shell spawner
 
 B<msvc-shell> B<-h>|B<--help>
 
-B<msvc-shell> [B<OPTIONS>] [B<VC_OPTIONS>]
+B<msvc-shell> [B<OPTIONS>] B<VC_OPTIONS>
 
 =head1 DESCRIPTION
 

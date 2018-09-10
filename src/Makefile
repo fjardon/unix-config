@@ -1,4 +1,4 @@
-
+POD2MAN = pod2man -r "github.com/fjardon/unix-config" -c "FJ Unix Config Commands"
 
 all : setup-latest.sh
 
@@ -27,19 +27,19 @@ SHAR_FILES = dot_bash_profile \
 						 runcron
 
 byzanz-helper.1 : byzanz-helper
-	pod2man $< > $@
+	$(POD2MAN) $< $@
 
 ffmpeg-helper.1 : ffmpeg-helper
-	pod2man $< > $@
+	$(POD2MAN) $< $@
 
 hyper-v.1 : hyper-v
-	pod2man $< > $@
+	$(POD2MAN) $< $@
 
 msvc-shell.1 : msvc-shell
-	pod2man $< > $@
+	$(POD2MAN) $< $@
 
 yank.1 : yank
-	pod2man $< > $@
+	$(POD2MAN) $< $@
 
 setup-files.shar: $(SHAR_FILES)
 	shar $^ > $@
