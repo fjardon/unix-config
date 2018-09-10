@@ -1,10 +1,6 @@
 TODO
 ====
 
-
-[ ] apt-cyg should be embedded in installer
-  [ ] checkout the file at make time and embedd in the shar
-
 [x] Vim Plugins:
   [x] Move to vim-plug
   [x] Install it prior to updating the .vimrc
@@ -61,7 +57,7 @@ TODO
   [x] Configure XWinrc only if cygwin is detected
   [.] Add perl script to generate visual-c++ equivalent of vcvarsall.bat
       Beware install path is different depending on 32 or 64 bits
-    [ ] Add support for vs professional
+    [x] Add support for vs professional
   [ ] Install a shortcut to launch X-server at startup
       C:\cygwin64\bin\run.exe --quote /usr/bin/bash.exe -l -c "cd; exec /usr/bin/startxwin"
       Paths can be found with cygpath -F <folder-id>
@@ -89,3 +85,6 @@ DONE
 ====
 
 [x] Add ssh-agent stuff...
+[x] apt-cyg should be embedded in installer
+  [x] checkout the file at make time and embedd in the shar
+

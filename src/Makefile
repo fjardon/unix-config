@@ -6,6 +6,12 @@ setup-latest.sh: setup-template setup-files.shar
 	sed -e '/[@]SHAR_ARCHIVE[@]/ r setup-files.shar' setup-template > $@
 	chmod 0755 $@
 
+GIT_FILES  = apt-cyg
+MAN1_FILES = byzanz-helper.1 \
+						 ffmpeg-helper.1 \
+						 hyper-v.1 \
+						 msvc-shell.1 \
+						 yank.1
 SHAR_FILES = dot_bash_profile \
 						 dot_bashrc \
 						 dot_profile \
@@ -14,17 +20,18 @@ SHAR_FILES = dot_bash_profile \
 						 dot_Xresources \
 						 dot_XWinrc \
 						 byzanz-helper \
-						 byzanz-helper.1 \
 						 ffmpeg-helper \
-						 ffmpeg-helper.1 \
 						 hyper-v \
-						 hyper-v.1 \
 						 msvc-shell \
-						 msvc-shell.1 \
 						 yank \
-						 yank.1 \
 						 tmux-256color.tinfo \
-						 runcron
+						 runcron \
+						 $(GIT_FILES) \
+						 $(MAN1_FILES)
+
+apt-cyg:
+	curl -O 'https://raw.githubusercontent.com/fjardon/apt-cyg/master/apt-cyg'
+	chmod a+x apt-cyg
 
 byzanz-helper.1 : byzanz-helper
 	$(POD2MAN) $< $@
@@ -47,3 +54,7 @@ setup-files.shar: $(SHAR_FILES)
 clean:
 		$(RM) setup-latest.sh
 		$(RM) setup-files.shar
+		$(RM) $(MAN1_FILES)
+		$(RM) $(GIT_FILES)
+
+

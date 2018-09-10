@@ -147,9 +147,7 @@ if [[ "${os_name}" == CYGWIN* ]]; then
     install -m 0644 hyper-v.1 ~/.local/share/man/man1
     install -m 0755 msvc-shell ~/.local/bin
     install -m 0644 msvc-shell.1 ~/.local/share/man/man1
-
-    git clone https://github.com/transcode-open/apt-cyg.git apt-cyg > install.log 2>&1
-    install -m 0755 apt-cyg/apt-cyg ~/.local/bin
+    install -m 0755 apt-cyg ~/.local/bin
 fi
 
 # Python
