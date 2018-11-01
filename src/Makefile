@@ -8,26 +8,27 @@ setup-latest.sh: setup-template setup-files.shar
 
 GIT_FILES  = apt-cyg
 MAN1_FILES = byzanz-helper.1 \
-						 ffmpeg-helper.1 \
-						 hyper-v.1 \
-						 msvc-shell.1 \
-						 yank.1
-SHAR_FILES = dot_bash_profile \
-						 dot_bashrc \
-						 dot_profile \
-						 dot_tmux_conf \
-						 dot_vimrc \
-						 dot_Xresources \
-						 dot_XWinrc \
-						 byzanz-helper \
-						 ffmpeg-helper \
-						 hyper-v \
-						 msvc-shell \
-						 yank \
-						 tmux-256color.tinfo \
-						 runcron \
-						 $(GIT_FILES) \
-						 $(MAN1_FILES)
+             ffmpeg-helper.1 \
+             hyper-v.1 \
+             msvc-shell.1 \
+             yank.1
+SHAR_FILES = config.site \
+             dot_bash_profile \
+             dot_bashrc \
+             dot_profile \
+             dot_tmux_conf \
+             dot_vimrc \
+             dot_Xresources \
+             dot_XWinrc \
+             byzanz-helper \
+             ffmpeg-helper \
+             hyper-v \
+             msvc-shell \
+             yank \
+             tmux-256color.tinfo \
+             runcron \
+             $(GIT_FILES) \
+             $(MAN1_FILES)
 
 apt-cyg:
 	curl -O 'https://raw.githubusercontent.com/fjardon/apt-cyg/master/apt-cyg'
@@ -52,9 +53,9 @@ setup-files.shar: $(SHAR_FILES)
 	shar $^ > $@
 
 clean:
-		$(RM) setup-latest.sh
-		$(RM) setup-files.shar
-		$(RM) $(MAN1_FILES)
-		$(RM) $(GIT_FILES)
+	$(RM) setup-latest.sh
+	$(RM) setup-files.shar
+	$(RM) $(MAN1_FILES)
+	$(RM) $(GIT_FILES)
 
 

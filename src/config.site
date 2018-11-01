@@ -1,0 +1,16 @@
+# ${HOME}/.local/etc/config.site for configure
+#
+# Change some defaults.
+test "$prefix" = NONE && prefix="${HOME}/.local"
+
+# Give Autoconf 2.x generated configure scripts a shared default
+# cache file for feature test results, architecture-specific.
+if test "$cache_file" = /dev/null; then
+  # A cache file is only valid for one C compiler.
+  if test -z "${CC}"; then
+    CC=gcc
+  fi
+  
+  cache_file="${prefix}/var/${CC}-config.cache"
+fi
+

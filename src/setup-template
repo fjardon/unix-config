@@ -93,6 +93,7 @@ install -m 0755 -d ~/.local/bin
 install -m 0755 -d ~/.local/lib
 install -m 0755 -d ~/.local/share
 install -m 0755 -d ~/.local/share/man/man1
+install -m 0755 -d ~/.local/var
 install -m 0755 -d ~/.local/var/lock
 install -m 0755 -d ~/.local/var/log
 install -m 0755 -d ~/.local/var/run
@@ -260,6 +261,12 @@ install -m 0755 byzanz-helper ~/.local/bin
 install -m 0644 byzanz-helper.1 ~/.local/share/man/man1
 install -m 0755 ffmpeg-helper ~/.local/bin
 install -m 0644 ffmpeg-helper.1 ~/.local/share/man/man1
+
+# Autoconf cache
+echo "Autoconf cache ..."
+if [ ! -e ~/.local/etc/config.site ]; then
+    cp config.site ~/.local/etc/config.site
+fi
 
 # Gnulib
 echo "Gnulib ..."
