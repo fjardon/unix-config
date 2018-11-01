@@ -1,0 +1,157 @@
+#!/usr/bin/env perl
+
+use strict;
+use warnings 'all';
+
+use Carp;
+use Getopt::Long qw(GetOptionsFromArray :config no_ignore_case);
+use Pod::Usage;
+
+sub tmux_dcs_escape {
+    my ($inception_level, $msg) = @_;
+
+    for(my $l=0; $l<$inception_level; ++$l) {
+        my $dcs_payload = $msg;
+        $dcs_payload =~ s/\033/\033\033/g;
+        $msg = "\033Ptmux;$dcs_payload\033\\";
+    }
+    return $msg;
+}
+
+# Parse options
+my ($opt_help, $opt_t, $opt_tmux_tty, $opt_l);
+GetOptionsFromArray(
+    \@ARGV,
+    'help|h'              => \$opt_help,
+    'l|inception-level=s' => \$opt_l,
+    't|terminal=s'        => \$opt_t,
+) or croak('Error parsing command line arguments');
+
+# Handle help option
+pod2usage(-exitval => 0) if $opt_help;
+
+# get terminal
+my ($terminal);
+$terminal //= $opt_t if(defined($opt_t));
+$terminal //= '/dev/tty';
+
+# inception level
+$opt_l //= 1 if(exists($ENV{'TMUX'}));
+$opt_l //= 0;
+
+# output to tty
+my $tty;
+$tty = \*STDOUT;
+open($tty, '>', $terminal) or croak("Unable to open tty: $terminal\n") if('-' ne $terminal);
+
+# loop reading sixel chunks, escape them using tmux DCS and loop again
+my ($msg, $payload, $chunk) = ('', '', '');
+my $max_byte_size = 74994;
+binmode STDIN;
+binmode $tty;
+while(sysread STDIN, $msg, 256) {
+    $payload .= $msg;
+    while($payload =~ s/^((.*)?\e\\)//g) {
+        $chunk = $1;
+        $chunk = tmux_dcs_escape($opt_l, $chunk);
+        if(length($chunk) > $max_byte_size) {
+            print STDERR "An escape sequence is too large to pass-through: ".length($chunk)." > $max_byte_size. Aborting!\n";
+            exit 1;
+        }
+        syswrite $tty, $chunk;
+    }
+}
+$chunk = tmux_dcs_escape($opt_l, $payload);
+syswrite $tty, $chunk;
+close($tty) if('-' ne $terminal);
+
+__END__
+=head1 NAME
+
+tmux-passthrough - Script converting input into tmux's DCS escape sequence
+
+=head1 SYNOPSIS
+
+B<tmux-passthrough> B<-h>|B<--help>
+
+B<tmux-passthrough> [B<OPTIONS>]
+
+GNUTERM=sixelgd gnuplot -e 'plot sin(x)' | B<tmux-passthrough>
+
+=head1 DESCRIPTION
+
+This tool converts standard input into a I<tmux> specific B<DCS> escape sequence
+and outputs it to a terminal.
+
+The output of the program should be directed to a terminal. In case no terminal
+is specified, the script will use F</dev/tty>.
+
+=head1 OPTIONS
+
+=over
+
+=item B<-h>|B<--help>
+
+Print the usage, help and version information for this program and exit.
+
+=item B<-t> I<TERMINAL>|B<--terminal>=I<TERMINAL>
+
+Sets the terminal used to output the tmux DCS escape sequence. In case the
+terminal is not specified, the default value is: F</dev/tty>.
+
+The special name: '-' means I<stdout>
+
+=item B<-l>=I<INCEPTION>|B<--inception-level>=I<INCEPTION>
+
+Sets the B<tmux> inception level. This is needed in case you connect to another
+B<tmux> session from within a B<tmux> session. Default value is 0 unless the
+B<TMUX> environment variable is set, in which case the default value is 1.
+
+=back
+
+
+=head1 ENVIRONMENT VARIABLES
+
+=over
+
+=item TMUX
+
+The B<TMUX> environment variable is used to find out if we are running inside
+a B<tmux> pane.
+
+=back
+
+
+=head1 SEE ALSO
+
+xterm(1), tmux(1)
+
+=over
+
+=item I<XTerm Control Sequences>
+
+    https://invisible-island.net/xterm/ctlseqs/ctlseqs.html#h2-Operating-System-Commands
+
+=item I<Device Control String Sequences>
+
+    https://vt100.net/docs/vt510-rm/chapter4.html
+
+=item I<TMux DCS Sequences>
+
+    see tmux changelog
+
+=back
+
+=head1 AUTHOR
+
+Frederic JARDON <frederic.jardon@gmail.com>
+
+=head1 COPYRIGHT AND LICENSE
+
+Copyright (C) 2017 by Frederic JARDON <frederic.jardon@gmail.com>
+
+This program is free software; you can redistribute it and/or modify
+it under the MIT license.
+
+=cut
+

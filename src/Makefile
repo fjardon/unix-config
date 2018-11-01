@@ -11,6 +11,7 @@ MAN1_FILES = byzanz-helper.1 \
              ffmpeg-helper.1 \
              hyper-v.1 \
              msvc-shell.1 \
+			 sixel2tmux.1 \
              yank.1
 SHAR_FILES = config.site \
              dot_bash_profile \
@@ -24,6 +25,7 @@ SHAR_FILES = config.site \
              ffmpeg-helper \
              hyper-v \
              msvc-shell \
+			 sixel2tmux \
              yank \
              tmux-256color.tinfo \
              runcron \
@@ -44,6 +46,9 @@ hyper-v.1 : hyper-v
 	$(POD2MAN) $< $@
 
 msvc-shell.1 : msvc-shell
+	$(POD2MAN) $< $@
+
+sixel2tmux.1 : sixel2tmux
 	$(POD2MAN) $< $@
 
 yank.1 : yank
