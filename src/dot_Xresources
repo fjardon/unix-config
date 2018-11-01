@@ -23,3 +23,9 @@ XTerm*VT100.Translations: \
 !XTerm*dynamicColors: true
 !XTerm*backarrowKey: false
 !XTerm*backarrowKeyIsErase: true
+
+! Sixel enabling
+XTerm*decTerminalID: vt340
+! Sixel with more than 16 colors
+XTerm*numColorRegisters: 256
+
