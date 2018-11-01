@@ -51,8 +51,8 @@ cat <<'SETUP_SHAR_EOF'> setup.shar
 # To extract the files from this archive, save it to some FILE, remove
 # everything before the '#!/bin/sh' line above, then type 'sh FILE'.
 #
-lock_dir=_sh23997
-# Made on 2018-09-10 09:20 CEST by <fjardon@DiskStation>.
+lock_dir=_sh12977
+# Made on 2018-11-01 14:35 CET by <fjardon@DiskStation>.
 # Source directory was '/home/fjardon/workspace/github/unix-config/src'.
 #
 # Existing files will *not* be overwritten, unless '-c' is specified.
@@ -60,12 +60,13 @@ lock_dir=_sh23997
 # This shar contains:
 # length mode       name
 # ------ ---------- ------------------------------------------
+#    439 -rw-r--r-- config.site
 #    456 -rw-r--r-- dot_bash_profile
 #   3087 -rw-r--r-- dot_bashrc
 #   2236 -rw-r--r-- dot_profile
 #   3140 -rw-r--r-- dot_tmux_conf
 #   4125 -rw-r--r-- dot_vimrc
-#    814 -rw-r--r-- dot_Xresources
+#    922 -rw-r--r-- dot_Xresources
 #   4076 -rw-r--r-- dot_XWinrc
 #   2541 -rwxr-xr-x byzanz-helper
 #   3766 -rwxr-xr-x ffmpeg-helper
@@ -175,6 +176,49 @@ if mkdir ${lock_dir}
 then ${echo} "x - created lock directory ${lock_dir}."
 else ${echo} "x - failed to create lock directory ${lock_dir}."
      exit 1
+fi
+# ============= config.site ==============
+if test -n "${keep_file}" && test -f 'config.site'
+then
+${echo} "x - SKIPPING config.site (file already exists)"
+
+else
+${echo} "x - extracting config.site (text)"
+  sed 's/^X//' << 'SHAR_EOF' > 'config.site' &&
+# ${HOME}/.local/etc/config.site for configure
+#
+# Change some defaults.
+test "$prefix" = NONE && prefix="${HOME}/.local"
+X
+# Give Autoconf 2.x generated configure scripts a shared default
+# cache file for feature test results, architecture-specific.
+if test "$cache_file" = /dev/null; then
+X  # A cache file is only valid for one C compiler.
+X  if test -z "${CC}"; then
+X    CC=gcc
+X  fi
+X  
+X  cache_file="${prefix}/var/${CC}-config.cache"
+fi
+X
+SHAR_EOF
+  (set 20 18 11 01 14 34 59 'config.site'
+   eval "${shar_touch}") && \
+  chmod 0644 'config.site'
+if test $? -ne 0
+then ${echo} "restore of config.site failed"
+fi
+  if ${md5check}
+  then (
+       ${MD5SUM} -c >/dev/null 2>&1 || ${echo} 'config.site': 'MD5 check failed'
+       ) << \SHAR_EOF
+9a31f4ee2391cf018c040cffeb71bc3a  config.site
+SHAR_EOF
+
+else
+test `LC_ALL=C wc -c < 'config.site'` -ne 439 && \
+  ${echo} "restoration warning:  size of 'config.site' is not 439"
+  fi
 fi
 # ============= dot_bash_profile ==============
 if test -n "${keep_file}" && test -f 'dot_bash_profile'
@@ -781,8 +825,14 @@ X
 !XTerm*dynamicColors: true
 !XTerm*backarrowKey: false
 !XTerm*backarrowKeyIsErase: true
+X
+! Sixel enabling
+XXTerm*decTerminalID: vt340
+! Sixel with more than 16 colors
+XXTerm*numColorRegisters: 256
+X
 SHAR_EOF
-  (set 20 18 09 06 10 08 24 'dot_Xresources'
+  (set 20 18 11 01 14 34 59 'dot_Xresources'
    eval "${shar_touch}") && \
   chmod 0644 'dot_Xresources'
 if test $? -ne 0
@@ -792,12 +842,12 @@ fi
   then (
        ${MD5SUM} -c >/dev/null 2>&1 || ${echo} 'dot_Xresources': 'MD5 check failed'
        ) << \SHAR_EOF
-3e2be155ba6b755586b06637c91efd63  dot_Xresources
+ad95919ba13b8c78d737f8dbc472bdd5  dot_Xresources
 SHAR_EOF
 
 else
-test `LC_ALL=C wc -c < 'dot_Xresources'` -ne 814 && \
-  ${echo} "restoration warning:  size of 'dot_Xresources' is not 814"
+test `LC_ALL=C wc -c < 'dot_Xresources'` -ne 922 && \
+  ${echo} "restoration warning:  size of 'dot_Xresources' is not 922"
   fi
 fi
 # ============= dot_XWinrc ==============
@@ -2651,7 +2701,7 @@ else
 X  printf "$usage"
 fi
 SHAR_EOF
-  (set 20 18 09 10 09 20 26 'apt-cyg'
+  (set 20 18 11 01 14 35 16 'apt-cyg'
    eval "${shar_touch}") && \
   chmod 0755 'apt-cyg'
 if test $? -ne 0
@@ -2858,7 +2908,7 @@ X.PP
 This program is free software; you can redistribute it and/or modify
 it under the \s-1MIT\s0 license.
 SHAR_EOF
-  (set 20 18 09 10 09 20 27 'byzanz-helper.1'
+  (set 20 18 11 01 14 35 18 'byzanz-helper.1'
    eval "${shar_touch}") && \
   chmod 0644 'byzanz-helper.1'
 if test $? -ne 0
@@ -3065,7 +3115,7 @@ X.PP
 This program is free software; you can redistribute it and/or modify
 it under the \s-1MIT\s0 license.
 SHAR_EOF
-  (set 20 18 09 10 09 20 28 'ffmpeg-helper.1'
+  (set 20 18 11 01 14 35 19 'ffmpeg-helper.1'
    eval "${shar_touch}") && \
   chmod 0644 'ffmpeg-helper.1'
 if test $? -ne 0
@@ -3267,7 +3317,7 @@ X.PP
 This program is free software; you can redistribute it and/or modify
 it under the \s-1MIT\s0 license.
 SHAR_EOF
-  (set 20 18 09 10 09 20 29 'hyper-v.1'
+  (set 20 18 11 01 14 35 20 'hyper-v.1'
    eval "${shar_touch}") && \
   chmod 0644 'hyper-v.1'
 if test $? -ne 0
@@ -3478,7 +3528,7 @@ X.PP
 This program is free software; you can redistribute it and/or modify
 it under the \s-1MIT\s0 license.
 SHAR_EOF
-  (set 20 18 09 10 09 20 30 'msvc-shell.1'
+  (set 20 18 11 01 14 35 21 'msvc-shell.1'
    eval "${shar_touch}") && \
   chmod 0644 'msvc-shell.1'
 if test $? -ne 0
@@ -3722,7 +3772,7 @@ X.PP
 This program is free software; you can redistribute it and/or modify
 it under the \s-1MIT\s0 license.
 SHAR_EOF
-  (set 20 18 09 10 09 20 30 'yank.1'
+  (set 20 18 11 01 14 35 22 'yank.1'
    eval "${shar_touch}") && \
   chmod 0644 'yank.1'
 if test $? -ne 0
@@ -3793,6 +3843,7 @@ install -m 0755 -d ~/.local/bin
 install -m 0755 -d ~/.local/lib
 install -m 0755 -d ~/.local/share
 install -m 0755 -d ~/.local/share/man/man1
+install -m 0755 -d ~/.local/var
 install -m 0755 -d ~/.local/var/lock
 install -m 0755 -d ~/.local/var/log
 install -m 0755 -d ~/.local/var/run
@@ -3852,27 +3903,34 @@ fi
 
 # Python
 echo "Python ..."
+echo " - checking if pip3 is installed"
 if ! has_prog pip3; then
     easy_install_prog=$(compgen -c 'easy_install-3' | head -n 1)
     if has_prog "${easy_install_prog}"; then
+        echo " - installing pip3 with easy_install-3"
         if ! has_prog pip3; then
              "${easy_install_prog}" --user pip > install.log 2>&1
         fi
     fi
 fi
+echo " - checking if pip2 is installed"
 if ! has_prog pip2; then
     easy_install_prog=$(compgen -c 'easy_install-2' | head -n 1)
     if has_prog "${easy_install_prog}"; then
+        echo " - installing pip2 with easy_install-2"
         if ! has_prog pip2; then
              "${easy_install_prog}" --user pip > install.log 2>&1
         fi
     fi
 fi
 if has_prog pip3; then
+    echo " - installing neovim plugin with pip3"
     pip3 install --user neovim > install.log 2>&1
 fi
+echo " - checking if cppman is installed"
 if ! has_prog cppman; then
     if has_prog pip3; then
+        echo " - installing cppman plugin with pip3"
         pip3 install --user cppman > install.log 2>&1
     fi
 fi
@@ -3960,6 +4018,12 @@ install -m 0755 byzanz-helper ~/.local/bin
 install -m 0644 byzanz-helper.1 ~/.local/share/man/man1
 install -m 0755 ffmpeg-helper ~/.local/bin
 install -m 0644 ffmpeg-helper.1 ~/.local/share/man/man1
+
+# Autoconf cache
+echo "Autoconf cache ..."
+if [ ! -e ~/.local/etc/config.site ]; then
+    cp config.site ~/.local/etc/config.site
+fi
 
 # Gnulib
 echo "Gnulib ..."

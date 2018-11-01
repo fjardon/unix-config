@@ -153,27 +153,34 @@ fi
 
 # Python
 echo "Python ..."
+echo " - checking if pip3 is installed"
 if ! has_prog pip3; then
     easy_install_prog=$(compgen -c 'easy_install-3' | head -n 1)
     if has_prog "${easy_install_prog}"; then
+        echo " - installing pip3 with easy_install-3"
         if ! has_prog pip3; then
              "${easy_install_prog}" --user pip > install.log 2>&1
         fi
     fi
 fi
+echo " - checking if pip2 is installed"
 if ! has_prog pip2; then
     easy_install_prog=$(compgen -c 'easy_install-2' | head -n 1)
     if has_prog "${easy_install_prog}"; then
+        echo " - installing pip2 with easy_install-2"
         if ! has_prog pip2; then
              "${easy_install_prog}" --user pip > install.log 2>&1
         fi
     fi
 fi
 if has_prog pip3; then
+    echo " - installing neovim plugin with pip3"
     pip3 install --user neovim > install.log 2>&1
 fi
+echo " - checking if cppman is installed"
 if ! has_prog cppman; then
     if has_prog pip3; then
+        echo " - installing cppman plugin with pip3"
         pip3 install --user cppman > install.log 2>&1
     fi
 fi
