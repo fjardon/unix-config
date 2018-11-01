@@ -68,15 +68,15 @@ close($tty) if('-' ne $terminal);
 __END__
 =head1 NAME
 
-tmux-passthrough - Script converting input into tmux's DCS escape sequence
+sixel2tmux - Script converting sixel input into tmux's DCS escape sequence
 
 =head1 SYNOPSIS
 
-B<tmux-passthrough> B<-h>|B<--help>
+B<sixel2tmux> B<-h>|B<--help>
 
-B<tmux-passthrough> [B<OPTIONS>]
+B<sixel2tmux> [B<OPTIONS>]
 
-GNUTERM=sixelgd gnuplot -e 'plot sin(x)' | B<tmux-passthrough>
+GNUTERM=sixelgd gnuplot -e 'plot sin(x)' | B<sixel2tmux>
 
 =head1 DESCRIPTION
 
