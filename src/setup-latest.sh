@@ -51,8 +51,8 @@ cat <<'SETUP_SHAR_EOF'> setup.shar
 # To extract the files from this archive, save it to some FILE, remove
 # everything before the '#!/bin/sh' line above, then type 'sh FILE'.
 #
-lock_dir=_sh12977
-# Made on 2018-11-01 14:35 CET by <fjardon@DiskStation>.
+lock_dir=_sh27199
+# Made on 2018-11-01 22:17 CET by <fjardon@DiskStation>.
 # Source directory was '/home/fjardon/workspace/github/unix-config/src'.
 #
 # Existing files will *not* be overwritten, unless '-c' is specified.
@@ -72,6 +72,7 @@ lock_dir=_sh12977
 #   3766 -rwxr-xr-x ffmpeg-helper
 #   1820 -rwxr-xr-x hyper-v
 #   5848 -rwxr-xr-x msvc-shell
+#   3591 -rw-r--r-- sixel2tmux
 #   4128 -rwxr-xr-x yank
 #   2836 -rw-r--r-- tmux-256color.tinfo
 #    901 -rwxr-xr-x runcron
@@ -80,6 +81,7 @@ lock_dir=_sh12977
 #   5711 -rw-r--r-- ffmpeg-helper.1
 #   5129 -rw-r--r-- hyper-v.1
 #   5915 -rw-r--r-- msvc-shell.1
+#   6510 -rw-r--r-- sixel2tmux.1
 #   7193 -rw-r--r-- yank.1
 #
 MD5SUM=${MD5SUM-md5sum}
@@ -1670,6 +1672,190 @@ SHAR_EOF
 else
 test `LC_ALL=C wc -c < 'msvc-shell'` -ne 5848 && \
   ${echo} "restoration warning:  size of 'msvc-shell' is not 5848"
+  fi
+fi
+# ============= sixel2tmux ==============
+if test -n "${keep_file}" && test -f 'sixel2tmux'
+then
+${echo} "x - SKIPPING sixel2tmux (file already exists)"
+
+else
+${echo} "x - extracting sixel2tmux (text)"
+  sed 's/^X//' << 'SHAR_EOF' > 'sixel2tmux' &&
+#!/usr/bin/env perl
+X
+use strict;
+use warnings 'all';
+X
+use Carp;
+use Getopt::Long qw(GetOptionsFromArray :config no_ignore_case);
+use Pod::Usage;
+X
+sub tmux_dcs_escape {
+X    my ($inception_level, $msg) = @_;
+X
+X    for(my $l=0; $l<$inception_level; ++$l) {
+X        my $dcs_payload = $msg;
+X        $dcs_payload =~ s/\033/\033\033/g;
+X        $msg = "\033Ptmux;$dcs_payload\033\\";
+X    }
+X    return $msg;
+}
+X
+# Parse options
+my ($opt_help, $opt_t, $opt_tmux_tty, $opt_l);
+GetOptionsFromArray(
+X    \@ARGV,
+X    'help|h'              => \$opt_help,
+X    'l|inception-level=s' => \$opt_l,
+X    't|terminal=s'        => \$opt_t,
+) or croak('Error parsing command line arguments');
+X
+# Handle help option
+pod2usage(-exitval => 0) if $opt_help;
+X
+# get terminal
+my ($terminal);
+$terminal //= $opt_t if(defined($opt_t));
+$terminal //= '/dev/tty';
+X
+# inception level
+$opt_l //= 1 if(exists($ENV{'TMUX'}));
+$opt_l //= 0;
+X
+# output to tty
+my $tty;
+$tty = \*STDOUT;
+open($tty, '>', $terminal) or croak("Unable to open tty: $terminal\n") if('-' ne $terminal);
+X
+# loop reading sixel chunks, escape them using tmux DCS and loop again
+my ($msg, $payload, $chunk) = ('', '', '');
+my $max_byte_size = 74994;
+binmode STDIN;
+binmode $tty;
+while(sysread STDIN, $msg, 256) {
+X    $payload .= $msg;
+X    while($payload =~ s/^((.*)?\e\\)//g) {
+X        $chunk = $1;
+X        $chunk = tmux_dcs_escape($opt_l, $chunk);
+X        if(length($chunk) > $max_byte_size) {
+X            print STDERR "An escape sequence is too large to pass-through: ".length($chunk)." > $max_byte_size. Aborting!\n";
+X            exit 1;
+X        }
+X        syswrite $tty, $chunk;
+X    }
+}
+$chunk = tmux_dcs_escape($opt_l, $payload);
+syswrite $tty, $chunk;
+close($tty) if('-' ne $terminal);
+X
+__END__
+=head1 NAME
+X
+sixel2tmux - Script converting sixel input into tmux's DCS escape sequence
+X
+=head1 SYNOPSIS
+X
+B<sixel2tmux> B<-h>|B<--help>
+X
+B<sixel2tmux> [B<OPTIONS>]
+X
+GNUTERM=sixelgd gnuplot -e 'plot sin(x)' | B<sixel2tmux>
+X
+=head1 DESCRIPTION
+X
+This tool converts standard input into a I<tmux> specific B<DCS> escape sequence
+and outputs it to a terminal.
+X
+The output of the program should be directed to a terminal. In case no terminal
+is specified, the script will use F</dev/tty>.
+X
+=head1 OPTIONS
+X
+=over
+X
+=item B<-h>|B<--help>
+X
+Print the usage, help and version information for this program and exit.
+X
+=item B<-t> I<TERMINAL>|B<--terminal>=I<TERMINAL>
+X
+Sets the terminal used to output the tmux DCS escape sequence. In case the
+terminal is not specified, the default value is: F</dev/tty>.
+X
+The special name: '-' means I<stdout>
+X
+=item B<-l>=I<INCEPTION>|B<--inception-level>=I<INCEPTION>
+X
+Sets the B<tmux> inception level. This is needed in case you connect to another
+B<tmux> session from within a B<tmux> session. Default value is 0 unless the
+B<TMUX> environment variable is set, in which case the default value is 1.
+X
+=back
+X
+X
+=head1 ENVIRONMENT VARIABLES
+X
+=over
+X
+=item TMUX
+X
+The B<TMUX> environment variable is used to find out if we are running inside
+a B<tmux> pane.
+X
+=back
+X
+X
+=head1 SEE ALSO
+X
+xterm(1), tmux(1)
+X
+=over
+X
+=item I<XTerm Control Sequences>
+X
+X    https://invisible-island.net/xterm/ctlseqs/ctlseqs.html#h2-Operating-System-Commands
+X
+=item I<Device Control String Sequences>
+X
+X    https://vt100.net/docs/vt510-rm/chapter4.html
+X
+=item I<TMux DCS Sequences>
+X
+X    see tmux changelog
+X
+=back
+X
+=head1 AUTHOR
+X
+Frederic JARDON <frederic.jardon@gmail.com>
+X
+=head1 COPYRIGHT AND LICENSE
+X
+Copyright (C) 2017 by Frederic JARDON <frederic.jardon@gmail.com>
+X
+This program is free software; you can redistribute it and/or modify
+it under the MIT license.
+X
+=cut
+X
+SHAR_EOF
+  (set 20 18 11 01 22 17 26 'sixel2tmux'
+   eval "${shar_touch}") && \
+  chmod 0644 'sixel2tmux'
+if test $? -ne 0
+then ${echo} "restore of sixel2tmux failed"
+fi
+  if ${md5check}
+  then (
+       ${MD5SUM} -c >/dev/null 2>&1 || ${echo} 'sixel2tmux': 'MD5 check failed'
+       ) << \SHAR_EOF
+1502bceaaa5049181d318128b8e4d58d  sixel2tmux
+SHAR_EOF
+
+else
+test `LC_ALL=C wc -c < 'sixel2tmux'` -ne 3591 && \
+  ${echo} "restoration warning:  size of 'sixel2tmux' is not 3591"
   fi
 fi
 # ============= yank ==============
@@ -3546,6 +3732,238 @@ test `LC_ALL=C wc -c < 'msvc-shell.1'` -ne 5915 && \
   ${echo} "restoration warning:  size of 'msvc-shell.1' is not 5915"
   fi
 fi
+# ============= sixel2tmux.1 ==============
+if test -n "${keep_file}" && test -f 'sixel2tmux.1'
+then
+${echo} "x - SKIPPING sixel2tmux.1 (file already exists)"
+
+else
+${echo} "x - extracting sixel2tmux.1 (text)"
+  sed 's/^X//' << 'SHAR_EOF' > 'sixel2tmux.1' &&
+X.\" Automatically generated by Pod::Man 2.28 (Pod::Simple 3.28)
+X.\"
+X.\" Standard preamble:
+X.\" ========================================================================
+X.de Sp \" Vertical space (when we can't use .PP)
+X.if t .sp .5v
+X.if n .sp
+X..
+X.de Vb \" Begin verbatim text
+X.ft CW
+X.nf
+X.ne \\$1
+X..
+X.de Ve \" End verbatim text
+X.ft R
+X.fi
+X..
+X.\" Set up some character translations and predefined strings.  \*(-- will
+X.\" give an unbreakable dash, \*(PI will give pi, \*(L" will give a left
+X.\" double quote, and \*(R" will give a right double quote.  \*(C+ will
+X.\" give a nicer C++.  Capital omega is used to do unbreakable dashes and
+X.\" therefore won't be available.  \*(C` and \*(C' expand to `' in nroff,
+X.\" nothing in troff, for use with C<>.
+X.tr \(*W-
+X.ds C+ C\v'-.1v'\h'-1p'\s-2+\h'-1p'+\s0\v'.1v'\h'-1p'
+X.ie n \{\
+X.    ds -- \(*W-
+X.    ds PI pi
+X.    if (\n(.H=4u)&(1m=24u) .ds -- \(*W\h'-12u'\(*W\h'-12u'-\" diablo 10 pitch
+X.    if (\n(.H=4u)&(1m=20u) .ds -- \(*W\h'-12u'\(*W\h'-8u'-\"  diablo 12 pitch
+X.    ds L" ""
+X.    ds R" ""
+X.    ds C` ""
+X.    ds C' ""
+'br\}
+X.el\{\
+X.    ds -- \|\(em\|
+X.    ds PI \(*p
+X.    ds L" ``
+X.    ds R" ''
+X.    ds C`
+X.    ds C'
+'br\}
+X.\"
+X.\" Escape single quotes in literal strings from groff's Unicode transform.
+X.ie \n(.g .ds Aq \(aq
+X.el       .ds Aq '
+X.\"
+X.\" If the F register is turned on, we'll generate index entries on stderr for
+X.\" titles (.TH), headers (.SH), subsections (.SS), items (.Ip), and index
+X.\" entries marked with X<> in POD.  Of course, you'll have to process the
+X.\" output yourself in some meaningful fashion.
+X.\"
+X.\" Avoid warning from groff about undefined register 'F'.
+X.de IX
+X..
+X.nr rF 0
+X.if \n(.g .if rF .nr rF 1
+X.if (\n(rF:(\n(.g==0)) \{
+X.    if \nF \{
+X.        de IX
+X.        tm Index:\\$1\t\\n%\t"\\$2"
+X..
+X.        if !\nF==2 \{
+X.            nr % 0
+X.            nr F 2
+X.        \}
+X.    \}
+X.\}
+X.rr rF
+X.\"
+X.\" Accent mark definitions (@(#)ms.acc 1.5 88/02/08 SMI; from UCB 4.2).
+X.\" Fear.  Run.  Save yourself.  No user-serviceable parts.
+X.    \" fudge factors for nroff and troff
+X.if n \{\
+X.    ds #H 0
+X.    ds #V .8m
+X.    ds #F .3m
+X.    ds #[ \f1
+X.    ds #] \fP
+X.\}
+X.if t \{\
+X.    ds #H ((1u-(\\\\n(.fu%2u))*.13m)
+X.    ds #V .6m
+X.    ds #F 0
+X.    ds #[ \&
+X.    ds #] \&
+X.\}
+X.    \" simple accents for nroff and troff
+X.if n \{\
+X.    ds ' \&
+X.    ds ` \&
+X.    ds ^ \&
+X.    ds , \&
+X.    ds ~ ~
+X.    ds /
+X.\}
+X.if t \{\
+X.    ds ' \\k:\h'-(\\n(.wu*8/10-\*(#H)'\'\h"|\\n:u"
+X.    ds ` \\k:\h'-(\\n(.wu*8/10-\*(#H)'\`\h'|\\n:u'
+X.    ds ^ \\k:\h'-(\\n(.wu*10/11-\*(#H)'^\h'|\\n:u'
+X.    ds , \\k:\h'-(\\n(.wu*8/10)',\h'|\\n:u'
+X.    ds ~ \\k:\h'-(\\n(.wu-\*(#H-.1m)'~\h'|\\n:u'
+X.    ds / \\k:\h'-(\\n(.wu*8/10-\*(#H)'\z\(sl\h'|\\n:u'
+X.\}
+X.    \" troff and (daisy-wheel) nroff accents
+X.ds : \\k:\h'-(\\n(.wu*8/10-\*(#H+.1m+\*(#F)'\v'-\*(#V'\z.\h'.2m+\*(#F'.\h'|\\n:u'\v'\*(#V'
+X.ds 8 \h'\*(#H'\(*b\h'-\*(#H'
+X.ds o \\k:\h'-(\\n(.wu+\w'\(de'u-\*(#H)/2u'\v'-.3n'\*(#[\z\(de\v'.3n'\h'|\\n:u'\*(#]
+X.ds d- \h'\*(#H'\(pd\h'-\w'~'u'\v'-.25m'\f2\(hy\fP\v'.25m'\h'-\*(#H'
+X.ds D- D\\k:\h'-\w'D'u'\v'-.11m'\z\(hy\v'.11m'\h'|\\n:u'
+X.ds th \*(#[\v'.3m'\s+1I\s-1\v'-.3m'\h'-(\w'I'u*2/3)'\s-1o\s+1\*(#]
+X.ds Th \*(#[\s+2I\s-2\h'-\w'I'u*3/5'\v'-.3m'o\v'.3m'\*(#]
+X.ds ae a\h'-(\w'a'u*4/10)'e
+X.ds Ae A\h'-(\w'A'u*4/10)'E
+X.    \" corrections for vroff
+X.if v .ds ~ \\k:\h'-(\\n(.wu*9/10-\*(#H)'\s-2\u~\d\s+2\h'|\\n:u'
+X.if v .ds ^ \\k:\h'-(\\n(.wu*10/11-\*(#H)'\v'-.4m'^\v'.4m'\h'|\\n:u'
+X.    \" for low resolution devices (crt and lpr)
+X.if \n(.H>23 .if \n(.V>19 \
+\{\
+X.    ds : e
+X.    ds 8 ss
+X.    ds o a
+X.    ds d- d\h'-1'\(ga
+X.    ds D- D\h'-1'\(hy
+X.    ds th \o'bp'
+X.    ds Th \o'LP'
+X.    ds ae ae
+X.    ds Ae AE
+X.\}
+X.rm #[ #] #H #V #F C
+X.\" ========================================================================
+X.\"
+X.IX Title "SIXEL2TMUX 1"
+X.TH SIXEL2TMUX 1 "2018-11-01" "github.com/fjardon/unix-config" "FJ Unix Config Commands"
+X.\" For nroff, turn off justification.  Always turn off hyphenation; it makes
+X.\" way too many mistakes in technical documents.
+X.if n .ad l
+X.nh
+X.SH "NAME"
+sixel2tmux \- Script converting sixel input into tmux's DCS escape sequence
+X.SH "SYNOPSIS"
+X.IX Header "SYNOPSIS"
+\&\fBsixel2tmux\fR \fB\-h\fR|\fB\-\-help\fR
+X.PP
+\&\fBsixel2tmux\fR [\fB\s-1OPTIONS\s0\fR]
+X.PP
+GNUTERM=sixelgd gnuplot \-e 'plot sin(x)' | \fBsixel2tmux\fR
+X.SH "DESCRIPTION"
+X.IX Header "DESCRIPTION"
+This tool converts standard input into a \fItmux\fR specific \fB\s-1DCS\s0\fR escape sequence
+and outputs it to a terminal.
+X.PP
+The output of the program should be directed to a terminal. In case no terminal
+is specified, the script will use \fI/dev/tty\fR.
+X.SH "OPTIONS"
+X.IX Header "OPTIONS"
+X.IP "\fB\-h\fR|\fB\-\-help\fR" 4
+X.IX Item "-h|--help"
+Print the usage, help and version information for this program and exit.
+X.IP "\fB\-t\fR \fI\s-1TERMINAL\s0\fR|\fB\-\-terminal\fR=\fI\s-1TERMINAL\s0\fR" 4
+X.IX Item "-t TERMINAL|--terminal=TERMINAL"
+Sets the terminal used to output the tmux \s-1DCS\s0 escape sequence. In case the
+terminal is not specified, the default value is: \fI/dev/tty\fR.
+X.Sp
+The special name: '\-' means \fIstdout\fR
+X.IP "\fB\-l\fR=\fI\s-1INCEPTION\s0\fR|\fB\-\-inception\-level\fR=\fI\s-1INCEPTION\s0\fR" 4
+X.IX Item "-l=INCEPTION|--inception-level=INCEPTION"
+Sets the \fBtmux\fR inception level. This is needed in case you connect to another
+\&\fBtmux\fR session from within a \fBtmux\fR session. Default value is 0 unless the
+\&\fB\s-1TMUX\s0\fR environment variable is set, in which case the default value is 1.
+X.SH "ENVIRONMENT VARIABLES"
+X.IX Header "ENVIRONMENT VARIABLES"
+X.IP "\s-1TMUX\s0" 4
+X.IX Item "TMUX"
+The \fB\s-1TMUX\s0\fR environment variable is used to find out if we are running inside
+a \fBtmux\fR pane.
+X.SH "SEE ALSO"
+X.IX Header "SEE ALSO"
+\&\fIxterm\fR\|(1), \fItmux\fR\|(1)
+X.IP "\fIXTerm Control Sequences\fR" 4
+X.IX Item "XTerm Control Sequences"
+X.Vb 1
+\&    https://invisible\-island.net/xterm/ctlseqs/ctlseqs.html#h2\-Operating\-System\-Commands
+X.Ve
+X.IP "\fIDevice Control String Sequences\fR" 4
+X.IX Item "Device Control String Sequences"
+X.Vb 1
+\&    https://vt100.net/docs/vt510\-rm/chapter4.html
+X.Ve
+X.IP "\fITMux \s-1DCS\s0 Sequences\fR" 4
+X.IX Item "TMux DCS Sequences"
+X.Vb 1
+\&    see tmux changelog
+X.Ve
+X.SH "AUTHOR"
+X.IX Header "AUTHOR"
+Frederic \s-1JARDON\s0 <frederic.jardon@gmail.com>
+X.SH "COPYRIGHT AND LICENSE"
+X.IX Header "COPYRIGHT AND LICENSE"
+Copyright (C) 2017 by Frederic \s-1JARDON\s0 <frederic.jardon@gmail.com>
+X.PP
+This program is free software; you can redistribute it and/or modify
+it under the \s-1MIT\s0 license.
+SHAR_EOF
+  (set 20 18 11 01 22 17 29 'sixel2tmux.1'
+   eval "${shar_touch}") && \
+  chmod 0644 'sixel2tmux.1'
+if test $? -ne 0
+then ${echo} "restore of sixel2tmux.1 failed"
+fi
+  if ${md5check}
+  then (
+       ${MD5SUM} -c >/dev/null 2>&1 || ${echo} 'sixel2tmux.1': 'MD5 check failed'
+       ) << \SHAR_EOF
+812ddb398653de8c8feb2acc4a518ea9  sixel2tmux.1
+SHAR_EOF
+
+else
+test `LC_ALL=C wc -c < 'sixel2tmux.1'` -ne 6510 && \
+  ${echo} "restoration warning:  size of 'sixel2tmux.1' is not 6510"
+  fi
+fi
 # ============= yank.1 ==============
 if test -n "${keep_file}" && test -f 'yank.1'
 then
@@ -4012,6 +4430,10 @@ if [ ! -e ~/.local/share/perl5 ]; then
         > ~/.local/etc/profile.d/perl5.sh
     . ~/.local/etc/profile.d/perl5.sh
 fi
+
+# Sixel tools
+install -m 0755 sixel2tmux ~/.local/bin
+install -m 0644 sixel2tmux.1 ~/.local/share/man/man1
 
 # Screencast tools
 install -m 0755 byzanz-helper ~/.local/bin
