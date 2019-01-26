@@ -51,8 +51,8 @@ cat <<'SETUP_SHAR_EOF'> setup.shar
 # To extract the files from this archive, save it to some FILE, remove
 # everything before the '#!/bin/sh' line above, then type 'sh FILE'.
 #
-lock_dir=_sh27199
-# Made on 2018-11-01 22:17 CET by <fjardon@DiskStation>.
+lock_dir=_sh02098
+# Made on 2019-01-26 14:00 CET by <fjardon@DiskStation>.
 # Source directory was '/home/fjardon/workspace/github/unix-config/src'.
 #
 # Existing files will *not* be overwritten, unless '-c' is specified.
@@ -63,7 +63,7 @@ lock_dir=_sh27199
 #    439 -rw-r--r-- config.site
 #    456 -rw-r--r-- dot_bash_profile
 #   3087 -rw-r--r-- dot_bashrc
-#   2236 -rw-r--r-- dot_profile
+#   2251 -rw-r--r-- dot_profile
 #   3140 -rw-r--r-- dot_tmux_conf
 #   4125 -rw-r--r-- dot_vimrc
 #    922 -rw-r--r-- dot_Xresources
@@ -416,6 +416,7 @@ X
 if [ -z "${SYSTEM_PATH}" ] ; then
 X    export SYSTEM_PATH="${PATH}"
 X    export SYSTEM_LD_LIBRARY_PATH="${LD_LIBRARY_PATH}"
+X    export SYSTEM_MANPATH="${MANPATH}"
 X    export SYSTEM_PERL5LIB="${PERL5LIB}"
 X    export SYSTEM_PKG_CONFIG_PATH="${PKG_CONFIG_PATH}"
 fi
@@ -444,10 +445,10 @@ X        fi
 X
 X        # Set MANPATH so it includes users' private man if it exists
 X        if [ -d "${xtrad}/man" ]; then
-X            MANPATH="${xtrad}/man${MANPATH:+:${MANPATH}}"
+X            MANPATH="${xtrad}/man:${MANPATH}"
 X        fi
 X        if [ -d "${xtrad}/share/man" ]; then
-X            MANPATH="${xtrad}/share/man${MANPATH:+:${MANPATH}}"
+X            MANPATH="${xtrad}/share/man:${MANPATH}"
 X        fi
 X
 X        # Set INFOPATH so it includes users' private info if it exists
@@ -486,7 +487,7 @@ X    done
 fi
 X
 SHAR_EOF
-  (set 20 18 09 06 10 08 24 'dot_profile'
+  (set 20 19 01 25 11 58 05 'dot_profile'
    eval "${shar_touch}") && \
   chmod 0644 'dot_profile'
 if test $? -ne 0
@@ -496,12 +497,12 @@ fi
   then (
        ${MD5SUM} -c >/dev/null 2>&1 || ${echo} 'dot_profile': 'MD5 check failed'
        ) << \SHAR_EOF
-754dbf1429fb49836bc6e3d6745d20ef  dot_profile
+8858168309f7fbccc7d94e59d6ef2b5f  dot_profile
 SHAR_EOF
 
 else
-test `LC_ALL=C wc -c < 'dot_profile'` -ne 2236 && \
-  ${echo} "restoration warning:  size of 'dot_profile' is not 2236"
+test `LC_ALL=C wc -c < 'dot_profile'` -ne 2251 && \
+  ${echo} "restoration warning:  size of 'dot_profile' is not 2251"
   fi
 fi
 # ============= dot_tmux_conf ==============

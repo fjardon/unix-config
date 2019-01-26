@@ -4,6 +4,7 @@
 if [ -z "${SYSTEM_PATH}" ] ; then
     export SYSTEM_PATH="${PATH}"
     export SYSTEM_LD_LIBRARY_PATH="${LD_LIBRARY_PATH}"
+    export SYSTEM_MANPATH="${MANPATH}"
     export SYSTEM_PERL5LIB="${PERL5LIB}"
     export SYSTEM_PKG_CONFIG_PATH="${PKG_CONFIG_PATH}"
 fi
@@ -32,10 +33,10 @@ if [ -f ~/.path_dirs ]; then
 
         # Set MANPATH so it includes users' private man if it exists
         if [ -d "${xtrad}/man" ]; then
-            MANPATH="${xtrad}/man${MANPATH:+:${MANPATH}}"
+            MANPATH="${xtrad}/man:${MANPATH}"
         fi
         if [ -d "${xtrad}/share/man" ]; then
-            MANPATH="${xtrad}/share/man${MANPATH:+:${MANPATH}}"
+            MANPATH="${xtrad}/share/man:${MANPATH}"
         fi
 
         # Set INFOPATH so it includes users' private info if it exists
