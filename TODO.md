@@ -55,9 +55,12 @@ TODO
 [ ] Better cygwin support:
   [ ] Create a cygwin package with all good tools for developers (as requires)
   [x] Configure XWinrc only if cygwin is detected
-  [.] Add perl script to generate visual-c++ equivalent of vcvarsall.bat
+  [/] Add perl script to generate visual-c++ equivalent of vcvarsall.bat
       Beware install path is different depending on 32 or 64 bits
+    [x] msvc-shell script included
     [x] Add support for vs professional
+    [ ] Add non interactive mode so that one can use msvc-shell to launch a
+        script in the VC ready environment. For instance to make a VC++ build.
   [ ] Install a shortcut to launch X-server at startup
       C:\cygwin64\bin\run.exe --quote /usr/bin/bash.exe -l -c "cd; exec /usr/bin/startxwin"
       Paths can be found with cygpath -F <folder-id>
