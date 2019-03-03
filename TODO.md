@@ -1,6 +1,12 @@
 TODO
 ====
 
+[.] Utilities
+  [x] Install gdb pretty printers.
+      See: http://sourceware.org/gdb/wiki/STLSupport
+  [ ] Install lcov when missing
+  [ ] Install jekyll if ruby is available
+
 [x] Vim Plugins:
   [x] Move to vim-plug
   [x] Install it prior to updating the .vimrc

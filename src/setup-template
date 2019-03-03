@@ -20,7 +20,7 @@ function has_prog() {
     return $?
 }
 
-REQUIRED_PROGS=(curl git grep install mktemp sed)
+REQUIRED_PROGS=(curl git grep install mktemp sed tar)
 has_errors=
 for p in ${REQUIRED_PROGS[@]};
 do
@@ -277,6 +277,14 @@ install -m 0644 ffmpeg-helper.1 ~/.local/share/man/man1
 echo "Autoconf cache ..."
 if [ ! -e ~/.local/etc/config.site ]; then
     cp config.site ~/.local/etc/config.site
+fi
+
+# Gdb pretty printers
+if [ ! -e ~/.local/share/gdb ]; then
+    mkdir -p ~/.local/share/gdb
+    tar xvf share-gdb.tar -C ~/.local/share/gdb
+    cp -f ~/.gdbinit "${BACKUPDIR}"
+    cp dot_gdbinit ~/.gdbinit
 fi
 
 # Gnulib

@@ -1,4 +1,5 @@
 POD2MAN = pod2man -r "github.com/fjardon/unix-config" -c "FJ Unix Config Commands"
+TAR = tar
 
 all : setup-latest.sh
 
@@ -16,6 +17,7 @@ MAN1_FILES = byzanz-helper.1 \
 SHAR_FILES = config.site \
              dot_bash_profile \
              dot_bashrc \
+             dot_gdbinit \
              dot_profile \
              dot_tmux_conf \
              dot_vimrc \
@@ -25,10 +27,11 @@ SHAR_FILES = config.site \
              ffmpeg-helper \
              hyper-v \
              msvc-shell \
-			 sixel2tmux \
+             sixel2tmux \
              yank \
              tmux-256color.tinfo \
              runcron \
+             share-gdb.tar \
              $(GIT_FILES) \
              $(MAN1_FILES)
 
@@ -41,6 +44,12 @@ byzanz-helper.1 : byzanz-helper
 
 ffmpeg-helper.1 : ffmpeg-helper
 	$(POD2MAN) $< $@
+
+share-gdb :
+	svn co svn://gcc.gnu.org/svn/gcc/trunk/libstdc++-v3/python share-gdb/python
+
+share-gdb.tar : share-gdb
+	$(TAR) cvf share-gdb.tar --exclude '.svn' -C share-gdb .
 
 hyper-v.1 : hyper-v
 	$(POD2MAN) $< $@
@@ -58,9 +67,11 @@ setup-files.shar: $(SHAR_FILES)
 	shar $^ > $@
 
 clean:
-	$(RM) setup-latest.sh
-	$(RM) setup-files.shar
-	$(RM) $(MAN1_FILES)
-	$(RM) $(GIT_FILES)
+	$(RM) -f setup-latest.sh
+	$(RM) -f setup-files.shar
+	$(RM) -rf share-gdb
+	$(RM) -f share-gdb.tar
+	$(RM) -f $(MAN1_FILES)
+	$(RM) -f $(GIT_FILES)
 
 
