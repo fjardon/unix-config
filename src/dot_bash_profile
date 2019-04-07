@@ -13,7 +13,7 @@ fi
 # Bash reads:
 # - .bash_profile for interactive login shells
 # - .bashrc for non-login intecactive shells.
-# 
+#
 # source the user's bashrc if it exists
 if [ -f ~/.bashrc ]; then
     . ~/.bashrc

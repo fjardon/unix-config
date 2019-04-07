@@ -7,6 +7,12 @@ if [ -z "${SYSTEM_PATH}" ] ; then
     export SYSTEM_MANPATH="${MANPATH}"
     export SYSTEM_PERL5LIB="${PERL5LIB}"
     export SYSTEM_PKG_CONFIG_PATH="${PKG_CONFIG_PATH}"
+else
+    export PATH="${SYSTEM_PATH}"
+    export LD_LIBRARY_PATH="${SYSTEM_LD_LIBRARY_PATH}"
+    export MANPATH="${SYSTEM_MANPATH}"
+    export PERL5LIB="${SYSTEM_PERL5LIB}"
+    export PKG_CONFIG_PATH="${SYSTEM_PKG_CONFIG_PATH}"
 fi
 
 if [ -f ~/.path_dirs ]; then
