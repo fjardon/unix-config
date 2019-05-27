@@ -14,7 +14,7 @@ if [ -t 1 -a -n "${TPUT}" ]; then
         MAGENTA_FG=$(tput setaf 5)
         CYAN_FG=$(tput setaf 6)
         WHITE_FG=$(tput setaf 7)
-        DEFAULT_FG=$(tput setaf $(expr ${NCOLORS} + 1))
+        DEFAULT_FG=$(tput sgr0)
     fi
 fi
 
@@ -30,7 +30,7 @@ fi
 if [[ -n "${VS_KIT}" ]]; then
     VS_LED="${CYAN_FG}[msvc ${VS_KIT} ${VS_VERSION:0:2}.${VS_VERSION:2:1}] "
 fi
-PS1="${SETXTERMTITLE}${VIM_LED}${VS_LED}${GREEN_FG}\\u@\\h ${MAGENTA_FG}\\t ${YELLOW_FG}\\w${WHITE_FG}\n\$ "
+PS1="${SETXTERMTITLE}${VIM_LED}${VS_LED}${GREEN_FG}\\u@\\h ${MAGENTA_FG}\\t ${YELLOW_FG}\\w${DEFAULT_FG}\n\$ "
 export PS1
 
 # Make bash append rather than overwrite the history on disk
