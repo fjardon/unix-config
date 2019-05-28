@@ -137,6 +137,9 @@ if has_prog crontab; then
     rm -f "${tmpcrontab}"
 fi
 
+# iMatix environment
+install -m 0644 ibase.sh ~/.local/etc/profile.d
+
 # Cygwin
 if [[ "${os_name}" == CYGWIN* ]]; then
     echo "Cygwin ..."

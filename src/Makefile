@@ -26,6 +26,7 @@ SHAR_FILES = config.site \
              byzanz-helper \
              ffmpeg-helper \
              hyper-v \
+             ibase.sh \
              msvc-shell \
              sixel2tmux \
              yank \
