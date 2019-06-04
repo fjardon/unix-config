@@ -11,6 +11,9 @@ if test "$cache_file" = /dev/null; then
     CC=gcc
   fi
   
-  cache_file="${prefix}/var/${CC}-config.cache"
+  if hash "md5sum" > /dev/null 2>&1; then
+    md5=`echo "CFLAGS='${CFLAGS}' CXXFLAGS='${CXXFLAGS}'" | md5sum | awk '{print $1}'`
+    cache_file="${prefix}/var/config.cache.${CC}.${md5}"
+  fi
 fi
 
