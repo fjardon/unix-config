@@ -1,0 +1,176 @@
+#!/usr/bin/env perl
+#*===========================================================================*
+#*                                                                           *
+#*  codefmt - Code formatting tool                                           *
+#*                                                                           *
+#*  Copyright (c) 2019 Frederic Jardon  <frederic.jardon@gmail.com>          *
+#*                                                                           *
+#*  ------------------ GPL Licensed Source Code ------------------           *
+#*  Frederic Jardon makes this software available under the GNU              *
+#*  General Public License (GPL) license for open source projects.           *
+#*  For details of the GPL license please see www.gnu.org or read            *
+#*  the file license.gpl provided in this package.                           *
+#*                                                                           *
+#*  This program is free software; you can redistribute it and/or            *
+#*  modify it under the terms of the GNU General Public License as           *
+#*  published by the Free Software Foundation; either version 3 of           *
+#*  the License, or (at your option) any later version.                      *
+#*                                                                           *
+#*  This program is distributed in the hope that it will be useful,          *
+#*  but WITHOUT ANY WARRANTY; without even the implied warranty of           *
+#*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the            *
+#*  GNU General Public License for more details.                             *
+#*                                                                           *
+#*  You should have received a copy of the GNU General Public                *
+#*  License along with this program in the file 'license.gpl'; if            *
+#*  not, see <http://www.gnu.org/licenses/>.                                 *
+#*  --------------------------------------------------------------           *
+#*===========================================================================*
+
+use strict;
+use warnings 'all';
+use Data::Dumper;
+use Carp;
+use List::Util qw(max sum);
+
+# synopsis:  binary_search {code} $a_included, $b_excluded
+sub binary_search(&$$) {
+    my ($l, $r, $f) = @_;
+    my $d = $r-$l;
+    while ($d >= 1) {
+        my $m = $l + int($d/2);
+        my $ok = $f->($m);
+        if ($ok) {
+            $r = $m;
+            next;
+        }
+        $l = $m+1;
+        $d = $r-$l;
+    }
+    return $l;
+}
+
+sub shuffle_words_in_columns {
+    my %args = @_;
+    croak "words is not defined" if (!defined ($args{words}));
+    croak "fmt is not defined"   if (!defined ($args{fmt}));
+
+    my @words = @{$args{words}};
+    my $fmt   = $args{fmt};
+
+    my $n_cols = length ($fmt);
+    my $n_rows = int ((@words+$n_cols-1)/$n_cols);
+    my @cols   = ();
+    for (my $i=0; $i<$n_cols; ++$i) {
+        my @indexes = map { $i+$n_cols*$_ } (0..($n_rows-1));
+        my @column  = map { $_ //= '' } @words[@indexes];
+        push (@cols, \@column);
+    }
+    return @cols;
+}
+
+sub line_width {
+    my %args = @_;
+
+    croak "cols is not defined" if (!defined ($args{cols}));
+
+    my @cols      = @{$args{cols}};
+    my $textwidth = $args{textwidth};
+    my $c_sep     = $args{separator};
+    my $eol_sep   = $args{eol_separator};
+    $textwidth  //= 70;
+    $c_sep      //= ' ';
+    $eol_sep    //= ' \\';
+
+    my $n_cols = @cols;
+    my @widths = map { max (map scalar @{$_} ) } @cols;
+    my $width  = ($n_cols - 1)*length ($c_sep) + sum (@widths) + length ($eol_sep);
+    return $width;
+}
+
+
+
+sub format_columns_to_lines {
+    my %args = @_;
+
+    croak "cols is not defined" if (!defined ($args{cols}));
+    croak "fmt is not defined"  if (!defined ($args{fmt}));
+
+    my @cols      = @{$args{cols}};
+    my $fmt       = $args{fmt};
+    my $textwidth = $args{textwidth};
+    my $c_sep     = $args{separator};
+    my $eol_sep   = $args{eol_separator};
+    $textwidth  //= 70;
+    $c_sep      //= ' ';
+    $eol_sep    //= ' \\';
+
+    my $n_cols    = @cols;
+    my @c_indexes = (0..$#cols);
+    my @widths    = map {
+                        my $col = $_;
+                        max (map {length ($_)} @{$col})
+                    } @cols;
+
+    my @perl_fmta = map {
+                        my ($c, $width) = (substr ($fmt, $_, 1), $widths[$_]);
+                        $width -= 1;
+                        my $r = '@'.'<'x$width;
+                        $r = '@'.'|'x$width if ($c eq 'c');
+                        $r = '@'.'>'x$width if ($c eq 'r');
+                        $r;
+                    } @c_indexes;
+    my $perl_fmt = join ($c_sep, @perl_fmta);
+    $perl_fmt .= $eol_sep."\n";
+
+    my $n_lines   = @{$cols[0]};
+    my @l_indexes = (0..($n_lines-1));
+    my @lines     = map {
+                        my $l_no = $_;
+                        my @words = map { $_->[$l_no] } @cols;
+                        $^A = '';
+                        formline ($perl_fmt, @words);
+                        $^A;
+                    } @l_indexes;
+    return @lines;
+}
+
+my $fmt = shift;
+$fmt //= 'lll';
+
+my @words = ();
+while (<>) {
+    chomp;
+    while ($_ ne '') {
+        $_ =~ s/^[ \t]*//g;
+        if ($_ =~ s/^("([^"\\]|\\.)*")//g) {
+            push (@words, $1);
+            next;
+        }
+        if ($_ =~ s/^('([^'\\]|\\.)*')//g) {
+            push (@words, $1);
+            next;
+        }
+        if ($_ =~ s/^([^ \t]+)//g) {
+            push (@words, $1);
+            next;
+        }
+    }
+}
+
+if (0 == @words) {
+    exit 0;
+}
+
+
+my @cols  = shuffle_words_in_columns (words => \@words, fmt => $fmt);
+
+my @lines = format_columns_to_lines (cols => \@cols, fmt => $fmt);
+foreach my $line (@lines) {
+    print $line;
+}
+
+
+
+
+
