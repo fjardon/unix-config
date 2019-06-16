@@ -120,9 +120,7 @@ sub format_columns_to_lines {
                         $r = '@'.'>'x$width if ($c eq 'r');
                         $r;
                     } @c_indexes;
-    my $perl_fmt = join ($c_sep, @perl_fmta);
-    $perl_fmt .= $eol_sep."\n";
-
+    my $perl_fmt  = join ($c_sep, @perl_fmta);
     my $n_lines   = @{$cols[0]};
     my @l_indexes = (0..($n_lines-1));
     my @lines     = map {
@@ -135,27 +133,39 @@ sub format_columns_to_lines {
     return @lines;
 }
 
+# CLI arguments processing
 my $fmt = shift;
-$fmt //= 'lll';
+my $eol_sep = undef;
+my $separator = undef;
+
+$fmt       //= 'lll';
+$separator //= ' ';
+$eol_sep   //= " \\";
 
 my @words = ();
 while (<>) {
     chomp;
+    my @line = ();
     while ($_ ne '') {
-        $_ =~ s/^[ \t]*//g;
-        if ($_ =~ s/^("([^"\\]|\\.)*")//g) {
-            push (@words, $1);
+        my $word = undef;
+        if ($_ =~ s/^[ \t]*\Q$eol_sep\E$//g) {
+            last;
+        }
+        elsif ($_ =~ s/^[ \t]+//g) {
             next;
         }
-        if ($_ =~ s/^('([^'\\]|\\.)*')//g) {
-            push (@words, $1);
-            next;
+        elsif ($_ =~ s/^("([^"\\]|\\.)*")//g) {
+            push (@line, $1);
         }
-        if ($_ =~ s/^([^ \t]+)//g) {
-            push (@words, $1);
-            next;
+        elsif ($_ =~ s/^('([^'\\]|\\.)*')//g) {
+            push (@line, $1);
+        }
+        elsif ($_ =~ s/^([^ \t]+)//g) {
+            push (@line, $1);
         }
     }
+    next if (! @line);
+    push (@words, @line);
 }
 
 if (0 == @words) {
@@ -164,10 +174,9 @@ if (0 == @words) {
 
 
 my @cols  = shuffle_words_in_columns (words => \@words, fmt => $fmt);
-
-my @lines = format_columns_to_lines (cols => \@cols, fmt => $fmt);
+my @lines = format_columns_to_lines (cols => \@cols, fmt => $fmt, separator => $separator, eol_separator => $eol_sep);
 foreach my $line (@lines) {
-    print $line;
+    print $line.$eol_sep."\n";
 }
 
 
