@@ -9,12 +9,14 @@ setup-latest.sh: setup-template setup-files.shar
 
 GIT_FILES  = apt-cyg
 MAN1_FILES = byzanz-helper.1 \
+			 codefmt.1 \
              ffmpeg-helper.1 \
              hyper-v.1 \
              msvc-shell.1 \
 			 sixel2tmux.1 \
              yank.1
-SHAR_FILES = config.site \
+SHAR_FILES = codefmt \
+			 config.site \
              dot_bash_profile \
              dot_bashrc \
              dot_gdbinit \
@@ -41,6 +43,9 @@ apt-cyg:
 	chmod a+x apt-cyg
 
 byzanz-helper.1 : byzanz-helper
+	$(POD2MAN) $< $@
+
+codefmt.1 : codefmt
 	$(POD2MAN) $< $@
 
 ffmpeg-helper.1 : ffmpeg-helper

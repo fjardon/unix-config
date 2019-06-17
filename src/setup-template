@@ -266,6 +266,10 @@ if [ ! -e ~/.local/share/perl5 ]; then
     . ~/.local/etc/profile.d/perl5.sh
 fi
 
+# Code formatter tools
+install -m 0755 codefmt ~/.local/bin
+install -m 0644 codefmt.1 ~/.local/share/man/man1
+
 # Sixel tools
 install -m 0755 sixel2tmux ~/.local/bin
 install -m 0644 sixel2tmux.1 ~/.local/share/man/man1
