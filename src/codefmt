@@ -105,6 +105,7 @@ sub format_columns_to_lines {
     $c_sep      //= ' ';
     $eol_sep    //= ' \\';
 
+    my $eol_len   = length ($eol_sep);
     my $n_cols    = @cols;
     my @c_indexes = (0..$#cols);
     my @widths    = map {
@@ -121,11 +122,13 @@ sub format_columns_to_lines {
                         $r;
                     } @c_indexes;
     my $perl_fmt  = join ($c_sep, @perl_fmta);
+    $perl_fmt    .= ' ^'.('<'x($eol_len-1))."\n";
     my $n_lines   = @{$cols[0]};
     my @l_indexes = (0..($n_lines-1));
     my @lines     = map {
                         my $l_no = $_;
                         my @words = map { $_->[$l_no] } @cols;
+                        push (@words, $eol_sep);
                         $^A = '';
                         formline ($perl_fmt, @words);
                         $^A;
@@ -176,7 +179,7 @@ if (0 == @words) {
 my @cols  = shuffle_words_in_columns (words => \@words, fmt => $fmt);
 my @lines = format_columns_to_lines (cols => \@cols, fmt => $fmt, separator => $separator, eol_separator => $eol_sep);
 foreach my $line (@lines) {
-    print $line.$eol_sep."\n";
+    print $line;
 }
 
 
