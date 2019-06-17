@@ -31,7 +31,10 @@ use strict;
 use warnings 'all';
 use Data::Dumper;
 use Carp;
+use Getopt::Long qw(GetOptionsFromArray :config no_ignore_case pass_through);
 use List::Util qw(max sum);
+use Pod::Usage;
+
 
 # synopsis:  binary_search {code} $a_included, $b_excluded
 sub binary_search(&$$) {
@@ -89,24 +92,32 @@ sub line_width {
 }
 
 
+sub format_args {
+    my ($fmt, @args) = @_;
+    $^A = '';
+    formline ($fmt, @args);
+    return ''.$^A;
+}
 
 sub format_columns_to_lines {
     my %args = @_;
 
-    croak "cols is not defined" if (!defined ($args{cols}));
-    croak "fmt is not defined"  if (!defined ($args{fmt}));
+    croak "cols is not defined"     if (!defined ($args{cols}));
+    croak "fmt is not defined"      if (!defined ($args{fmt}));
+    croak "n_words is not defined"  if (!defined ($args{n_words}));
 
     my @cols      = @{$args{cols}};
     my $fmt       = $args{fmt};
     my $textwidth = $args{textwidth};
     my $c_sep     = $args{separator};
     my $eol_sep   = $args{eol_separator};
+    my $n_words   = $args{n_words};
     $textwidth  //= 70;
     $c_sep      //= ' ';
     $eol_sep    //= ' \\';
 
     my $eol_len   = length ($eol_sep);
-    my $n_cols    = @cols;
+    my $n_cols    = scalar @cols;
     my @c_indexes = (0..$#cols);
     my @widths    = map {
                         my $col = $_;
@@ -123,27 +134,49 @@ sub format_columns_to_lines {
                     } @c_indexes;
     my $perl_fmt  = join ($c_sep, @perl_fmta);
     $perl_fmt    .= ' ^'.('<'x($eol_len-1))."\n";
+
+    my $last_n_cols = $n_cols-((-$n_words) % $n_cols);
+    my @last_c_indexes = (0..($last_n_cols-1));
+    my @last_perl_fmta = @perl_fmta[@last_c_indexes];
+    my $last_perl_fmt  = join ($c_sep, @last_perl_fmta);
+
     my $n_lines   = @{$cols[0]};
-    my @l_indexes = (0..($n_lines-1));
+    my @l_indexes = (0..($n_lines-2));
     my @lines     = map {
                         my $l_no = $_;
                         my @words = map { $_->[$l_no] } @cols;
                         push (@words, $eol_sep);
-                        $^A = '';
-                        formline ($perl_fmt, @words);
-                        $^A;
+                        format_args ($perl_fmt, @words)
                     } @l_indexes;
+    my $last_line = format_args ($last_perl_fmt, map { $_->[$n_lines-1] } @cols);
+    $last_line =~ s/[ \t]*$//g;
+    push (@lines, $last_line);
     return @lines;
 }
 
 # CLI arguments processing
-my $fmt = shift;
-my $eol_sep = undef;
-my $separator = undef;
+my ($opt_help,
+    $opt_fmt,
+    $opt_eol,
+    $opt_prefix,
+    $opt_separator,
+    $opt_textwidth,
+);
 
-$fmt       //= 'lll';
-$separator //= ' ';
-$eol_sep   //= " \\";
+GetOptionsFromArray(\@ARGV,
+    'h|help'         => \$opt_help,
+    'f|format=s'     => \$opt_fmt,
+    'e|eol=s'        => \$opt_eol,
+    'p|prefix=s'     => \$opt_prefix,
+    's|separator=s'  => \$opt_separator,
+    'w|width=i'      => \$opt_textwidth,
+) or croak "Error while parsing command-line arguments";
+
+$opt_fmt       //= 'lll';
+$opt_eol       //= " \\";
+$opt_prefix    //= '    ';
+$opt_separator //= ' ';
+$opt_textwidth //= 70;
 
 my @words = ();
 while (<>) {
@@ -151,8 +184,11 @@ while (<>) {
     my @line = ();
     while ($_ ne '') {
         my $word = undef;
-        if ($_ =~ s/^[ \t]*\Q$eol_sep\E$//g) {
+        if ($_ =~ s/^[ \t]*\Q$opt_eol\E$//g) {
             last;
+        }
+        elsif ($_ =~ s/^[ \t]*\Q$opt_separator\E//g) {
+            next;
         }
         elsif ($_ =~ s/^[ \t]+//g) {
             next;
@@ -166,6 +202,9 @@ while (<>) {
         elsif ($_ =~ s/^([^ \t]+)//g) {
             push (@line, $1);
         }
+        else {
+            croak "Unexpected tokens: '".quotemeta($_)."'";
+        }
     }
     next if (! @line);
     push (@words, @line);
@@ -176,8 +215,8 @@ if (0 == @words) {
 }
 
 
-my @cols  = shuffle_words_in_columns (words => \@words, fmt => $fmt);
-my @lines = format_columns_to_lines (cols => \@cols, fmt => $fmt, separator => $separator, eol_separator => $eol_sep);
+my @cols  = shuffle_words_in_columns (words => \@words, fmt => $opt_fmt);
+my @lines = format_columns_to_lines (cols => \@cols, fmt => $opt_fmt, separator => $opt_separator, eol_separator => $opt_eol, n_words => scalar @words);
 foreach my $line (@lines) {
     print $line;
 }
