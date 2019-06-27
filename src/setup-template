@@ -271,6 +271,8 @@ fi
 # Scripts
 install -m 0755 scripts/codefmt       "${PREFIX}/.local/bin"
 install -m 0644 codefmt.1             "${PREFIX}/.local/share/man/man1"
+install -m 0755 scripts/codemv        "${PREFIX}/.local/bin"
+install -m 0644 codemv.1              "${PREFIX}/.local/share/man/man1"
 install -m 0755 scripts/sixel2tmux    "${PREFIX}/.local/bin"
 install -m 0644 sixel2tmux.1          "${PREFIX}/.local/share/man/man1"
 install -m 0755 scripts/byzanz-helper "${PREFIX}/.local/bin"

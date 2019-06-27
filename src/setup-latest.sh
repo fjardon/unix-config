@@ -53,8 +53,8 @@ cat <<'SETUP_SHAR_EOF'> setup.shar
 # To extract the files from this archive, save it to some FILE, remove
 # everything before the '#!/bin/sh' line above, then type 'sh FILE'.
 #
-lock_dir=_sh01844
-# Made on 2019-06-27 20:05 CEST by <frede@darthvader>.
+lock_dir=_sh05414
+# Made on 2019-06-27 20:55 CEST by <frede@darthvader>.
 # Source directory was '/home/frede/Documents/workspace/github/unix-config/src'.
 #
 # Existing files will *not* be overwritten, unless '-c' is specified.
@@ -62,7 +62,8 @@ lock_dir=_sh01844
 # This shar contains:
 # length mode       name
 # ------ ---------- ------------------------------------------
-#   8413 -rwxr-xr-x scripts/codefmt
+#   8082 -rwxr-xr-x scripts/codefmt
+#   4686 -rwxr-xr-x scripts/codemv
 #    601 -rw-r--r-- config.site
 #    455 -rw-r--r-- dot_bash_profile
 #   3065 -rw-r--r-- dot_bashrc
@@ -84,7 +85,8 @@ lock_dir=_sh01844
 # 143360 -rw-r--r-- share-gdb.tar
 #  13765 -rwxr-xr-x apt-cyg
 #   5665 -rw-r--r-- byzanz-helper.1
-#   5173 -rw-r--r-- codefmt.1
+#   5192 -rw-r--r-- codefmt.1
+#   5273 -rw-r--r-- codemv.1
 #   5621 -rw-r--r-- ffmpeg-helper.1
 #   5039 -rw-r--r-- hyper-v.1
 #   5825 -rw-r--r-- msvc-shell.1
@@ -238,24 +240,6 @@ use Carp;
 use Getopt::Long qw(GetOptionsFromArray :config no_ignore_case pass_through);
 use List::Util qw(max sum);
 use Pod::Usage;
-X
-X
-# synopsis:  binary_search {code} $a_included, $b_excluded
-sub binary_search(&$$) {
-X    my ($l, $r, $f) = @_;
-X    my $d = $r-$l;
-X    while ($d >= 1) {
-X        my $m = $l + int($d/2);
-X        my $ok = $f->($m);
-X        if ($ok) {
-X            $r = $m;
-X            next;
-X        }
-X        $l = $m+1;
-X        $d = $r-$l;
-X    }
-X    return $l;
-}
 X
 sub shuffle_words_in_columns {
 X    my %args = @_;
@@ -465,7 +449,7 @@ X
 X
 =head1 SEE ALSO
 X
-fmt(1), column(1)
+fmt(1), column(1), codemv(1)
 X
 =head1 AUTHOR
 X
@@ -481,7 +465,7 @@ X
 =cut
 X
 SHAR_EOF
-  (set 20 19 06 27 19 59 27 'scripts/codefmt'
+  (set 20 19 06 27 20 54 26 'scripts/codefmt'
    eval "${shar_touch}") && \
   chmod 0755 'scripts/codefmt'
 if test $? -ne 0
@@ -491,12 +475,189 @@ fi
   then (
        ${MD5SUM} -c >/dev/null 2>&1 || ${echo} 'scripts/codefmt': 'MD5 check failed'
        ) << \SHAR_EOF
-a7278d89f740fbe7bc9758d89c28ac65  scripts/codefmt
+7df3cc74f1240e64f5162ca08773670d  scripts/codefmt
 SHAR_EOF
 
 else
-test `LC_ALL=C wc -c < 'scripts/codefmt'` -ne 8413 && \
-  ${echo} "restoration warning:  size of 'scripts/codefmt' is not 8413"
+test `LC_ALL=C wc -c < 'scripts/codefmt'` -ne 8082 && \
+  ${echo} "restoration warning:  size of 'scripts/codefmt' is not 8082"
+  fi
+fi
+# ============= scripts/codemv ==============
+if test ! -d 'scripts'; then
+  mkdir 'scripts'
+if test $? -eq 0
+then ${echo} "x - created directory scripts."
+else ${echo} "x - failed to create directory scripts."
+     exit 1
+fi
+fi
+if test -n "${keep_file}" && test -f 'scripts/codemv'
+then
+${echo} "x - SKIPPING scripts/codemv (file already exists)"
+
+else
+${echo} "x - extracting scripts/codemv (text)"
+  sed 's/^X//' << 'SHAR_EOF' > 'scripts/codemv' &&
+#!/usr/bin/env perl
+#*===========================================================================*
+#*                                                                           *
+#*  codefmt - Code formatting tool                                           *
+#*                                                                           *
+#*  Copyright (c) 2019 Frederic Jardon  <frederic.jardon@gmail.com>          *
+#*                                                                           *
+#*  ------------------ GPL Licensed Source Code ------------------           *
+#*  Frederic Jardon makes this software available under the GNU              *
+#*  General Public License (GPL) license for open source projects.           *
+#*  For details of the GPL license please see www.gnu.org or read            *
+#*  the file license.gpl provided in this package.                           *
+#*                                                                           *
+#*  This program is free software; you can redistribute it and/or            *
+#*  modify it under the terms of the GNU General Public License as           *
+#*  published by the Free Software Foundation; either version 3 of           *
+#*  the License, or (at your option) any later version.                      *
+#*                                                                           *
+#*  This program is distributed in the hope that it will be useful,          *
+#*  but WITHOUT ANY WARRANTY; without even the implied warranty of           *
+#*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the            *
+#*  GNU General Public License for more details.                             *
+#*                                                                           *
+#*  You should have received a copy of the GNU General Public                *
+#*  License along with this program in the file 'license.gpl'; if            *
+#*  not, see <http://www.gnu.org/licenses/>.                                 *
+#*  --------------------------------------------------------------           *
+#*===========================================================================*
+X
+use strict;
+use warnings 'all';
+use Data::Dumper;
+use Carp;
+use Getopt::Long qw(GetOptionsFromArray :config no_ignore_case pass_through);
+use List::Util qw(max sum);
+use Pod::Usage;
+X
+sub usage {
+X    my $exitval = scalar @_;
+X    map { print STDERR "ERROR: ".$_."\n" } @_;
+X    pod2usage(-exitval => $exitval);
+}
+X
+# CLI arguments processing
+my ($opt_help,
+X    $opt_append,
+X    $opt_copy,
+X    $opt_end_string,
+X    $opt_extract,
+X    $opt_overwrite,
+X    $opt_start_string,
+);
+X
+GetOptionsFromArray(\@ARGV,
+X    'h|help'         => \$opt_help,
+X    'a|append=s'     => \$opt_append,
+X    'c|copy'         => \$opt_copy,
+X    'e|end=s'        => \$opt_end_string,
+X    'o|overwrite=s'  => \$opt_overwrite,
+X    's|start=s'      => \$opt_start_string,
+X    'x|extract'      => \$opt_extract,
+) or croak "Error while parsing command-line arguments";
+X
+# Handle help option
+usage if ($opt_help);
+usage("Options: '-a' and '-o' are mutually exclusive") if (defined($opt_append) and defined($opt_overwrite));
+usage("Options: '-c' and '-x' are mutually exclusive") if (defined($opt_copy) and defined($opt_extract));
+X
+my ($open_mode, $filename);
+$open_mode = '>>' if(defined($opt_append));
+$open_mode = '>'  if(defined($opt_overwrite));
+$filename //= $opt_append;
+$filename //= $opt_overwrite;
+usage("One option out of '-a' or '-o' is required") if(!defined($open_mode));
+X
+X
+open(FILE, $open_mode, $filename) or die("Unable to open: '".$filename."'");
+while(my $line = <STDIN>) {
+X    print STDOUT $line if(defined($opt_copy));
+X    print FILE $line;
+}
+close(FILE);
+X
+X
+Xexit 0;
+X
+__END__
+=head1 NAME
+X
+codemv - Code Mover Tool
+X
+=head1 SYNOPSIS
+X
+B<codemv> B<-h>|B<--help>
+X
+B<codemv> [B<OPTIONS>]...
+X
+=head1 DESCRIPTION
+X
+This tool divert part of its input to a specified file.
+X
+=head1 OPTIONS
+X
+=over
+X
+=item B<-h>|B<--help>
+X
+Print the usage, help and version information for this program and exit.
+X
+=item B<-a> I<FILE>|B<--append>=I<FILE>
+X
+Sets the file where diverted input is appended. This option is mutually
+exclusive with the B<-o> option.
+X
+=item B<-c>|B<--copy>
+X
+Copy to stdout the whole input.
+X
+=item B<-o> I<FILE>|B<--overwrite>=I<FILE>
+X
+Sets the file overwritten by the diverted input. This option is mutually
+exclusive with the B<-o> option.
+X
+=back
+X
+=head1 SEE ALSO
+X
+fmt(1), column(1), codefmt(1)
+X
+=head1 AUTHOR
+X
+Frederic JARDON <frederic.jardon@gmail.com>
+X
+=head1 COPYRIGHT AND LICENSE
+X
+Copyright (C) 2019 by Frederic JARDON <frederic.jardon@gmail.com>
+X
+This program is free software; you can redistribute it and/or modify
+it under the GPL license.
+X
+=cut
+X
+SHAR_EOF
+  (set 20 19 06 27 20 54 27 'scripts/codemv'
+   eval "${shar_touch}") && \
+  chmod 0755 'scripts/codemv'
+if test $? -ne 0
+then ${echo} "restore of scripts/codemv failed"
+fi
+  if ${md5check}
+  then (
+       ${MD5SUM} -c >/dev/null 2>&1 || ${echo} 'scripts/codemv': 'MD5 check failed'
+       ) << \SHAR_EOF
+c6e87f1769739326591d4863f0247678  scripts/codemv
+SHAR_EOF
+
+else
+test `LC_ALL=C wc -c < 'scripts/codemv'` -ne 4686 && \
+  ${echo} "restoration warning:  size of 'scripts/codemv' is not 4686"
   fi
 fi
 # ============= config.site ==============
@@ -1384,14 +1545,6 @@ test `LC_ALL=C wc -c < 'dot_XWinrc'` -ne 4076 && \
   fi
 fi
 # ============= scripts/byzanz-helper ==============
-if test ! -d 'scripts'; then
-  mkdir 'scripts'
-if test $? -eq 0
-then ${echo} "x - created directory scripts."
-else ${echo} "x - failed to create directory scripts."
-     exit 1
-fi
-fi
 if test -n "${keep_file}" && test -f 'scripts/byzanz-helper'
 then
 ${echo} "x - SKIPPING scripts/byzanz-helper (file already exists)"
@@ -1507,7 +1660,7 @@ it under the MIT license.
 X
 =cut
 SHAR_EOF
-  (set 20 18 04 03 08 04 45 'scripts/byzanz-helper'
+  (set 20 19 06 27 20 54 26 'scripts/byzanz-helper'
    eval "${shar_touch}") && \
   chmod 0755 'scripts/byzanz-helper'
 if test $? -ne 0
@@ -1682,7 +1835,7 @@ it under the MIT license.
 X
 =cut
 SHAR_EOF
-  (set 20 18 04 03 19 52 23 'scripts/ffmpeg-helper'
+  (set 20 19 06 27 20 54 26 'scripts/ffmpeg-helper'
    eval "${shar_touch}") && \
   chmod 0755 'scripts/ffmpeg-helper'
 if test $? -ne 0
@@ -1800,7 +1953,7 @@ X
 =cut
 X
 SHAR_EOF
-  (set 20 18 09 02 15 42 12 'scripts/hyper-v'
+  (set 20 19 06 27 20 54 26 'scripts/hyper-v'
    eval "${shar_touch}") && \
   chmod 0755 'scripts/hyper-v'
 if test $? -ne 0
@@ -2068,7 +2221,7 @@ X
 =cut
 X
 SHAR_EOF
-  (set 20 18 09 26 08 02 32 'scripts/msvc-shell'
+  (set 20 19 06 27 20 54 26 'scripts/msvc-shell'
    eval "${shar_touch}") && \
   chmod 0755 'scripts/msvc-shell'
 if test $? -ne 0
@@ -2252,7 +2405,7 @@ X
 =cut
 X
 SHAR_EOF
-  (set 20 18 11 07 20 09 15 'scripts/sixel2tmux'
+  (set 20 19 06 27 20 54 26 'scripts/sixel2tmux'
    eval "${shar_touch}") && \
   chmod 0644 'scripts/sixel2tmux'
 if test $? -ne 0
@@ -2451,7 +2604,7 @@ X
 =cut
 X
 SHAR_EOF
-  (set 20 18 04 01 15 36 07 'scripts/yank'
+  (set 20 19 06 27 20 54 26 'scripts/yank'
    eval "${shar_touch}") && \
   chmod 0755 'scripts/yank'
 if test $? -ne 0
@@ -6672,7 +6825,7 @@ X.rm #[ #] #H #V #F C
 X.\" ========================================================================
 X.\"
 X.IX Title "BYZANZ-HELPER 1"
-X.TH BYZANZ-HELPER 1 "2018-04-03" "github.com/fjardon/unix-config" "FJ Unix Config Commands"
+X.TH BYZANZ-HELPER 1 "2019-06-27" "github.com/fjardon/unix-config" "FJ Unix Config Commands"
 X.\" For nroff, turn off justification.  Always turn off hyphenation; it makes
 X.\" way too many mistakes in technical documents.
 X.if n .ad l
@@ -6718,7 +6871,7 @@ X.PP
 This program is free software; you can redistribute it and/or modify
 it under the \s-1MIT\s0 license.
 SHAR_EOF
-  (set 20 19 06 27 20 05 14 'byzanz-helper.1'
+  (set 20 19 06 27 20 55 32 'byzanz-helper.1'
    eval "${shar_touch}") && \
   chmod 0644 'byzanz-helper.1'
 if test $? -ne 0
@@ -6728,7 +6881,7 @@ fi
   then (
        ${MD5SUM} -c >/dev/null 2>&1 || ${echo} 'byzanz-helper.1': 'MD5 check failed'
        ) << \SHAR_EOF
-02449e6a54af42324394655b8bb51369  byzanz-helper.1
+974a7d2d599a4cb47df505885393acba  byzanz-helper.1
 SHAR_EOF
 
 else
@@ -6903,7 +7056,7 @@ X.IX Item "-s COLUMN-SEPARATOR|--separator=COLUMN-SEPARATOR"
 Sets the end-of-line separator. Default value is: \f(CW\*(C` \*(C'\fR.
 X.SH "SEE ALSO"
 X.IX Header "SEE ALSO"
-\&\fIfmt\fR\|(1), \fIcolumn\fR\|(1)
+\&\fIfmt\fR\|(1), \fIcolumn\fR\|(1), \fIcodemv\fR\|(1)
 X.SH "AUTHOR"
 X.IX Header "AUTHOR"
 Frederic \s-1JARDON\s0 <frederic.jardon@gmail.com>
@@ -6914,7 +7067,7 @@ X.PP
 This program is free software; you can redistribute it and/or modify
 it under the \s-1GPL\s0 license.
 SHAR_EOF
-  (set 20 19 06 27 20 05 15 'codefmt.1'
+  (set 20 19 06 27 20 55 32 'codefmt.1'
    eval "${shar_touch}") && \
   chmod 0644 'codefmt.1'
 if test $? -ne 0
@@ -6924,12 +7077,213 @@ fi
   then (
        ${MD5SUM} -c >/dev/null 2>&1 || ${echo} 'codefmt.1': 'MD5 check failed'
        ) << \SHAR_EOF
-6922907cce44b924e02393245bfe4d96  codefmt.1
+a3c620c535ab9724d1af059fdd74a031  codefmt.1
 SHAR_EOF
 
 else
-test `LC_ALL=C wc -c < 'codefmt.1'` -ne 5173 && \
-  ${echo} "restoration warning:  size of 'codefmt.1' is not 5173"
+test `LC_ALL=C wc -c < 'codefmt.1'` -ne 5192 && \
+  ${echo} "restoration warning:  size of 'codefmt.1' is not 5192"
+  fi
+fi
+# ============= codemv.1 ==============
+if test -n "${keep_file}" && test -f 'codemv.1'
+then
+${echo} "x - SKIPPING codemv.1 (file already exists)"
+
+else
+${echo} "x - extracting codemv.1 (text)"
+  sed 's/^X//' << 'SHAR_EOF' > 'codemv.1' &&
+X.\" Automatically generated by Pod::Man 4.09 (Pod::Simple 3.35)
+X.\"
+X.\" Standard preamble:
+X.\" ========================================================================
+X.de Sp \" Vertical space (when we can't use .PP)
+X.if t .sp .5v
+X.if n .sp
+X..
+X.de Vb \" Begin verbatim text
+X.ft CW
+X.nf
+X.ne \\$1
+X..
+X.de Ve \" End verbatim text
+X.ft R
+X.fi
+X..
+X.\" Set up some character translations and predefined strings.  \*(-- will
+X.\" give an unbreakable dash, \*(PI will give pi, \*(L" will give a left
+X.\" double quote, and \*(R" will give a right double quote.  \*(C+ will
+X.\" give a nicer C++.  Capital omega is used to do unbreakable dashes and
+X.\" therefore won't be available.  \*(C` and \*(C' expand to `' in nroff,
+X.\" nothing in troff, for use with C<>.
+X.tr \(*W-
+X.ds C+ C\v'-.1v'\h'-1p'\s-2+\h'-1p'+\s0\v'.1v'\h'-1p'
+X.ie n \{\
+X.    ds -- \(*W-
+X.    ds PI pi
+X.    if (\n(.H=4u)&(1m=24u) .ds -- \(*W\h'-12u'\(*W\h'-12u'-\" diablo 10 pitch
+X.    if (\n(.H=4u)&(1m=20u) .ds -- \(*W\h'-12u'\(*W\h'-8u'-\"  diablo 12 pitch
+X.    ds L" ""
+X.    ds R" ""
+X.    ds C` ""
+X.    ds C' ""
+'br\}
+X.el\{\
+X.    ds -- \|\(em\|
+X.    ds PI \(*p
+X.    ds L" ``
+X.    ds R" ''
+X.    ds C`
+X.    ds C'
+'br\}
+X.\"
+X.\" Escape single quotes in literal strings from groff's Unicode transform.
+X.ie \n(.g .ds Aq \(aq
+X.el       .ds Aq '
+X.\"
+X.\" If the F register is >0, we'll generate index entries on stderr for
+X.\" titles (.TH), headers (.SH), subsections (.SS), items (.Ip), and index
+X.\" entries marked with X<> in POD.  Of course, you'll have to process the
+X.\" output yourself in some meaningful fashion.
+X.\"
+X.\" Avoid warning from groff about undefined register 'F'.
+X.de IX
+X..
+X.if !\nF .nr F 0
+X.if \nF>0 \{\
+X.    de IX
+X.    tm Index:\\$1\t\\n%\t"\\$2"
+X..
+X.    if !\nF==2 \{\
+X.        nr % 0
+X.        nr F 2
+X.    \}
+X.\}
+X.\"
+X.\" Accent mark definitions (@(#)ms.acc 1.5 88/02/08 SMI; from UCB 4.2).
+X.\" Fear.  Run.  Save yourself.  No user-serviceable parts.
+X.    \" fudge factors for nroff and troff
+X.if n \{\
+X.    ds #H 0
+X.    ds #V .8m
+X.    ds #F .3m
+X.    ds #[ \f1
+X.    ds #] \fP
+X.\}
+X.if t \{\
+X.    ds #H ((1u-(\\\\n(.fu%2u))*.13m)
+X.    ds #V .6m
+X.    ds #F 0
+X.    ds #[ \&
+X.    ds #] \&
+X.\}
+X.    \" simple accents for nroff and troff
+X.if n \{\
+X.    ds ' \&
+X.    ds ` \&
+X.    ds ^ \&
+X.    ds , \&
+X.    ds ~ ~
+X.    ds /
+X.\}
+X.if t \{\
+X.    ds ' \\k:\h'-(\\n(.wu*8/10-\*(#H)'\'\h"|\\n:u"
+X.    ds ` \\k:\h'-(\\n(.wu*8/10-\*(#H)'\`\h'|\\n:u'
+X.    ds ^ \\k:\h'-(\\n(.wu*10/11-\*(#H)'^\h'|\\n:u'
+X.    ds , \\k:\h'-(\\n(.wu*8/10)',\h'|\\n:u'
+X.    ds ~ \\k:\h'-(\\n(.wu-\*(#H-.1m)'~\h'|\\n:u'
+X.    ds / \\k:\h'-(\\n(.wu*8/10-\*(#H)'\z\(sl\h'|\\n:u'
+X.\}
+X.    \" troff and (daisy-wheel) nroff accents
+X.ds : \\k:\h'-(\\n(.wu*8/10-\*(#H+.1m+\*(#F)'\v'-\*(#V'\z.\h'.2m+\*(#F'.\h'|\\n:u'\v'\*(#V'
+X.ds 8 \h'\*(#H'\(*b\h'-\*(#H'
+X.ds o \\k:\h'-(\\n(.wu+\w'\(de'u-\*(#H)/2u'\v'-.3n'\*(#[\z\(de\v'.3n'\h'|\\n:u'\*(#]
+X.ds d- \h'\*(#H'\(pd\h'-\w'~'u'\v'-.25m'\f2\(hy\fP\v'.25m'\h'-\*(#H'
+X.ds D- D\\k:\h'-\w'D'u'\v'-.11m'\z\(hy\v'.11m'\h'|\\n:u'
+X.ds th \*(#[\v'.3m'\s+1I\s-1\v'-.3m'\h'-(\w'I'u*2/3)'\s-1o\s+1\*(#]
+X.ds Th \*(#[\s+2I\s-2\h'-\w'I'u*3/5'\v'-.3m'o\v'.3m'\*(#]
+X.ds ae a\h'-(\w'a'u*4/10)'e
+X.ds Ae A\h'-(\w'A'u*4/10)'E
+X.    \" corrections for vroff
+X.if v .ds ~ \\k:\h'-(\\n(.wu*9/10-\*(#H)'\s-2\u~\d\s+2\h'|\\n:u'
+X.if v .ds ^ \\k:\h'-(\\n(.wu*10/11-\*(#H)'\v'-.4m'^\v'.4m'\h'|\\n:u'
+X.    \" for low resolution devices (crt and lpr)
+X.if \n(.H>23 .if \n(.V>19 \
+\{\
+X.    ds : e
+X.    ds 8 ss
+X.    ds o a
+X.    ds d- d\h'-1'\(ga
+X.    ds D- D\h'-1'\(hy
+X.    ds th \o'bp'
+X.    ds Th \o'LP'
+X.    ds ae ae
+X.    ds Ae AE
+X.\}
+X.rm #[ #] #H #V #F C
+X.\" ========================================================================
+X.\"
+X.IX Title "CODEMV 1"
+X.TH CODEMV 1 "2019-06-27" "github.com/fjardon/unix-config" "FJ Unix Config Commands"
+X.\" For nroff, turn off justification.  Always turn off hyphenation; it makes
+X.\" way too many mistakes in technical documents.
+X.if n .ad l
+X.nh
+X.SH "NAME"
+codemv \- Code Mover Tool
+X.SH "SYNOPSIS"
+X.IX Header "SYNOPSIS"
+\&\fBcodemv\fR \fB\-h\fR|\fB\-\-help\fR
+X.PP
+\&\fBcodemv\fR [\fB\s-1OPTIONS\s0\fR]...
+X.SH "DESCRIPTION"
+X.IX Header "DESCRIPTION"
+This tool divert part of its input to a specified file.
+X.SH "OPTIONS"
+X.IX Header "OPTIONS"
+X.IP "\fB\-h\fR|\fB\-\-help\fR" 4
+X.IX Item "-h|--help"
+Print the usage, help and version information for this program and exit.
+X.IP "\fB\-a\fR \fI\s-1FILE\s0\fR|\fB\-\-append\fR=\fI\s-1FILE\s0\fR" 4
+X.IX Item "-a FILE|--append=FILE"
+Sets the file where diverted input is appended. This option is mutually
+exclusive with the \fB\-o\fR option.
+X.IP "\fB\-c\fR|\fB\-\-copy\fR" 4
+X.IX Item "-c|--copy"
+Copy to stdout the whole input.
+X.IP "\fB\-o\fR \fI\s-1FILE\s0\fR|\fB\-\-overwrite\fR=\fI\s-1FILE\s0\fR" 4
+X.IX Item "-o FILE|--overwrite=FILE"
+Sets the file overwritten by the diverted input. This option is mutually
+exclusive with the \fB\-o\fR option.
+X.SH "SEE ALSO"
+X.IX Header "SEE ALSO"
+\&\fIfmt\fR\|(1), \fIcolumn\fR\|(1), \fIcodefmt\fR\|(1)
+X.SH "AUTHOR"
+X.IX Header "AUTHOR"
+Frederic \s-1JARDON\s0 <frederic.jardon@gmail.com>
+X.SH "COPYRIGHT AND LICENSE"
+X.IX Header "COPYRIGHT AND LICENSE"
+Copyright (C) 2019 by Frederic \s-1JARDON\s0 <frederic.jardon@gmail.com>
+X.PP
+This program is free software; you can redistribute it and/or modify
+it under the \s-1GPL\s0 license.
+SHAR_EOF
+  (set 20 19 06 27 20 55 33 'codemv.1'
+   eval "${shar_touch}") && \
+  chmod 0644 'codemv.1'
+if test $? -ne 0
+then ${echo} "restore of codemv.1 failed"
+fi
+  if ${md5check}
+  then (
+       ${MD5SUM} -c >/dev/null 2>&1 || ${echo} 'codemv.1': 'MD5 check failed'
+       ) << \SHAR_EOF
+cb51a85bef3af0ae39eb95d3f1f71046  codemv.1
+SHAR_EOF
+
+else
+test `LC_ALL=C wc -c < 'codemv.1'` -ne 5273 && \
+  ${echo} "restoration warning:  size of 'codemv.1' is not 5273"
   fi
 fi
 # ============= ffmpeg-helper.1 ==============
@@ -7071,7 +7425,7 @@ X.rm #[ #] #H #V #F C
 X.\" ========================================================================
 X.\"
 X.IX Title "FFMPEG-HELPER 1"
-X.TH FFMPEG-HELPER 1 "2018-04-03" "github.com/fjardon/unix-config" "FJ Unix Config Commands"
+X.TH FFMPEG-HELPER 1 "2019-06-27" "github.com/fjardon/unix-config" "FJ Unix Config Commands"
 X.\" For nroff, turn off justification.  Always turn off hyphenation; it makes
 X.\" way too many mistakes in technical documents.
 X.if n .ad l
@@ -7117,7 +7471,7 @@ X.PP
 This program is free software; you can redistribute it and/or modify
 it under the \s-1MIT\s0 license.
 SHAR_EOF
-  (set 20 19 06 27 20 05 15 'ffmpeg-helper.1'
+  (set 20 19 06 27 20 55 33 'ffmpeg-helper.1'
    eval "${shar_touch}") && \
   chmod 0644 'ffmpeg-helper.1'
 if test $? -ne 0
@@ -7127,7 +7481,7 @@ fi
   then (
        ${MD5SUM} -c >/dev/null 2>&1 || ${echo} 'ffmpeg-helper.1': 'MD5 check failed'
        ) << \SHAR_EOF
-c52e9378db97901eb277f512e84a2e0b  ffmpeg-helper.1
+f8ed5cfc616068e43a2ba1a2772aa251  ffmpeg-helper.1
 SHAR_EOF
 
 else
@@ -7274,7 +7628,7 @@ X.rm #[ #] #H #V #F C
 X.\" ========================================================================
 X.\"
 X.IX Title "HYPER-V 1"
-X.TH HYPER-V 1 "2018-09-02" "github.com/fjardon/unix-config" "FJ Unix Config Commands"
+X.TH HYPER-V 1 "2019-06-27" "github.com/fjardon/unix-config" "FJ Unix Config Commands"
 X.\" For nroff, turn off justification.  Always turn off hyphenation; it makes
 X.\" way too many mistakes in technical documents.
 X.if n .ad l
@@ -7315,7 +7669,7 @@ X.PP
 This program is free software; you can redistribute it and/or modify
 it under the \s-1MIT\s0 license.
 SHAR_EOF
-  (set 20 19 06 27 20 05 15 'hyper-v.1'
+  (set 20 19 06 27 20 55 33 'hyper-v.1'
    eval "${shar_touch}") && \
   chmod 0644 'hyper-v.1'
 if test $? -ne 0
@@ -7325,7 +7679,7 @@ fi
   then (
        ${MD5SUM} -c >/dev/null 2>&1 || ${echo} 'hyper-v.1': 'MD5 check failed'
        ) << \SHAR_EOF
-a352260862a2e69e73b17e99e9625943  hyper-v.1
+f93a8e2741e853b6b50b32ededf12d1d  hyper-v.1
 SHAR_EOF
 
 else
@@ -7472,7 +7826,7 @@ X.rm #[ #] #H #V #F C
 X.\" ========================================================================
 X.\"
 X.IX Title "MSVC-SHELL 1"
-X.TH MSVC-SHELL 1 "2018-09-26" "github.com/fjardon/unix-config" "FJ Unix Config Commands"
+X.TH MSVC-SHELL 1 "2019-06-27" "github.com/fjardon/unix-config" "FJ Unix Config Commands"
 X.\" For nroff, turn off justification.  Always turn off hyphenation; it makes
 X.\" way too many mistakes in technical documents.
 X.if n .ad l
@@ -7522,7 +7876,7 @@ X.PP
 This program is free software; you can redistribute it and/or modify
 it under the \s-1MIT\s0 license.
 SHAR_EOF
-  (set 20 19 06 27 20 05 16 'msvc-shell.1'
+  (set 20 19 06 27 20 55 33 'msvc-shell.1'
    eval "${shar_touch}") && \
   chmod 0644 'msvc-shell.1'
 if test $? -ne 0
@@ -7532,7 +7886,7 @@ fi
   then (
        ${MD5SUM} -c >/dev/null 2>&1 || ${echo} 'msvc-shell.1': 'MD5 check failed'
        ) << \SHAR_EOF
-1696cb53eeb5eab916c154f36475082f  msvc-shell.1
+4a3f19858c0f1573fff8049186368a67  msvc-shell.1
 SHAR_EOF
 
 else
@@ -7679,7 +8033,7 @@ X.rm #[ #] #H #V #F C
 X.\" ========================================================================
 X.\"
 X.IX Title "SIXEL2TMUX 1"
-X.TH SIXEL2TMUX 1 "2018-11-07" "github.com/fjardon/unix-config" "FJ Unix Config Commands"
+X.TH SIXEL2TMUX 1 "2019-06-27" "github.com/fjardon/unix-config" "FJ Unix Config Commands"
 X.\" For nroff, turn off justification.  Always turn off hyphenation; it makes
 X.\" way too many mistakes in technical documents.
 X.if n .ad l
@@ -7750,7 +8104,7 @@ X.PP
 This program is free software; you can redistribute it and/or modify
 it under the \s-1MIT\s0 license.
 SHAR_EOF
-  (set 20 19 06 27 20 05 16 'sixel2tmux.1'
+  (set 20 19 06 27 20 55 34 'sixel2tmux.1'
    eval "${shar_touch}") && \
   chmod 0644 'sixel2tmux.1'
 if test $? -ne 0
@@ -7760,7 +8114,7 @@ fi
   then (
        ${MD5SUM} -c >/dev/null 2>&1 || ${echo} 'sixel2tmux.1': 'MD5 check failed'
        ) << \SHAR_EOF
-52bb0f5afcc9dbc669874b56cd7c2103  sixel2tmux.1
+af75317ceb330ddb083e76947e5427da  sixel2tmux.1
 SHAR_EOF
 
 else
@@ -7907,7 +8261,7 @@ X.rm #[ #] #H #V #F C
 X.\" ========================================================================
 X.\"
 X.IX Title "YANK 1"
-X.TH YANK 1 "2018-04-01" "github.com/fjardon/unix-config" "FJ Unix Config Commands"
+X.TH YANK 1 "2019-06-27" "github.com/fjardon/unix-config" "FJ Unix Config Commands"
 X.\" For nroff, turn off justification.  Always turn off hyphenation; it makes
 X.\" way too many mistakes in technical documents.
 X.if n .ad l
@@ -7990,7 +8344,7 @@ X.PP
 This program is free software; you can redistribute it and/or modify
 it under the \s-1MIT\s0 license.
 SHAR_EOF
-  (set 20 19 06 27 20 05 16 'yank.1'
+  (set 20 19 06 27 20 55 34 'yank.1'
    eval "${shar_touch}") && \
   chmod 0644 'yank.1'
 if test $? -ne 0
@@ -8000,7 +8354,7 @@ fi
   then (
        ${MD5SUM} -c >/dev/null 2>&1 || ${echo} 'yank.1': 'MD5 check failed'
        ) << \SHAR_EOF
-5b4e03faee62735be16fa96307b62c32  yank.1
+4cdd8da813e56533f2c7bfc75f52d32c  yank.1
 SHAR_EOF
 
 else
@@ -8237,6 +8591,8 @@ fi
 # Scripts
 install -m 0755 scripts/codefmt       "${PREFIX}/.local/bin"
 install -m 0644 codefmt.1             "${PREFIX}/.local/share/man/man1"
+install -m 0755 scripts/codemv        "${PREFIX}/.local/bin"
+install -m 0644 codemv.1              "${PREFIX}/.local/share/man/man1"
 install -m 0755 scripts/sixel2tmux    "${PREFIX}/.local/bin"
 install -m 0644 sixel2tmux.1          "${PREFIX}/.local/share/man/man1"
 install -m 0755 scripts/byzanz-helper "${PREFIX}/.local/bin"
