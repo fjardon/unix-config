@@ -203,7 +203,7 @@ if (0 == @words) {
 my @cols  = shuffle_words_in_columns (words => \@words, fmt => $opt_fmt);
 my @lines = format_columns_to_lines (cols => \@cols, fmt => $opt_fmt, separator => $opt_separator, eol_separator => $opt_eol, n_words => scalar @words);
 foreach my $line (@lines) {
-    print $line;
+    print $opt_prefix.$line;
 }
 
 exit 0;

@@ -53,8 +53,8 @@ cat <<'SETUP_SHAR_EOF'> setup.shar
 # To extract the files from this archive, save it to some FILE, remove
 # everything before the '#!/bin/sh' line above, then type 'sh FILE'.
 #
-lock_dir=_sh05414
-# Made on 2019-06-27 20:55 CEST by <frede@darthvader>.
+lock_dir=_sh28711
+# Made on 2019-06-28 00:47 CEST by <frede@darthvader>.
 # Source directory was '/home/frede/Documents/workspace/github/unix-config/src'.
 #
 # Existing files will *not* be overwritten, unless '-c' is specified.
@@ -62,7 +62,7 @@ lock_dir=_sh05414
 # This shar contains:
 # length mode       name
 # ------ ---------- ------------------------------------------
-#   8082 -rwxr-xr-x scripts/codefmt
+#   8094 -rwxr-xr-x scripts/codefmt
 #   4686 -rwxr-xr-x scripts/codemv
 #    601 -rw-r--r-- config.site
 #    455 -rw-r--r-- dot_bash_profile
@@ -409,7 +409,7 @@ X
 my @cols  = shuffle_words_in_columns (words => \@words, fmt => $opt_fmt);
 my @lines = format_columns_to_lines (cols => \@cols, fmt => $opt_fmt, separator => $opt_separator, eol_separator => $opt_eol, n_words => scalar @words);
 foreach my $line (@lines) {
-X    print $line;
+X    print $opt_prefix.$line;
 }
 X
 Xexit 0;
@@ -465,7 +465,7 @@ X
 =cut
 X
 SHAR_EOF
-  (set 20 19 06 27 20 54 26 'scripts/codefmt'
+  (set 20 19 06 27 22 44 39 'scripts/codefmt'
    eval "${shar_touch}") && \
   chmod 0755 'scripts/codefmt'
 if test $? -ne 0
@@ -475,12 +475,12 @@ fi
   then (
        ${MD5SUM} -c >/dev/null 2>&1 || ${echo} 'scripts/codefmt': 'MD5 check failed'
        ) << \SHAR_EOF
-7df3cc74f1240e64f5162ca08773670d  scripts/codefmt
+1d3f96584042667191108c7b9ddc345b  scripts/codefmt
 SHAR_EOF
 
 else
-test `LC_ALL=C wc -c < 'scripts/codefmt'` -ne 8082 && \
-  ${echo} "restoration warning:  size of 'scripts/codefmt' is not 8082"
+test `LC_ALL=C wc -c < 'scripts/codefmt'` -ne 8094 && \
+  ${echo} "restoration warning:  size of 'scripts/codefmt' is not 8094"
   fi
 fi
 # ============= scripts/codemv ==============
@@ -7067,7 +7067,7 @@ X.PP
 This program is free software; you can redistribute it and/or modify
 it under the \s-1GPL\s0 license.
 SHAR_EOF
-  (set 20 19 06 27 20 55 32 'codefmt.1'
+  (set 20 19 06 28 00 47 46 'codefmt.1'
    eval "${shar_touch}") && \
   chmod 0644 'codefmt.1'
 if test $? -ne 0
