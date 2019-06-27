@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+PREFIX="${PREFIX:-${HOME}}"
+
 # =============================================================================
 # Exit on any errors
 set -e
@@ -8,9 +10,9 @@ function echoerr() { echo "$@" 1>&2; }
 
 # =============================================================================
 # Configure some shell variables
-PATH="${PATH}:${HOME}/.local/bin"
-LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:${HOME}/.local/lib"
-DATAROOTDIR="${HOME}/.local/share"
+PATH="${PATH}:${PREFIX}/.local/bin"
+LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:${PREFIX}/.local/lib"
+DATAROOTDIR="${PREFIX}/.local/share"
 # =============================================================================
 
 # =============================================================================
@@ -54,22 +56,22 @@ SETUP_SHAR_EOF
 # Prepare backups directory
 DATE=$(date '+%Y%m%d')
 HOUR=$(date '+%H%M%S')
-BACKUPDIR="${HOME}/.backups/${DATE}/${HOUR}"
+BACKUPDIR="${PREFIX}/.backups/${DATE}/${HOUR}"
 install -m 0700 -d "${BACKUPDIR}"
 
 # Backup files
 echo "shell ..."
-if [ -e ~/.profile ]; then
-    cp -f ~/.profile "${BACKUPDIR}"
+if [ -e "${PREFIX}/.profile" ]; then
+    cp -f "${PREFIX}/.profile" "${BACKUPDIR}"
 fi
-if [ -e ~/.bash_profile ]; then
-    cp -f ~/.bash_profile "${BACKUPDIR}"
+if [ -e "${PREFIX}/.bash_profile" ]; then
+    cp -f "${PREFIX}/.bash_profile" "${BACKUPDIR}"
 fi
-if [ -e ~/.bashrc ]; then
-    cp -f ~/.bashrc "${BACKUPDIR}"
+if [ -e "${PREFIX}/.bashrc" ]; then
+    cp -f "${PREFIX}/.bashrc" "${BACKUPDIR}"
 fi
-if [ ! -e ~/.path_dirs ]; then
-    cat <<DOT_PROFILE_PATHS_EOF > ~/.path_dirs
+if [ ! -e "${PREFIX}/.path_dirs" ]; then
+    cat <<DOT_PROFILE_PATHS_EOF > "${PREFIX}/.path_dirs"
 # Directory path in this file are scanned by .bash_profile
 # to setup the following variables:
 #  - PATH
@@ -79,79 +81,79 @@ if [ ! -e ~/.path_dirs ]; then
 #  - PERL5LIB
 #  - PKG_CONFIG_PATH
 
-${HOME}/.local
-${HOME}/.local/share/perl5
+${PREFIX}/.local
+${PREFIX}/.local/share/perl5
 DOT_PROFILE_PATHS_EOF
 fi
-install -m 0644 dot_profile      ~/.profile
-install -m 0644 dot_bash_profile ~/.bash_profile
-install -m 0644 dot_bashrc       ~/.bashrc
+install -m 0644 dot_profile      "${PREFIX}/.profile"
+install -m 0644 dot_bash_profile "${PREFIX}/.bash_profile"
+install -m 0644 dot_bashrc       "${PREFIX}/.bashrc"
 
 # .local setup
 echo "local ..."
-install -m 0755 -d ~/.local/bin
-install -m 0755 -d ~/.local/lib
-install -m 0755 -d ~/.local/share
-install -m 0755 -d ~/.local/share/man/man1
-install -m 0755 -d ~/.local/var
-install -m 0755 -d ~/.local/var/lock
-install -m 0755 -d ~/.local/var/log
-install -m 0755 -d ~/.local/var/run
-install -m 0755 -d ~/.local/etc/cron
-install -m 0755 -d ~/.local/etc/profile.d
-install -m 0755 runcron ~/.local/bin
-export PATH="${PATH}:~/.local/bin"
+install -m 0755 -d "${PREFIX}/.local/bin"
+install -m 0755 -d "${PREFIX}/.local/lib"
+install -m 0755 -d "${PREFIX}/.local/share"
+install -m 0755 -d "${PREFIX}/.local/share/man/man1"
+install -m 0755 -d "${PREFIX}/.local/var"
+install -m 0755 -d "${PREFIX}/.local/var/lock"
+install -m 0755 -d "${PREFIX}/.local/var/log"
+install -m 0755 -d "${PREFIX}/.local/var/run"
+install -m 0755 -d "${PREFIX}/.local/etc/cron"
+install -m 0755 -d "${PREFIX}/.local/etc/profile.d"
+install -m 0755 runcron "${PREFIX}/.local/bin"
+export PATH="${PATH}:${PREFIX}/.local/bin"
 
 # Cron setup
 echo "cron ..."
 if has_prog crontab; then
-    install -m 0755 -d ~/.local/etc/cron
-    install -m 0755 -d ~/.local/etc/cron/hourly
-    install -m 0755 -d ~/.local/etc/cron/daily
-    install -m 0755 -d ~/.local/etc/cron/daily-4
-    install -m 0755 -d ~/.local/etc/cron/daily-8
-    install -m 0755 -d ~/.local/etc/cron/daily-12
-    install -m 0755 -d ~/.local/etc/cron/daily-16
-    install -m 0755 -d ~/.local/etc/cron/daily-20
-    install -m 0755 -d ~/.local/etc/cron/weekly
-    install -m 0755 -d ~/.local/etc/cron/monthly
-    install -m 0755 -d ~/.local/etc/cron/yearly
-    install -m 0755 -d ~/.local/etc/cron/commands
-    touch ~/.local/etc/cron/environ.bash
+    install -m 0755 -d "${PREFIX}/.local/etc/cron"
+    install -m 0755 -d "${PREFIX}/.local/etc/cron/hourly"
+    install -m 0755 -d "${PREFIX}/.local/etc/cron/daily"
+    install -m 0755 -d "${PREFIX}/.local/etc/cron/daily-4"
+    install -m 0755 -d "${PREFIX}/.local/etc/cron/daily-8"
+    install -m 0755 -d "${PREFIX}/.local/etc/cron/daily-12"
+    install -m 0755 -d "${PREFIX}/.local/etc/cron/daily-16"
+    install -m 0755 -d "${PREFIX}/.local/etc/cron/daily-20"
+    install -m 0755 -d "${PREFIX}/.local/etc/cron/weekly"
+    install -m 0755 -d "${PREFIX}/.local/etc/cron/monthly"
+    install -m 0755 -d "${PREFIX}/.local/etc/cron/yearly"
+    install -m 0755 -d "${PREFIX}/.local/etc/cron/commands"
+    touch "${PREFIX}/.local/etc/cron/environ.bash"
 
     crontab -l > "${BACKUPDIR}/crontab"
     tmpcrontab=$(mktemp)
-    grep -v ~/.local/bin/runcron "${BACKUPDIR}/crontab" \
+    grep -v "${PREFIX}/.local/bin/runcron" "${BACKUPDIR}/crontab" \
          > "${tmpcrontab}"
-    echo "0  * * * *" ~/.local/bin/runcron hourly   >> "${tmpcrontab}"
-    echo "0  0 * * *" ~/.local/bin/runcron daily    >> "${tmpcrontab}"
-    echo "0  4 * * *" ~/.local/bin/runcron daily-4  >> "${tmpcrontab}"
-    echo "0  8 * * *" ~/.local/bin/runcron daily-8  >> "${tmpcrontab}"
-    echo "0 12 * * *" ~/.local/bin/runcron daily-12 >> "${tmpcrontab}"
-    echo "0 16 * * *" ~/.local/bin/runcron daily-16 >> "${tmpcrontab}"
-    echo "0 20 * * *" ~/.local/bin/runcron daily-20 >> "${tmpcrontab}"
-    echo "0  0 * * 0" ~/.local/bin/runcron weekly   >> "${tmpcrontab}"
-    echo "0  0 1 * *" ~/.local/bin/runcron monthly  >> "${tmpcrontab}"
-    echo "0  0 1 1 *" ~/.local/bin/runcron yearly   >> "${tmpcrontab}"
+    echo "0  * * * *" "${PREFIX}/.local/bin/runcron hourly"   >> "${tmpcrontab}"
+    echo "0  0 * * *" "${PREFIX}/.local/bin/runcron daily"    >> "${tmpcrontab}"
+    echo "0  4 * * *" "${PREFIX}/.local/bin/runcron daily-4"  >> "${tmpcrontab}"
+    echo "0  8 * * *" "${PREFIX}/.local/bin/runcron daily-8"  >> "${tmpcrontab}"
+    echo "0 12 * * *" "${PREFIX}/.local/bin/runcron daily-12" >> "${tmpcrontab}"
+    echo "0 16 * * *" "${PREFIX}/.local/bin/runcron daily-16" >> "${tmpcrontab}"
+    echo "0 20 * * *" "${PREFIX}/.local/bin/runcron daily-20" >> "${tmpcrontab}"
+    echo "0  0 * * 0" "${PREFIX}/.local/bin/runcron weekly"   >> "${tmpcrontab}"
+    echo "0  0 1 * *" "${PREFIX}/.local/bin/runcron monthly"  >> "${tmpcrontab}"
+    echo "0  0 1 1 *" "${PREFIX}/.local/bin/runcron yearly"   >> "${tmpcrontab}"
     crontab "${tmpcrontab}"
     rm -f "${tmpcrontab}"
 fi
 
 # iMatix environment
-install -m 0644 ibase.sh ~/.local/etc/profile.d
+install -m 0644 ibase.sh "${PREFIX}/.local/etc/profile.d"
 
 # Cygwin
 if [[ "${os_name}" == CYGWIN* ]]; then
     echo "Cygwin ..."
-    if [ -e ~/.XWinrc ]; then
-        cp -f ~/.XWinrc "${BACKUPDIR}"
+    if [ -e "${PREFIX}/.XWinrc" ]; then
+        cp -f "${PREFIX}/.XWinrc" "${BACKUPDIR}"
     fi
-    install -m 0644 dot_XWinrc ~/.XWinrc
-    install -m 0755 scripts/hyper-v ~/.local/bin
-    install -m 0644 hyper-v.1 ~/.local/share/man/man1
-    install -m 0755 scripts/msvc-shell ~/.local/bin
-    install -m 0644 msvc-shell.1 ~/.local/share/man/man1
-    install -m 0755 apt-cyg ~/.local/bin
+    install -m 0644 dot_XWinrc         "${PREFIX}/.XWinrc"
+    install -m 0755 scripts/hyper-v    "${PREFIX}/.local/bin"
+    install -m 0644 hyper-v.1          "${PREFIX}/.local/share/man/man1"
+    install -m 0755 scripts/msvc-shell "${PREFIX}/.local/bin"
+    install -m 0644 msvc-shell.1       "${PREFIX}/.local/share/man/man1"
+    install -m 0755 apt-cyg            "${PREFIX}/.local/bin"
 fi
 
 # Python
@@ -191,47 +193,47 @@ fi
 # XWindow
 if has_prog xterm; then
     echo "XWindow ..."
-    if [ -e ~/.Xresources ]; then
-        cp -f ~/.Xresources "${BACKUPDIR}"
+    if [ -e "${PREFIX}/.Xresources" ]; then
+        cp -f "${PREFIX}/.Xresources" "${BACKUPDIR}"
     fi
-    install -m 0644 dot_Xresources ~/.Xresources
+    install -m 0644 dot_Xresources "${PREFIX}/.Xresources"
 
     # Fonts
     echo "nerd fonts ..."
-    install -d ~/.fonts
-    install -d ~/.local/share/fonts
+    install -d "${PREFIX}/.fonts"
+    install -d "${PREFIX}/.local/share/fonts"
     if has_prog fc-cache; then
-        if [ ! -d ~/.local/share/fonts/nerd-fonts ]; then
-            install -d ~/.local/share/fonts/nerd-fonts
+        if [ ! -d "${PREFIX}/.local/share/fonts/nerd-fonts" ]; then
+            install -d "${PREFIX}/.local/share/fonts/nerd-fonts"
             curl -O 'https://raw.githubusercontent.com/ryanoasis/nerd-fonts/2.0.0/patched-fonts/DejaVuSansMono/Regular/complete/DejaVu%20Sans%20Mono%20Nerd%20Font%20Complete.ttf' \
                 > install.log 2>&1
             mv 'DejaVu%20Sans%20Mono%20Nerd%20Font%20Complete.ttf' 'DejaVu Sans Mono Nerd Font Complete.ttf'
-            install -m 0644 'DejaVu Sans Mono Nerd Font Complete.ttf' ~/.local/share/fonts/nerd-fonts/
-            fc-cache -f ~/.local/share/fonts
+            install -m 0644 'DejaVu Sans Mono Nerd Font Complete.ttf' "${PREFIX}/.local/share/fonts/nerd-fonts/"
+            fc-cache -f "${PREFIX}/.local/share/fonts"
         fi
     fi
 fi
 
 # vim
 echo "vim ..."
-if [ -e ~/.vimrc ]; then
-    cp -f ~/.vimrc "${BACKUPDIR}"
+if [ -e "${PREFIX}/.vimrc" ]; then
+    cp -f "${PREFIX}/.vimrc" "${BACKUPDIR}"
 fi
-if [ ! -e ~/.vim/autoload/plug.vim ]; then
-    curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
+if [ ! -e "${PREFIX}/.vim/autoload/plug.vim" ]; then
+    curl -fLo "${PREFIX}/.vim/autoload/plug.vim" --create-dirs \
             https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
 fi
-install -m 0644 dot_vimrc ~/.vimrc
+install -m 0644 dot_vimrc "${PREFIX}/.vimrc"
 vim +PlugInstall +qall
 
 # tmux
 echo "tmux ..."
-if [ -e ~/.tmux.conf ]; then
-    cp -f ~/.tmux.conf "${BACKUPDIR}"
+if [ -e "${PREFIX}/.tmux.conf" ]; then
+    cp -f "${PREFIX}/.tmux.conf" "${BACKUPDIR}"
 fi
-install -m 0644 dot_tmux_conf ~/.tmux.conf
-install -m 0755 scripts/yank ~/.local/bin
-install -m 0644 yank.1 ~/.local/share/man/man1
+install -m 0644 dot_tmux_conf "${PREFIX}/.tmux.conf"
+install -m 0755 scripts/yank  "${PREFIX}/.local/bin"
+install -m 0644 yank.1        "${PREFIX}/.local/share/man/man1"
 
 echo "terminfo ..."
 if has_prog tic; then
@@ -242,65 +244,63 @@ if has_prog tic; then
     if [ -e /usr/share/terminfo/t/tmux-256color ]; then
         has_tmux256_terminfo="y"
     fi
-    if [ -e ~/.terminfo/t/tmux-256color ]; then
+    if [ -e "${PREFIX}/.terminfo/t/tmux-256color" ]; then
         has_tmux256_terminfo="y"
     fi
     if [ -z "${has_tmux256_terminfo}" ]; then
-        mkdir -p ~/.terminfo
-        tic -o ~/.terminfo tmux-256color.tinfo
+        mkdir -p "${PREFIX}/.terminfo"
+        tic -o "${PREFIX}/.terminfo" tmux-256color.tinfo
     fi
 fi
 
 # Perl
 echo "Perl ..."
-if [ ! -e ~/.local/share/perl5 ]; then
+if [ ! -e "${PREFIX}/.local/share/perl5" ]; then
     perl_local_lib=local-lib-2.000023
     curl -O "http://www.cpan.org/authors/id/H/HA/HAARG/${perl_local_lib}.tar.gz"
     tar zxvf "${perl_local_lib}.tar.gz"
     cd  "${perl_local_lib}"
-    perl Makefile.PL "--bootstrap=${HOME}/.local/share/perl5" > install.log 2>&1
+    perl Makefile.PL "--bootstrap=${PREFIX}/.local/share/perl5" > install.log 2>&1
     make test > install.log 2>&1 && make install > install.log 2>&1
     cd ..
-    perl "-I${HOME}/.local/share/perl5/lib/perl5" "-Mlocal::lib=${HOME}/.local/share/perl5" \
-        > ~/.local/etc/profile.d/perl5.sh
-    . ~/.local/etc/profile.d/perl5.sh
+    perl "-I${PREFIX}/.local/share/perl5/lib/perl5" "-Mlocal::lib=${PREFIX}/.local/share/perl5" \
+        > "${PREFIX}/.local/etc/profile.d/perl5.sh"
+    . "${PREFIX}/.local/etc/profile.d/perl5.sh"
 fi
 
-# Code formatter tools
-install -m 0755 scripts/codefmt ~/.local/bin
-install -m 0644 codefmt.1 ~/.local/share/man/man1
-
-# Sixel tools
-install -m 0755 scripts/sixel2tmux ~/.local/bin
-install -m 0644 sixel2tmux.1 ~/.local/share/man/man1
-
-# Screencast tools
-install -m 0755 scripts/byzanz-helper ~/.local/bin
-install -m 0644 byzanz-helper.1 ~/.local/share/man/man1
-install -m 0755 scripts/ffmpeg-helper ~/.local/bin
-install -m 0644 ffmpeg-helper.1 ~/.local/share/man/man1
+# Scripts
+install -m 0755 scripts/codefmt       "${PREFIX}/.local/bin"
+install -m 0644 codefmt.1             "${PREFIX}/.local/share/man/man1"
+install -m 0755 scripts/sixel2tmux    "${PREFIX}/.local/bin"
+install -m 0644 sixel2tmux.1          "${PREFIX}/.local/share/man/man1"
+install -m 0755 scripts/byzanz-helper "${PREFIX}/.local/bin"
+install -m 0644 byzanz-helper.1       "${PREFIX}/.local/share/man/man1"
+install -m 0755 scripts/ffmpeg-helper "${PREFIX}/.local/bin"
+install -m 0644 ffmpeg-helper.1       "${PREFIX}/.local/share/man/man1"
 
 # Autoconf cache
 echo "Autoconf cache ..."
-if [ ! -e ~/.local/etc/config.site ]; then
-    cp config.site ~/.local/etc/config.site
+if [ ! -e "${PREFIX}/.local/etc/config.site" ]; then
+    cp config.site "${PREFIX}/.local/etc/config.site"
 fi
 
 # Gdb pretty printers
-if [ ! -e ~/.local/share/gdb ]; then
-    mkdir -p ~/.local/share/gdb
-    tar xvf share-gdb.tar -C ~/.local/share/gdb
-    cp -f ~/.gdbinit "${BACKUPDIR}"
-    cp dot_gdbinit ~/.gdbinit
+if [ ! -e "${PREFIX}/.local/share/gdb" ]; then
+    mkdir -p "${PREFIX}/.local/share/gdb"
+    tar xvf share-gdb.tar -C "${PREFIX}/.local/share/gdb"
+    if [ -e "${PREFIX}/.gdbinit" ]; then
+        cp -f "${PREFIX}/.gdbinit" "${BACKUPDIR}"
+    fi
+    cp dot_gdbinit "${PREFIX}/.gdbinit"
 fi
 
 # Gnulib
 echo "Gnulib ..."
 if ! has_prog gnulib-tool; then
-    if [ ! -e ~/.local/share/gnulib ]; then
-        git clone git://git.savannah.gnu.org/gnulib.git ~/.local/share/gnulib > install.log 2>&1
+    if [ ! -e "${PREFIX}/.local/share/gnulib" ]; then
+        git clone git://git.savannah.gnu.org/gnulib.git "${PREFIX}/.local/share/gnulib" > install.log 2>&1
     fi
-    ln -s ~/.local/share/gnulib/gnulib-tool ~/.local/bin/gnulib-tool
+    ln -s "${PREFIX}/.local/share/gnulib/gnulib-tool" "${PREFIX}/.local/bin/gnulib-tool"
 fi
 
 # TeX
