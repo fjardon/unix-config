@@ -15,7 +15,7 @@ MAN1_FILES = byzanz-helper.1 \
              msvc-shell.1 \
 			 sixel2tmux.1 \
              yank.1
-SHAR_FILES = codefmt \
+SHAR_FILES = scripts/codefmt \
 			 config.site \
              dot_bash_profile \
              dot_bashrc \
@@ -25,13 +25,13 @@ SHAR_FILES = codefmt \
              dot_vimrc \
              dot_Xresources \
              dot_XWinrc \
-             byzanz-helper \
-             ffmpeg-helper \
-             hyper-v \
+             scripts/byzanz-helper \
+             scripts/ffmpeg-helper \
+             scripts/hyper-v \
              ibase.sh \
-             msvc-shell \
-             sixel2tmux \
-             yank \
+             scripts/msvc-shell \
+             scripts/sixel2tmux \
+             scripts/yank \
              tmux-256color.tinfo \
              runcron \
              share-gdb.tar \
@@ -42,13 +42,13 @@ apt-cyg:
 	curl -O 'https://raw.githubusercontent.com/fjardon/apt-cyg/master/apt-cyg'
 	chmod a+x apt-cyg
 
-byzanz-helper.1 : byzanz-helper
+byzanz-helper.1 : scripts/byzanz-helper
 	$(POD2MAN) $< $@
 
-codefmt.1 : codefmt
+codefmt.1 : scripts/codefmt
 	$(POD2MAN) $< $@
 
-ffmpeg-helper.1 : ffmpeg-helper
+ffmpeg-helper.1 : scripts/ffmpeg-helper
 	$(POD2MAN) $< $@
 
 share-gdb :
@@ -57,16 +57,16 @@ share-gdb :
 share-gdb.tar : share-gdb
 	$(TAR) cvf share-gdb.tar --exclude '.svn' -C share-gdb .
 
-hyper-v.1 : hyper-v
+hyper-v.1 : scripts/hyper-v
 	$(POD2MAN) $< $@
 
-msvc-shell.1 : msvc-shell
+msvc-shell.1 : scripts/msvc-shell
 	$(POD2MAN) $< $@
 
-sixel2tmux.1 : sixel2tmux
+sixel2tmux.1 : scripts/sixel2tmux
 	$(POD2MAN) $< $@
 
-yank.1 : yank
+yank.1 : scripts/yank
 	$(POD2MAN) $< $@
 
 setup-files.shar: $(SHAR_FILES)

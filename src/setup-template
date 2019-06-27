@@ -147,9 +147,9 @@ if [[ "${os_name}" == CYGWIN* ]]; then
         cp -f ~/.XWinrc "${BACKUPDIR}"
     fi
     install -m 0644 dot_XWinrc ~/.XWinrc
-    install -m 0755 hyper-v ~/.local/bin
+    install -m 0755 scripts/hyper-v ~/.local/bin
     install -m 0644 hyper-v.1 ~/.local/share/man/man1
-    install -m 0755 msvc-shell ~/.local/bin
+    install -m 0755 scripts/msvc-shell ~/.local/bin
     install -m 0644 msvc-shell.1 ~/.local/share/man/man1
     install -m 0755 apt-cyg ~/.local/bin
 fi
@@ -230,7 +230,7 @@ if [ -e ~/.tmux.conf ]; then
     cp -f ~/.tmux.conf "${BACKUPDIR}"
 fi
 install -m 0644 dot_tmux_conf ~/.tmux.conf
-install -m 0755 yank ~/.local/bin
+install -m 0755 scripts/yank ~/.local/bin
 install -m 0644 yank.1 ~/.local/share/man/man1
 
 echo "terminfo ..."
@@ -267,17 +267,17 @@ if [ ! -e ~/.local/share/perl5 ]; then
 fi
 
 # Code formatter tools
-install -m 0755 codefmt ~/.local/bin
+install -m 0755 scripts/codefmt ~/.local/bin
 install -m 0644 codefmt.1 ~/.local/share/man/man1
 
 # Sixel tools
-install -m 0755 sixel2tmux ~/.local/bin
+install -m 0755 scripts/sixel2tmux ~/.local/bin
 install -m 0644 sixel2tmux.1 ~/.local/share/man/man1
 
 # Screencast tools
-install -m 0755 byzanz-helper ~/.local/bin
+install -m 0755 scripts/byzanz-helper ~/.local/bin
 install -m 0644 byzanz-helper.1 ~/.local/share/man/man1
-install -m 0755 ffmpeg-helper ~/.local/bin
+install -m 0755 scripts/ffmpeg-helper ~/.local/bin
 install -m 0644 ffmpeg-helper.1 ~/.local/share/man/man1
 
 # Autoconf cache
