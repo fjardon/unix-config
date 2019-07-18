@@ -1,6 +1,5 @@
 #!/usr/bin/env perl
 
-use 5.008000;
 use strict;
 use warnings 'all';
 
@@ -15,7 +14,7 @@ use Storable;
 sub call_vcvarsall {
     my ($opts) = @_;
 
-    # save current context to restore it later
+    # Save current context to restore it later
     my %saved_ENV = (%ENV);
     my $cwd = getcwd;
 
@@ -29,7 +28,7 @@ sub call_vcvarsall {
         if(!defined($comspec_win));
     my $comspec_path = Cygwin::win_to_posix_path($comspec_win);
 
-    # get path to vcvarsall.bat
+    # Get path to vcvarsall.bat
     my $vcvarsall_bat_path = $opts->{vcvarsall_bat_path};
     croak("'vcvarsall_bat_path' parameter is mandatory")
         if(!defined($vcvarsall_bat_path));
@@ -91,6 +90,19 @@ BATCH
     %ENV = %saved_ENV;
 }
 
+sub get_default_vs_paths {
+    my @default_vs_paths = ();
+    push(@default_vs_paths, $ENV{'ProgramW6432'})
+        if(exists($ENV{'ProgramW6432'}));
+    push(@default_vs_paths, $ENV{'ProgramFiles(x86)'})
+        if(exists($ENV{'ProgramFiles(x86)'}));
+    @default_vs_paths = map { Cygwin::win_to_posix_path($_) } @default_vs_paths;
+    @default_vs_paths = map { $_.'/Microsoft Visual Studio' } @default_vs_paths;
+    @default_vs_paths = map { my $year=$_; map { $_.'/'.$year } @default_vs_paths; } (2019, 2017);
+    @default_vs_paths = map { $_.'/Community', $_.'/Professional', $_.'/Enterprise' } @default_vs_paths;
+    @default_vs_paths = map { $_.'/VC/Auxiliary/Build/vcvarsall.bat' } @default_vs_paths;
+    return @default_vs_paths;
+}
 
 # Load the full windows environment
 Cygwin::sync_winenv();
@@ -106,19 +118,11 @@ GetOptionsFromArray(
 # Handle help option
 pod2usage(-exitval => 0) if $opt_help;
 
-# Clean -p option
+# Clean '-p' option
 $opt_p = Cygwin::win_to_posix_path($opt_p)
     if(defined($opt_p));
-my @default_vs_paths = ();
-push(@default_vs_paths, $ENV{'ProgramW6432'})
-    if(exists($ENV{'ProgramW6432'}));
-push(@default_vs_paths, $ENV{'ProgramFiles(x86)'})
-    if(exists($ENV{'ProgramFiles(x86)'}));
-@default_vs_paths = map { Cygwin::win_to_posix_path($_) } @default_vs_paths;
-@default_vs_paths = map { $_.'/Microsoft Visual Studio/2017' } @default_vs_paths;
-@default_vs_paths = map { $_.'/Community', $_.'/Professional', $_.'/Enterprise' } @default_vs_paths;
-@default_vs_paths = map { $_.'/VC/Auxiliary/Build/vcvarsall.bat' } @default_vs_paths;
 if(! defined($opt_p)) {
+    my @default_vs_paths = get_default_vs_paths();
     my @found_vcvars = grep { -f $_ } @default_vs_paths;
     if(@found_vcvars) {
         $opt_p = $found_vcvars[0];
@@ -135,9 +139,10 @@ if(! -f $opt_p) {
 }
 
 call_vcvarsall({
-        vcvarsall_bat_path => $opt_p,
-        args => \@ARGV,
-    });
+    vcvarsall_bat_path => $opt_p,
+    args => \@ARGV,
+});
+
 
 __END__
 =head1 NAME
