@@ -53,8 +53,8 @@ cat <<'SETUP_SHAR_EOF'> setup.shar
 # To extract the files from this archive, save it to some FILE, remove
 # everything before the '#!/bin/sh' line above, then type 'sh FILE'.
 #
-lock_dir=_sh12663
-# Made on 2019-07-18 11:35 CEST by <fjardon@DiskStation>.
+lock_dir=_sh23163
+# Made on 2019-07-18 14:38 CEST by <fjardon@DiskStation>.
 # Source directory was '/home/fjardon/workspace/github/unix-config/src'.
 #
 # Existing files will *not* be overwritten, unless '-c' is specified.
@@ -68,6 +68,7 @@ lock_dir=_sh12663
 #    455 -rw-r--r-- dot_bash_profile
 #   3065 -rw-r--r-- dot_bashrc
 #    214 -rw-r--r-- dot_gdbinit
+#     89 -rw-r--r-- dot_gemrc
 #   2479 -rw-r--r-- dot_profile
 #   3140 -rw-r--r-- dot_tmux_conf
 #   4125 -rw-r--r-- dot_vimrc
@@ -919,6 +920,36 @@ SHAR_EOF
 else
 test `LC_ALL=C wc -c < 'dot_gdbinit'` -ne 214 && \
   ${echo} "restoration warning:  size of 'dot_gdbinit' is not 214"
+  fi
+fi
+# ============= dot_gemrc ==============
+if test -n "${keep_file}" && test -f 'dot_gemrc'
+then
+${echo} "x - SKIPPING dot_gemrc (file already exists)"
+
+else
+${echo} "x - extracting dot_gemrc (text)"
+  sed 's/^X//' << 'SHAR_EOF' > 'dot_gemrc' &&
+gem: --user-install --bindir ~/.local/bin
+install: --user-install --bindir ~/.local/bin
+X
+SHAR_EOF
+  (set 20 19 07 18 11 45 26 'dot_gemrc'
+   eval "${shar_touch}") && \
+  chmod 0644 'dot_gemrc'
+if test $? -ne 0
+then ${echo} "restore of dot_gemrc failed"
+fi
+  if ${md5check}
+  then (
+       ${MD5SUM} -c >/dev/null 2>&1 || ${echo} 'dot_gemrc': 'MD5 check failed'
+       ) << \SHAR_EOF
+41198829c505876f4deb88494421c002  dot_gemrc
+SHAR_EOF
+
+else
+test `LC_ALL=C wc -c < 'dot_gemrc'` -ne 89 && \
+  ${echo} "restoration warning:  size of 'dot_gemrc' is not 89"
   fi
 fi
 # ============= dot_profile ==============
@@ -2787,7 +2818,7 @@ begin 600 share-gdb.tar
 M+B\`````````````````````````````````````````````````````````
 M````````````````````````````````````````````````````````````
 M`````````````#`P,#`W-34`,#`P,C`P,@`P,#`P,30T`#`P,#`P,#`P,#`P
-M`#$S-3$T,#,V-3`W`#`Q,#4U,``@-0``````````````````````````````
+M`#$S-3$T,#8T,#4Q`#`Q,#4T,P`@-0``````````````````````````````
 M````````````````````````````````````````````````````````````
 M``````````````````````````````````````````!U<W1A<B`@`&9J87)D
 M;VX`````````````````````````````````=7-E<G,`````````````````
@@ -2798,7 +2829,7 @@ M````````````````````````````````````````````````````````````
 M```````````````````````N+W!Y=&AO;B\`````````````````````````
 M````````````````````````````````````````````````````````````
 M````````````````````````````````````,#`P,#<U-0`P,#`R,#`R`#`P
-M,#`Q-#0`,#`P,#`P,#`P,#``,3,U,30P,S8U,3$`,#$R,#8T`"`U````````
+M,#`Q-#0`,#`P,#`P,#`P,#``,3,U,30P-C0P-3,`,#$R,#8V`"`U````````
 M````````````````````````````````````````````````````````````
 M````````````````````````````````````````````````````````````
 M`````'5S=&%R("``9FIA<F1O;@````````````````````````````````!U
@@ -2809,8 +2840,8 @@ M````````````````````````````````````````````````````````````
 M`````````````````````````````````````````````"XO<'ET:&]N+VQI
 M8G-T9&-X>"\`````````````````````````````````````````````````
 M```````````````````````````````````````````````````````````P
-M,#`P-S4U`#`P,#(P,#(`,#`P,#$T-``P,#`P,#`P,#`P,``Q,S4Q-#`S-C4Q
-M,0`P,30P-S``(#4`````````````````````````````````````````````
+M,#`P-S4U`#`P,#(P,#(`,#`P,#$T-``P,#`P,#`P,#`P,``Q,S4Q-#`V-#`U
+M,P`P,30P-S(`(#4`````````````````````````````````````````````
 M````````````````````````````````````````````````````````````
 M````````````````````````````=7-T87(@(`!F:F%R9&]N````````````
 M`````````````````````'5S97)S````````````````````````````````
@@ -2821,7 +2852,7 @@ M````````````````````````````````````````````````````````````
 M````````+B]P>71H;VXO;&EB<W1D8WAX+W8V+P``````````````````````
 M````````````````````````````````````````````````````````````
 M`````````````````````#`P,#`W-34`,#`P,C`P,@`P,#`P,30T`#`P,#`P
-M,#`P,#`P`#$S-3$T,#,V-3$Q`#`Q-#0R,P`@-0``````````````````````
+M,#`P,#`P`#$S-3$T,#8T,#4S`#`Q-#0R-0`@-0``````````````````````
 M````````````````````````````````````````````````````````````
 M``````````````````````````````````````````````````!U<W1A<B`@
 M`&9J87)D;VX`````````````````````````````````=7-E<G,`````````
@@ -2832,7 +2863,7 @@ M````````````````````````````````````````````````````````````
 M```````````````````````````````N+W!Y=&AO;B]L:6)S=&1C>'@O=C8O
 M>&UE=&AO9',N<'D`````````````````````````````````````````````
 M````````````````````````````````````````````,#`P,#8T-``P,#`R
-M,#`R`#`P,#`Q-#0`,#`P,#`P-C<P,#,`,3,U,30P,S8U,3$`,#$V-C,V`"`P
+M,#`R`#`P,#`Q-#0`,#`P,#`P-C<P,#,`,3,U,30P-C0P-3,`,#$V-C0P`"`P
 M````````````````````````````````````````````````````````````
 M````````````````````````````````````````````````````````````
 M`````````````'5S=&%R("``9FIA<F1O;@``````````````````````````
@@ -3481,7 +3512,7 @@ M````````````````````````````````````````````````````````````
 M```N+W!Y=&AO;B]L:6)S=&1C>'@O=C8O7U]I;FET7U\N<'D`````````````
 M````````````````````````````````````````````````````````````
 M````````````````,#`P,#8T-``P,#`R,#`R`#`P,#`Q-#0`,#`P,#`P,#(R
-M,3$`,3,U,30P,S8U,3$`,#$V-3,P`"`P````````````````````````````
+M,3$`,3,U,30P-C0P-3,`,#$V-3,R`"`P````````````````````````````
 M````````````````````````````````````````````````````````````
 M`````````````````````````````````````````````'5S=&%R("``9FIA
 M<F1O;@````````````````````````````````!U<V5R<P``````````````
@@ -3526,7 +3557,7 @@ M````````````````````````````````````````````````````````````
 M`````````````````````````````````"XO<'ET:&]N+VQI8G-T9&-X>"]V
 M-B]P<FEN=&5R<RYP>0``````````````````````````````````````````
 M```````````````````````````````````````````````P,#`P-C0T`#`P
-M,#(P,#(`,#`P,#$T-``P,#`P,#(Q-#8V-@`Q,S4Q-#`S-C4Q,0`P,38V-C(`
+M,#(P,#(`,#`P,#$T-``P,#`P,#(Q-#8V-@`Q,S4Q-#`V-#`U,P`P,38V-C0`
 M(#``````````````````````````````````````````````````````````
 M````````````````````````````````````````````````````````````
 M````````````````=7-T87(@(`!F:F%R9&]N````````````````````````
@@ -5142,7 +5173,7 @@ M````````````````````````````````````````````````````````````
 M````````````+B]P>71H;VXO;&EB<W1D8WAX+U]?:6YI=%]?+G!Y````````
 M````````````````````````````````````````````````````````````
 M`````````````````````````#`P,#`V-#0`,#`P,C`P,@`P,#`P,30T`#`P
-M,#`P,#`P,#`Q`#$S-3$T,#,V-3$Q`#`Q-C$W,``@,```````````````````
+M,#`P,#`P,#`Q`#$S-3$T,#8T,#4S`#`Q-C$W,@`@,```````````````````
 M````````````````````````````````````````````````````````````
 M``````````````````````````````````````````````````````!U<W1A
 M<B`@`&9J87)D;VX`````````````````````````````````=7-E<G,`````
@@ -5165,7 +5196,7 @@ M`````````````````````````````````````````````````````````"XO
 M<'ET:&]N+TUA:V5F:6QE+FEN````````````````````````````````````
 M````````````````````````````````````````````````````````````
 M```````````P,#`P-C0T`#`P,#(P,#(`,#`P,#$T-``P,#`P,#`T-#4Q,``Q
-M,S4Q-#`S-C4Q,0`P,30Q,S4`(#``````````````````````````````````
+M,S4Q-#`V-#`U,P`P,30Q,S<`(#``````````````````````````````````
 M````````````````````````````````````````````````````````````
 M````````````````````````````````````````=7-T87(@(`!F:F%R9&]N
 M`````````````````````````````````'5S97)S````````````````````
@@ -5597,7 +5628,7 @@ M````````````````````````````````````````````````````````````
 M```````````````````N+W!Y=&AO;B]H;V]K+FEN````````````````````
 M````````````````````````````````````````````````````````````
 M````````````````````````````````,#`P,#8T-``P,#`R,#`R`#`P,#`Q
-M-#0`,#`P,#`P,#0U,#``,3,U,30P,S8U,3$`,#$S,S4S`"`P````````````
+M-#0`,#`P,#`P,#0U,#``,3,U,30P-C0P-3,`,#$S,S4U`"`P````````````
 M````````````````````````````````````````````````````````````
 M````````````````````````````````````````````````````````````
 M`'5S=&%R("``9FIA<F1O;@````````````````````````````````!U<V5R
@@ -5665,7 +5696,7 @@ M````````````````````````````````````````````````````````````
 M```````````````````````````````````N+W!Y=&AO;B]-86ME9FEL92YA
 M;0``````````````````````````````````````````````````````````
 M````````````````````````````````````````````````,#`P,#8T-``P
-M,#`R,#`R`#`P,#`Q-#0`,#`P,#`P,#0S,S<`,3,U,30P,S8U,3$`,#$T,3(W
+M,#`R,#`R`#`P,#`Q-#0`,#`P,#`P,#0S,S<`,3,U,30P-C0P-3,`,#$T,3,Q
 M`"`P````````````````````````````````````````````````````````
 M````````````````````````````````````````````````````````````
 M`````````````````'5S=&%R("``9FIA<F1O;@``````````````````````
@@ -5973,7 +6004,7 @@ C````````````````````````````````````````````````
 `
 end
 SHAR_EOF
-  (set 20 19 07 18 11 35 06 'share-gdb.tar'
+  (set 20 19 07 18 14 38 04 'share-gdb.tar'
    eval "${shar_touch}") && \
   chmod 0644 'share-gdb.tar'
 if test $? -ne 0
@@ -5983,7 +6014,7 @@ fi
   then (
        ${MD5SUM} -c >/dev/null 2>&1 || ${echo} 'share-gdb.tar': 'MD5 check failed'
        ) << \SHAR_EOF
-099d18b35e84a8bc62b896accae9c175  share-gdb.tar
+a4c7a2dc8d140273df795df8143903d1  share-gdb.tar
 SHAR_EOF
 
 else
@@ -6673,7 +6704,7 @@ else
 X  printf "$usage"
 fi
 SHAR_EOF
-  (set 20 19 07 18 11 35 06 'apt-cyg'
+  (set 20 19 07 18 14 38 05 'apt-cyg'
    eval "${shar_touch}") && \
   chmod 0755 'apt-cyg'
 if test $? -ne 0
@@ -6880,7 +6911,7 @@ X.PP
 This program is free software; you can redistribute it and/or modify
 it under the \s-1MIT\s0 license.
 SHAR_EOF
-  (set 20 19 07 18 11 35 08 'byzanz-helper.1'
+  (set 20 19 07 18 14 38 06 'byzanz-helper.1'
    eval "${shar_touch}") && \
   chmod 0644 'byzanz-helper.1'
 if test $? -ne 0
@@ -7080,7 +7111,7 @@ X.PP
 This program is free software; you can redistribute it and/or modify
 it under the \s-1GPL\s0 license.
 SHAR_EOF
-  (set 20 19 07 18 11 35 09 'codefmt.1'
+  (set 20 19 07 18 14 38 07 'codefmt.1'
    eval "${shar_touch}") && \
   chmod 0644 'codefmt.1'
 if test $? -ne 0
@@ -7285,7 +7316,7 @@ X.PP
 This program is free software; you can redistribute it and/or modify
 it under the \s-1GPL\s0 license.
 SHAR_EOF
-  (set 20 19 07 18 11 35 09 'codemv.1'
+  (set 20 19 07 18 14 38 08 'codemv.1'
    eval "${shar_touch}") && \
   chmod 0644 'codemv.1'
 if test $? -ne 0
@@ -7492,7 +7523,7 @@ X.PP
 This program is free software; you can redistribute it and/or modify
 it under the \s-1MIT\s0 license.
 SHAR_EOF
-  (set 20 19 07 18 11 35 10 'ffmpeg-helper.1'
+  (set 20 19 07 18 14 38 08 'ffmpeg-helper.1'
    eval "${shar_touch}") && \
   chmod 0644 'ffmpeg-helper.1'
 if test $? -ne 0
@@ -7694,7 +7725,7 @@ X.PP
 This program is free software; you can redistribute it and/or modify
 it under the \s-1MIT\s0 license.
 SHAR_EOF
-  (set 20 19 07 18 11 35 11 'hyper-v.1'
+  (set 20 19 07 18 14 38 09 'hyper-v.1'
    eval "${shar_touch}") && \
   chmod 0644 'hyper-v.1'
 if test $? -ne 0
@@ -7905,7 +7936,7 @@ X.PP
 This program is free software; you can redistribute it and/or modify
 it under the \s-1MIT\s0 license.
 SHAR_EOF
-  (set 20 19 07 18 11 35 12 'msvc-shell.1'
+  (set 20 19 07 18 14 38 10 'msvc-shell.1'
    eval "${shar_touch}") && \
   chmod 0644 'msvc-shell.1'
 if test $? -ne 0
@@ -8137,7 +8168,7 @@ X.PP
 This program is free software; you can redistribute it and/or modify
 it under the \s-1MIT\s0 license.
 SHAR_EOF
-  (set 20 19 07 18 11 35 13 'sixel2tmux.1'
+  (set 20 19 07 18 14 38 11 'sixel2tmux.1'
    eval "${shar_touch}") && \
   chmod 0644 'sixel2tmux.1'
 if test $? -ne 0
@@ -8381,7 +8412,7 @@ X.PP
 This program is free software; you can redistribute it and/or modify
 it under the \s-1MIT\s0 license.
 SHAR_EOF
-  (set 20 19 07 18 11 35 14 'yank.1'
+  (set 20 19 07 18 14 38 12 'yank.1'
    eval "${shar_touch}") && \
   chmod 0644 'yank.1'
 if test $? -ne 0
@@ -8546,6 +8577,10 @@ if ! has_prog cppman; then
         pip3 install --user cppman > install.log 2>&1
     fi
 fi
+
+# Ruby
+cp -f "${PREFIX}/.gemrc" "${BACKUPDIR}"
+install -m 0644 dot_gemrc "${PREFIX}/.gemrc"
 
 # XWindow
 if has_prog xterm; then

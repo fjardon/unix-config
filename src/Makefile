@@ -22,6 +22,7 @@ SHAR_FILES = scripts/codefmt \
              dot_bash_profile \
              dot_bashrc \
              dot_gdbinit \
+             dot_gemrc \
              dot_profile \
              dot_tmux_conf \
              dot_vimrc \

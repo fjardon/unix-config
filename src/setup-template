@@ -190,6 +190,10 @@ if ! has_prog cppman; then
     fi
 fi
 
+# Ruby
+cp -f "${PREFIX}/.gemrc" "${BACKUPDIR}"
+install -m 0644 dot_gemrc "${PREFIX}/.gemrc"
+
 # XWindow
 if has_prog xterm; then
     echo "XWindow ..."
