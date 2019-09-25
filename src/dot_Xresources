@@ -1,5 +1,6 @@
 XTerm*eightBitInput: true
 XTerm*faceName: DejaVuSansMono NF
+XTerm*metaSendsEscape: true
 XTerm*renderFont: true
 XTerm*reverseVideo: true
 XTerm*rightScrollBar: true
