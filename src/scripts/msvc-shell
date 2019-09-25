@@ -3,20 +3,20 @@
 use strict;
 use warnings 'all';
 
-use Carp;
-use Cwd;
-use File::Basename;
+require Carp;
+require Cwd;
+require File::Basename;
+require Getopt::Long;
+require Storable;
+
 use File::Temp;
-use Getopt::Long qw(GetOptionsFromArray :config no_ignore_case);
-use Pod::Usage;
-use Storable;
 
 sub call_vcvarsall {
     my ($opts) = @_;
 
     # Save current context to restore it later
     my %saved_ENV = (%ENV);
-    my $cwd = getcwd;
+    my $cwd = Cwd::getcwd;
 
     # Get environment
     my $env = $opts->{ENV};
@@ -24,13 +24,13 @@ sub call_vcvarsall {
 
     # Get path to comspec
     my $comspec_win=$env->{'COMSPEC'};
-    croak("Unable to find 'COMSPEC' in the environment!")
+    Carp::croak("Unable to find 'COMSPEC' in the environment!")
         if(!defined($comspec_win));
     my $comspec_path = Cygwin::win_to_posix_path($comspec_win);
 
     # Get path to vcvarsall.bat
     my $vcvarsall_bat_path = $opts->{vcvarsall_bat_path};
-    croak("'vcvarsall_bat_path' parameter is mandatory")
+    Carp::croak("'vcvarsall_bat_path' parameter is mandatory")
         if(!defined($vcvarsall_bat_path));
 
     # Get vcvarsall.bat arguments
@@ -38,7 +38,7 @@ sub call_vcvarsall {
     $vcvarsall_args  //= [];
 
     # Get paths to scripts and bash
-    my $bat_dir      = dirname($vcvarsall_bat_path);
+    my $bat_dir      = File::Basename::dirname($vcvarsall_bat_path);
     my $bat_dir_win  = Cygwin::posix_to_win_path($bat_dir);
     my $bash_dir     ='/usr/bin';
     my $bash_dir_win = Cygwin::posix_to_win_path($bash_dir);
@@ -53,7 +53,7 @@ sub call_vcvarsall {
     my $tmp_bat_handle = File::Temp->new(SUFFIX => '.bat');
     my $tmp_bat        = "$tmp_bat_handle";
     my $tmp_bat_win    = Cygwin::posix_to_win_path($tmp_bat);
-    my $tmp_bat_dir    = dirname($tmp_bat);
+    my $tmp_bat_dir    = File::Basename::dirname($tmp_bat);
     # Close the temporary file handle to avoid 'text file is busy' errors
     close($tmp_bat_handle);
 
@@ -61,7 +61,7 @@ sub call_vcvarsall {
     my $vcvarsall_params = join(' ', @{$vcvarsall_args});
 
     open(my $fh, '>', $tmp_bat) or
-        croak("Unable to create batch file");
+        Carp::croak("Unable to create batch file");
     print $fh <<BATCH;
 \@ECHO OFF
 CD "$bat_dir_win"
@@ -74,10 +74,10 @@ BATCH
     system $comspec_path, '/C', $tmp_bat_win;
 
     # Read modified environment
-    my %vc_env = %{retrieve($tmp_env_filename)};
+    my %vc_env = %{Storable::retrieve($tmp_env_filename)};
 
     # Check for errors
-    croak("Error while setuping VC++ environment")
+    Carp::croak("Error while setuping VC++ environment")
         if(! exists($vc_env{VSCMD_VER}) || $vc_env{VSCMD_VER} eq '');
 
     # Start subshell with modified environment
@@ -109,14 +109,18 @@ Cygwin::sync_winenv();
 
 # Parse options
 my ($opt_help, $opt_p);
-GetOptionsFromArray(
+Getopt::Long::Configure("no_ignore_case");
+Getopt::Long::GetOptionsFromArray(
     \@ARGV,
     'help|h'             => \$opt_help,
     'p|vcvarsall-path=s' => \$opt_p,
-) or croak('Error parsing command line arguments');
+) or Carp::croak('Error parsing command line arguments');
 
 # Handle help option
-pod2usage(-exitval => 0) if $opt_help;
+if($opt_help) {
+    require Pod::Usage;
+    Pod::Usage::pod2usage(-exitval => 0);
+}
 
 # Clean '-p' option
 $opt_p = Cygwin::win_to_posix_path($opt_p)
@@ -126,16 +130,18 @@ if(! defined($opt_p)) {
     my @found_vcvars = grep { -f $_ } @default_vs_paths;
     if(@found_vcvars) {
         $opt_p = $found_vcvars[0];
-        print "Using 'vcvarsall.bat' found in path: ".dirname($opt_p)."\n";
+        print "Using 'vcvarsall.bat' found in path: ".File::Basename::dirname($opt_p)."\n";
     }
 }
 if(! defined($opt_p)) {
     print STDERR "Unable to find a suitable path to 'vcvarsall.bat'. Please use option '-p'\n";
-    pod2usage(-exitval => 1);
+    require Pod::Usage;
+    Pod::Usage::pod2usage(-exitval => 1);
 }
 if(! -f $opt_p) {
     print STDERR "The path specified by option '-p' is not valid.\n";
-    pod2usage(-exitval => 1);
+    require Pod::Usage;
+    Pod::Usage::pod2usage(-exitval => 1);
 }
 
 call_vcvarsall({
