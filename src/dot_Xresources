@@ -10,6 +10,7 @@ XTerm*toolBar: false
 XTerm*utf8: 2
 XTerm*utf8Fonts: true
 XTerm*utf8Title: true
+XTerm*vistualBell: true
 ! Contrary to what the statement looks like, it is enabling the SetSelection
 ! window operation. The default value is: 20,21,SetXprop,SetSelection
 XTerm*disallowedWindowOps: 20,21,SetXprop
