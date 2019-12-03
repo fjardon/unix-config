@@ -1,16 +1,11 @@
+#include ".Xresources.user"
+
 XTerm*eightBitInput: true
-XTerm*faceName: DejaVuSansMono NF
 XTerm*metaSendsEscape: true
 XTerm*renderFont: true
-XTerm*reverseVideo: true
-XTerm*rightScrollBar: true
-XTerm*scrollBar: true
 XTerm*termName: xterm-256color
-XTerm*toolBar: false
-XTerm*utf8: 2
 XTerm*utf8Fonts: true
 XTerm*utf8Title: true
-XTerm*vistualBell: true
 ! Contrary to what the statement looks like, it is enabling the SetSelection
 ! window operation. The default value is: 20,21,SetXprop,SetSelection
 XTerm*disallowedWindowOps: 20,21,SetXprop
@@ -26,8 +21,7 @@ XTerm*VT100.Translations: \
 !XTerm*backarrowKey: false
 !XTerm*backarrowKeyIsErase: true
 
-! Sixel enabling
+! Sixel enabling with more than 16 colors
 XTerm*decTerminalID: vt340
-! Sixel with more than 16 colors
 XTerm*numColorRegisters: 256
 

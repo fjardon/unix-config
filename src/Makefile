@@ -27,6 +27,7 @@ SHAR_FILES = scripts/codefmt \
              dot_tmux_conf \
              dot_vimrc \
              dot_Xresources \
+             dot_Xresources_user \
              dot_XWinrc \
              scripts/byzanz-helper \
              scripts/ffmpeg-helper \

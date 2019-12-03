@@ -1,0 +1,8 @@
+XTerm*faceName: DejaVuSansMono NF
+XTerm*faceSize: 12
+XTerm*reverseVideo: true
+XTerm*rightScrollBar: true
+XTerm*scrollBar: true
+XTerm*toolBar: false
+XTerm*utf8: 2
+XTerm*visualBell: true

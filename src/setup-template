@@ -191,30 +191,33 @@ if ! has_prog cppman; then
 fi
 
 # Ruby
-cp -f "${PREFIX}/.gemrc" "${BACKUPDIR}"
+if [ -e "${PREFIX}/.gemrc" ]; then
+    cp -f "${PREFIX}/.gemrc" "${BACKUPDIR}"
+fi
 install -m 0644 dot_gemrc "${PREFIX}/.gemrc"
 
 # XWindow
-if has_prog xterm; then
-    echo "XWindow ..."
-    if [ -e "${PREFIX}/.Xresources" ]; then
-        cp -f "${PREFIX}/.Xresources" "${BACKUPDIR}"
-    fi
-    install -m 0644 dot_Xresources "${PREFIX}/.Xresources"
+echo "XWindow ..."
+if [ -e "${PREFIX}/.Xresources" ]; then
+    cp -f "${PREFIX}/.Xresources" "${BACKUPDIR}"
+fi
+install -m 0644 dot_Xresources "${PREFIX}/.Xresources"
+if [ ! -e "${PREFIX}/.Xresources.user" ]; then
+    install -m 0644 dot_Xresources_user "${PREFIX}/.Xresources.user"
+fi
 
+if has_prog fc-cache; then
     # Fonts
     echo "nerd fonts ..."
     install -d "${PREFIX}/.fonts"
     install -d "${PREFIX}/.local/share/fonts"
-    if has_prog fc-cache; then
-        if [ ! -d "${PREFIX}/.local/share/fonts/nerd-fonts" ]; then
-            install -d "${PREFIX}/.local/share/fonts/nerd-fonts"
-            curl -O 'https://raw.githubusercontent.com/ryanoasis/nerd-fonts/2.0.0/patched-fonts/DejaVuSansMono/Regular/complete/DejaVu%20Sans%20Mono%20Nerd%20Font%20Complete.ttf' \
-                > install.log 2>&1
-            mv 'DejaVu%20Sans%20Mono%20Nerd%20Font%20Complete.ttf' 'DejaVu Sans Mono Nerd Font Complete.ttf'
-            install -m 0644 'DejaVu Sans Mono Nerd Font Complete.ttf' "${PREFIX}/.local/share/fonts/nerd-fonts/"
-            fc-cache -f "${PREFIX}/.local/share/fonts"
-        fi
+    if [ ! -d "${PREFIX}/.local/share/fonts/nerd-fonts" ]; then
+        install -d "${PREFIX}/.local/share/fonts/nerd-fonts"
+        curl -O 'https://raw.githubusercontent.com/ryanoasis/nerd-fonts/2.0.0/patched-fonts/DejaVuSansMono/Regular/complete/DejaVu%20Sans%20Mono%20Nerd%20Font%20Complete.ttf' \
+            > install.log 2>&1
+        mv 'DejaVu%20Sans%20Mono%20Nerd%20Font%20Complete.ttf' 'DejaVu Sans Mono Nerd Font Complete.ttf'
+        install -m 0644 'DejaVu Sans Mono Nerd Font Complete.ttf' "${PREFIX}/.local/share/fonts/nerd-fonts/"
+        fc-cache -f "${PREFIX}/.local/share/fonts"
     fi
 fi
 
