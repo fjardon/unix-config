@@ -31,6 +31,10 @@ do
        has_errors=Yes
     fi
 done
+if ! has_prog uudecode && ! has_prog perl; then
+    echoerr " - uudecode or perl required"
+    has_errors=Yes
+fi
 [[ -z "${has_errors}" ]] || exit 1
 
 os_name=
@@ -51,6 +55,13 @@ cat <<'SETUP_SHAR_EOF'> setup.shar
 SETUP_SHAR_EOF
 /bin/sh setup.shar
 # =============================================================================
+
+# Make uudecode available if not present on system
+if ! has_prog uudecode; then
+    mv uudecode.pl uudecode
+    chmod 0755 uudecode
+    export PATH="${PWD}:${PATH}"
+fi
 
 
 # Prepare backups directory

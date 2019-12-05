@@ -37,6 +37,7 @@ SHAR_FILES = scripts/codefmt \
              scripts/sixel2tmux \
              scripts/yank \
              tmux-256color.tinfo \
+			 uudecode.pl \
              runcron \
              share-gdb.tar \
              $(GIT_FILES) \
