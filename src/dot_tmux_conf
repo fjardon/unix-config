@@ -55,15 +55,15 @@ setw -g window-status-separator ''
 setw -g window-status-bg 'colour235'
 
 set -g  status-left '#[fg=colour232,bg=colour154] #S' # session name
-set -ga status-left '#[fg=colour154,bg=colour238,nobold,nounderscore,noitalics] '
+set -ga status-left '#[fg=colour154,bg=colour238,nobold,nounderscore,noitalics]'
 set -ga status-left '#[fg=color222,bg=colour238] #W' # window name
-set -ga status-left '#[fg=colour238,bg=colour235,nobold,nounderscore,noitalics] '
+set -ga status-left '#[fg=colour238,bg=colour235,nobold,nounderscore,noitalics]'
 set -ga status-left '#[fg=colour222,bg=colour235] #(whoami)' # window name
-set -ga status-left '#[fg=colour235,bg=colour235,nobold,nounderscore,noitalics] '
+set -ga status-left '#[fg=colour235,bg=colour235,nobold,nounderscore,noitalics]'
 
-set -g  status-right '#[fg=colour235,bg=colour235,nobold,nounderscore,noitalics] '
-set -ga status-right '#[fg=colour121,bg=colour235] %r' # hour, day, year
-set -ga status-right '#[fg=colour238,bg=colour235,nobold,nounderscore,noitalics] '
+set -g  status-right '#[fg=colour235,bg=colour235,nobold,nounderscore,noitalics]'
+set -ga status-right '#[fg=colour121,bg=colour235] %R' # hour, day, year
+set -ga status-right '#[fg=colour238,bg=colour235,nobold,nounderscore,noitalics]'
 set -ga status-right '#[fg=colour222,bg=colour238] #H' # hostname
 
 setw -g  window-status-format '#[fg=colour238]'
