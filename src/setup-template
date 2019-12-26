@@ -209,6 +209,10 @@ install -m 0644 dot_gemrc "${PREFIX}/.gemrc"
 
 # XWindow
 echo "XWindow ..."
+if [ -e "${PREFIX}/.xprofile" ]; then
+    cp -f "${PREFIX}/.xprofile" "${BACKUPDIR}"
+fi
+install -m 0644 dot_xprofile "${PREFIX}/.xprofile"
 if [ -e "${PREFIX}/.Xresources" ]; then
     cp -f "${PREFIX}/.Xresources" "${BACKUPDIR}"
 fi

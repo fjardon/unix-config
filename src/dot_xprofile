@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+# Some (most) session managers like 'gdm' pass the '-no-cppp' option to 'xrdb'
+# which causes our .Xresources.user file to not be loaded.
+#
+# Our solution is to explicitly merge our .Xresources file in .xprofile which
+# is (still) respected by these session managers.
+[ -f ~/.Xresources ] && xrdb -merge ~/.Xresources
+

@@ -26,6 +26,7 @@ SHAR_FILES = scripts/codefmt \
              dot_profile \
              dot_tmux_conf \
              dot_vimrc \
+			 dot_xprofile \
              dot_Xresources \
              dot_Xresources_user \
              dot_XWinrc \
