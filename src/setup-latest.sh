@@ -57,8 +57,8 @@ cat <<'SETUP_SHAR_EOF'> setup.shar
 # To extract the files from this archive, save it to some FILE, remove
 # everything before the '#!/bin/sh' line above, then type 'sh FILE'.
 #
-lock_dir=_sh06582
-# Made on 2019-12-26 11:24 CET by <fjardon@white-fang>.
+lock_dir=_sh08037
+# Made on 2019-12-26 12:16 CET by <fjardon@white-fang>.
 # Source directory was '/home/fjardon/Documents/workspace/github/unix-config/src'.
 #
 # Existing files will *not* be overwritten, unless '-c' is specified.
@@ -78,7 +78,7 @@ lock_dir=_sh06582
 #   4125 -rw-r--r-- dot_vimrc
 #    340 -rwxrwxr-x dot_xprofile
 #    828 -rw-r--r-- dot_Xresources
-#    185 -rw-r--r-- dot_Xresources_user
+#    832 -rw-r--r-- dot_Xresources_user
 #   4076 -rw-r--r-- dot_XWinrc
 #   2541 -rwxr-xr-x scripts/byzanz-helper
 #   3766 -rwxr-xr-x scripts/ffmpeg-helper
@@ -1456,16 +1456,36 @@ ${echo} "x - SKIPPING dot_Xresources_user (file already exists)"
 else
 ${echo} "x - extracting dot_Xresources_user (text)"
   sed 's/^X//' << 'SHAR_EOF' > 'dot_Xresources_user' &&
-XXTerm*faceName: DejaVuSansMono NF
-XXTerm*faceSize: 12
-XXTerm*reverseVideo: true
+! This file is preprocessed by 'cpp' which defines the following macros:
+! X_RESOLUTION: the X resolution of the screen in pixel per meter
+! Y_RESOLUTION: the Y resolution of the screen in pixel per meter
+!
+! By running `xrdb -symbols` we can inspect these macros for the current X
+! session.
+!
+! We can use these macros to define the font face size of our XTerm.
+#define XTERM_FACE_SIZE_MULTIPLE ((Y_RESOLUTION+3775)/3776)
+X
+XXTerm*faceName: DejaVuSansMono Nerd Font Mono
+#if XTERM_FACE_SIZE_MULTIPLE == 1
+XXTerm*faceSize: 14
+#endif
+#if XTERM_FACE_SIZE_MULTIPLE == 2
+XXTerm*faceSize: 24
+#endif
+#if XTERM_FACE_SIZE_MULTIPLE >= 3
+XXTerm*faceSize: 36
+#endif
+XXTerm*reverseVideo: false
+XXTerm*foreground: white
+XXTerm*background: black
 XXTerm*rightScrollBar: true
 XXTerm*scrollBar: true
 XXTerm*toolBar: false
 XXTerm*utf8: 2
 XXTerm*visualBell: true
 SHAR_EOF
-  (set 20 19 12 21 20 22 32 'dot_Xresources_user'
+  (set 20 19 12 26 12 13 53 'dot_Xresources_user'
    eval "${shar_touch}") && \
   chmod 0644 'dot_Xresources_user'
 if test $? -ne 0
@@ -1475,12 +1495,12 @@ fi
   then (
        ${MD5SUM} -c >/dev/null 2>&1 || ${echo} 'dot_Xresources_user': 'MD5 check failed'
        ) << \SHAR_EOF
-b6f55b7a9a72e078b2411c33de2a0ec3  dot_Xresources_user
+e8970ffffd426e18f1287b1b6a1ea0e2  dot_Xresources_user
 SHAR_EOF
 
 else
-test `LC_ALL=C wc -c < 'dot_Xresources_user'` -ne 185 && \
-  ${echo} "restoration warning:  size of 'dot_Xresources_user' is not 185"
+test `LC_ALL=C wc -c < 'dot_Xresources_user'` -ne 832 && \
+  ${echo} "restoration warning:  size of 'dot_Xresources_user' is not 832"
   fi
 fi
 # ============= dot_XWinrc ==============
@@ -2940,7 +2960,7 @@ begin 600 share-gdb.tar
 M+B\`````````````````````````````````````````````````````````
 M````````````````````````````````````````````````````````````
 M`````````````#`P,#`W-S4`,#`P,3<U,``P,#`Q-S4P`#`P,#`P,#`P,#`P
-M`#$S-C`Q,3`U,3$T`#`Q,3`S-0`@-0``````````````````````````````
+M`#$S-C`Q,3$S,3<U`#`Q,3`T,P`@-0``````````````````````````````
 M````````````````````````````````````````````````````````````
 M``````````````````````````````````````````!U<W1A<B`@`&9J87)D
 M;VX`````````````````````````````````9FIA<F1O;@``````````````
@@ -2951,7 +2971,7 @@ M````````````````````````````````````````````````````````````
 M```````````````````````N+W!Y=&AO;B\`````````````````````````
 M````````````````````````````````````````````````````````````
 M````````````````````````````````````,#`P,#<W-0`P,#`Q-S4P`#`P
-M,#$W-3``,#`P,#`P,#`P,#``,3,V,#$Q,#4Q,38`,#$R,S8P`"`U````````
+M,#$W-3``,#`P,#`P,#`P,#``,3,V,#$Q,3,Q-S<`,#$R,S8V`"`U````````
 M````````````````````````````````````````````````````````````
 M````````````````````````````````````````````````````````````
 M`````'5S=&%R("``9FIA<F1O;@````````````````````````````````!F
@@ -2962,8 +2982,8 @@ M````````````````````````````````````````````````````````````
 M`````````````````````````````````````````````"XO<'ET:&]N+VAO
 M;VLN:6X`````````````````````````````````````````````````````
 M```````````````````````````````````````````````````````````P
-M,#`P-C8T`#`P,#$W-3``,#`P,3<U,``P,#`P,#`P-#4P,``Q,S8P,3$P-3$Q
-M-@`P,3,V-#<`(#``````````````````````````````````````````````
+M,#`P-C8T`#`P,#$W-3``,#`P,3<U,``P,#`P,#`P-#4P,``Q,S8P,3$Q,S$W
+M-P`P,3,V-34`(#``````````````````````````````````````````````
 M````````````````````````````````````````````````````````````
 M````````````````````````````=7-T87(@(`!F:F%R9&]N````````````
 M`````````````````````&9J87)D;VX`````````````````````````````
@@ -3031,7 +3051,7 @@ M````````````````````````````````````````````````````````````
 M`"XO<'ET:&]N+TUA:V5F:6QE+FEN````````````````````````````````
 M````````````````````````````````````````````````````````````
 M```````````````P,#`P-C8T`#`P,#$W-3``,#`P,3<U,``P,#`P,#`T-#4Q
-M,``Q,S8P,3$P-3$Q-@`P,30T,S$`(#``````````````````````````````
+M,``Q,S8P,3$Q,S$W-P`P,30T,S<`(#``````````````````````````````
 M````````````````````````````````````````````````````````````
 M````````````````````````````````````````````=7-T87(@(`!F:F%R
 M9&]N`````````````````````````````````&9J87)D;VX`````````````
@@ -3463,7 +3483,7 @@ M````````````````````````````````````````````````````````````
 M```````````````````````N+W!Y=&AO;B]L:6)S=&1C>'@O````````````
 M````````````````````````````````````````````````````````````
 M````````````````````````````````````,#`P,#<W-0`P,#`Q-S4P`#`P
-M,#$W-3``,#`P,#`P,#`P,#``,3,V,#$Q,#4Q,38`,#$T,S8T`"`U````````
+M,#$W-3``,#`P,#`P,#`P,#``,3,V,#$Q,3,Q-S<`,#$T,S<R`"`U````````
 M````````````````````````````````````````````````````````````
 M````````````````````````````````````````````````````````````
 M`````'5S=&%R("``9FIA<F1O;@````````````````````````````````!F
@@ -3474,8 +3494,8 @@ M````````````````````````````````````````````````````````````
 M`````````````````````````````````````````````"XO<'ET:&]N+VQI
 M8G-T9&-X>"]?7VEN:71?7RYP>0``````````````````````````````````
 M```````````````````````````````````````````````````````````P
-M,#`P-C8T`#`P,#$W-3``,#`P,3<U,``P,#`P,#`P,#`P,0`Q,S8P,3$P-3$Q
-M-@`P,38T-C0`(#``````````````````````````````````````````````
+M,#`P-C8T`#`P,#$W-3``,#`P,3<U,``P,#`P,#`P,#`P,0`Q,S8P,3$Q,S$W
+M-P`P,38T-S(`(#``````````````````````````````````````````````
 M````````````````````````````````````````````````````````````
 M````````````````````````````=7-T87(@(`!F:F%R9&]N````````````
 M`````````````````````&9J87)D;VX`````````````````````````````
@@ -3497,7 +3517,7 @@ M````````````````````````````````````````````````````````````
 M```````````````````````````````N+W!Y=&AO;B]L:6)S=&1C>'@O=C8O
 M````````````````````````````````````````````````````````````
 M````````````````````````````````````````````,#`P,#<W-0`P,#`Q
-M-S4P`#`P,#$W-3``,#`P,#`P,#`P,#``,3,V,#$Q,#4Q,38`,#$T-S$W`"`U
+M-S4P`#`P,#$W-3``,#`P,#`P,#`P,#``,3,V,#$Q,3,Q-S<`,#$T-S(U`"`U
 M````````````````````````````````````````````````````````````
 M````````````````````````````````````````````````````````````
 M`````````````'5S=&%R("``9FIA<F1O;@``````````````````````````
@@ -3509,7 +3529,7 @@ M`````````````````````````````````````````````````````"XO<'ET
 M:&]N+VQI8G-T9&-X>"]V-B]?7VEN:71?7RYP>0``````````````````````
 M````````````````````````````````````````````````````````````
 M```````P,#`P-C8T`#`P,#$W-3``,#`P,3<U,``P,#`P,#`P,C(Q,0`Q,S8P
-M,3$P-3$Q-@`P,3<P,C0`(#``````````````````````````````````````
+M,3$Q,S$W-P`P,3<P,S(`(#``````````````````````````````````````
 M````````````````````````````````````````````````````````````
 M````````````````````````````````````=7-T87(@(`!F:F%R9&]N````
 M`````````````````````````````&9J87)D;VX`````````````````````
@@ -3554,7 +3574,7 @@ M````````````````````````````````````````````````````````````
 M````````````````````````+B]P>71H;VXO;&EB<W1D8WAX+W8V+W!R:6YT
 M97)S+G!Y````````````````````````````````````````````````````
 M`````````````````````````````````````#`P,#`V-C0`,#`P,3<U,``P
-M,#`Q-S4P`#`P,#`P,C(R-C0U`#$S-C`Q,3`U,3$V`#`Q-S$U,@`@,```````
+M,#`Q-S4P`#`P,#`P,C(R-C0U`#$S-C`Q,3$S,3<W`#`Q-S$V,``@,```````
 M````````````````````````````````````````````````````````````
 M````````````````````````````````````````````````````````````
 M``````!U<W1A<B`@`&9J87)D;VX`````````````````````````````````
@@ -5238,7 +5258,7 @@ M````````````````````````````````````````````````````````````
 M```````````````````N+W!Y=&AO;B]L:6)S=&1C>'@O=C8O>&UE=&AO9',N
 M<'D`````````````````````````````````````````````````````````
 M````````````````````````````````,#`P,#8V-``P,#`Q-S4P`#`P,#$W
-M-3``,#`P,#`P-C<P,#8`,3,V,#$Q,#4Q,38`,#$W,3,U`"`P````````````
+M-3``,#`P,#`P-C<P,#8`,3,V,#$Q,3,Q-S<`,#$W,30S`"`P````````````
 M````````````````````````````````````````````````````````````
 M````````````````````````````````````````````````````````````
 M`'5S=&%R("``9FIA<F1O;@````````````````````````````````!F:F%R
@@ -5887,7 +5907,7 @@ M```````````````````````````````````````````````````N+W!Y=&AO
 M;B]-86ME9FEL92YA;0``````````````````````````````````````````
 M````````````````````````````````````````````````````````````
 M````,#`P,#8V-``P,#`Q-S4P`#`P,#$W-3``,#`P,#`P,#0S,S<`,3,V,#$Q
-M,#4Q,38`,#$T-#(S`"`P````````````````````````````````````````
+M,3,Q-S<`,#$T-#,Q`"`P````````````````````````````````````````
 M````````````````````````````````````````````````````````````
 M`````````````````````````````````'5S=&%R("``9FIA<F1O;@``````
 M``````````````````````````!F:F%R9&]N````````````````````````
@@ -6126,7 +6146,7 @@ C````````````````````````````````````````````````
 `
 end
 SHAR_EOF
-  (set 20 19 12 26 11 24 14 'share-gdb.tar'
+  (set 20 19 12 26 12 16 15 'share-gdb.tar'
    eval "${shar_touch}") && \
   chmod 0664 'share-gdb.tar'
 if test $? -ne 0
@@ -6136,7 +6156,7 @@ fi
   then (
        ${MD5SUM} -c >/dev/null 2>&1 || ${echo} 'share-gdb.tar': 'MD5 check failed'
        ) << \SHAR_EOF
-24bf16e8d26ee81193e75cb0b8b9f369  share-gdb.tar
+b74e5b53d1b8750e39d97e933be3bd41  share-gdb.tar
 SHAR_EOF
 
 else
@@ -6826,7 +6846,7 @@ else
 X  printf "$usage"
 fi
 SHAR_EOF
-  (set 20 19 12 26 11 24 14 'apt-cyg'
+  (set 20 19 12 26 12 16 15 'apt-cyg'
    eval "${shar_touch}") && \
   chmod 0775 'apt-cyg'
 if test $? -ne 0
@@ -7029,7 +7049,7 @@ X.PP
 This program is free software; you can redistribute it and/or modify
 it under the \s-1MIT\s0 license.
 SHAR_EOF
-  (set 20 19 12 26 11 24 14 'byzanz-helper.1'
+  (set 20 19 12 26 12 16 15 'byzanz-helper.1'
    eval "${shar_touch}") && \
   chmod 0664 'byzanz-helper.1'
 if test $? -ne 0
@@ -7225,7 +7245,7 @@ X.PP
 This program is free software; you can redistribute it and/or modify
 it under the \s-1GPL\s0 license.
 SHAR_EOF
-  (set 20 19 12 26 11 24 14 'codefmt.1'
+  (set 20 19 12 26 12 16 15 'codefmt.1'
    eval "${shar_touch}") && \
   chmod 0664 'codefmt.1'
 if test $? -ne 0
@@ -7426,7 +7446,7 @@ X.PP
 This program is free software; you can redistribute it and/or modify
 it under the \s-1GPL\s0 license.
 SHAR_EOF
-  (set 20 19 12 26 11 24 15 'codemv.1'
+  (set 20 19 12 26 12 16 15 'codemv.1'
    eval "${shar_touch}") && \
   chmod 0664 'codemv.1'
 if test $? -ne 0
@@ -7629,7 +7649,7 @@ X.PP
 This program is free software; you can redistribute it and/or modify
 it under the \s-1MIT\s0 license.
 SHAR_EOF
-  (set 20 19 12 26 11 24 15 'ffmpeg-helper.1'
+  (set 20 19 12 26 12 16 15 'ffmpeg-helper.1'
    eval "${shar_touch}") && \
   chmod 0664 'ffmpeg-helper.1'
 if test $? -ne 0
@@ -7827,7 +7847,7 @@ X.PP
 This program is free software; you can redistribute it and/or modify
 it under the \s-1MIT\s0 license.
 SHAR_EOF
-  (set 20 19 12 26 11 24 15 'hyper-v.1'
+  (set 20 19 12 26 12 16 15 'hyper-v.1'
    eval "${shar_touch}") && \
   chmod 0664 'hyper-v.1'
 if test $? -ne 0
@@ -8034,7 +8054,7 @@ X.PP
 This program is free software; you can redistribute it and/or modify
 it under the \s-1MIT\s0 license.
 SHAR_EOF
-  (set 20 19 12 26 11 24 15 'msvc-shell.1'
+  (set 20 19 12 26 12 16 15 'msvc-shell.1'
    eval "${shar_touch}") && \
   chmod 0664 'msvc-shell.1'
 if test $? -ne 0
@@ -8262,7 +8282,7 @@ X.PP
 This program is free software; you can redistribute it and/or modify
 it under the \s-1MIT\s0 license.
 SHAR_EOF
-  (set 20 19 12 26 11 24 15 'sixel2tmux.1'
+  (set 20 19 12 26 12 16 15 'sixel2tmux.1'
    eval "${shar_touch}") && \
   chmod 0664 'sixel2tmux.1'
 if test $? -ne 0
@@ -8502,7 +8522,7 @@ X.PP
 This program is free software; you can redistribute it and/or modify
 it under the \s-1MIT\s0 license.
 SHAR_EOF
-  (set 20 19 12 26 11 24 15 'yank.1'
+  (set 20 19 12 26 12 16 16 'yank.1'
    eval "${shar_touch}") && \
   chmod 0664 'yank.1'
 if test $? -ne 0
@@ -8700,12 +8720,12 @@ if has_prog fc-cache; then
     echo "nerd fonts ..."
     install -d "${PREFIX}/.fonts"
     install -d "${PREFIX}/.local/share/fonts"
-    if [ ! -d "${PREFIX}/.local/share/fonts/nerd-fonts" ]; then
-        install -d "${PREFIX}/.local/share/fonts/nerd-fonts"
-        curl -O 'https://raw.githubusercontent.com/ryanoasis/nerd-fonts/2.0.0/patched-fonts/DejaVuSansMono/Regular/complete/DejaVu%20Sans%20Mono%20Nerd%20Font%20Complete.ttf' \
+    if [ ! -d "${PREFIX}/.local/share/fonts/NerdFonts" ]; then
+        install -d "${PREFIX}/.local/share/fonts/NerdFonts"
+        curl -O 'https://raw.githubusercontent.com/fjardon/nerd-fonts/master/patched-fonts/DejaVuSansMono/Regular/complete/DejaVu%20Sans%20Mono%20Nerd%20Font%20Complete%20Mono.ttf' \
             > install.log 2>&1
-        mv 'DejaVu%20Sans%20Mono%20Nerd%20Font%20Complete.ttf' 'DejaVu Sans Mono Nerd Font Complete.ttf'
-        install -m 0644 'DejaVu Sans Mono Nerd Font Complete.ttf' "${PREFIX}/.local/share/fonts/nerd-fonts/"
+        mv 'DejaVu%20Sans%20Mono%20Nerd%20Font%20Complete%20Mono.ttf' 'DejaVu Sans Mono Nerd Font Complete Mono.ttf'
+        install -m 0644 'DejaVu Sans Mono Nerd Font Complete Mono.ttf' "${PREFIX}/.local/share/fonts/nerd-fonts/"
         fc-cache -f "${PREFIX}/.local/share/fonts"
     fi
 fi

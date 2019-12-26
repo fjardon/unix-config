@@ -1,6 +1,26 @@
-XTerm*faceName: DejaVuSansMono NF
-XTerm*faceSize: 12
-XTerm*reverseVideo: true
+! This file is preprocessed by 'cpp' which defines the following macros:
+! X_RESOLUTION: the X resolution of the screen in pixel per meter
+! Y_RESOLUTION: the Y resolution of the screen in pixel per meter
+!
+! By running `xrdb -symbols` we can inspect these macros for the current X
+! session.
+!
+! We can use these macros to define the font face size of our XTerm.
+#define XTERM_FACE_SIZE_MULTIPLE ((Y_RESOLUTION+3775)/3776)
+
+XTerm*faceName: DejaVuSansMono Nerd Font Mono
+#if XTERM_FACE_SIZE_MULTIPLE == 1
+XTerm*faceSize: 14
+#endif
+#if XTERM_FACE_SIZE_MULTIPLE == 2
+XTerm*faceSize: 24
+#endif
+#if XTERM_FACE_SIZE_MULTIPLE >= 3
+XTerm*faceSize: 36
+#endif
+XTerm*reverseVideo: false
+XTerm*foreground: white
+XTerm*background: black
 XTerm*rightScrollBar: true
 XTerm*scrollBar: true
 XTerm*toolBar: false
