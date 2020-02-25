@@ -1,11 +1,61 @@
 TODO
 ====
 
+[ ] Setup remote connections
+  [ ] Add a .local/share/desktop-directories/RemoteAccess.directories file
+    -------
+    [Desktop Entry]
+    Name=Remote Access
+    Comment=Remote Access Shortcuts
+    Icon=network-workgroup
+    Type=Directory
+    -------
+  [ ] Add a .local/share/applications/ssh-<hostname>.desktop file for each
+      remote connection
+    -------
+    [Desktop Entry]
+    Name=SSH-<hostname>
+    GenericName=SSH-<hostname>
+    Comment=SSH to <hostname>
+    Exec=xterm -e ssh <hostname>
+    Terminal=false
+    Type=Application
+    Encoding=UTF-8
+    Icon=xterm-color
+    Categories=RemoteAccess;
+    Keywords=shell;prompt;command;commandline;cmd;
+    -------
+  [ ] Add a .config/menus/xwin-applications.menu with the following snippets
+    -------
+    <!-- Remote Access-->
+    <Menu>
+      <Name>Remote Access</Name>
+      <Directory>RemoteAccess.directory</Directory>
+      <Include>
+        <And>
+          <Category>RemoteAccess</Category>
+        </And>
+      </Include>
+    </Menu>   <!-- End Remote Access -->
+    -------
+    A template file can usually be found in
+    /etc/xdg/menus/xwin-applications.menu
+
+
+
+
+[ ] Setup template
+  [ ] Split the setup into multiple scripts called from the main template
+
 [.] Utilities
-  [x] Install gdb pretty printers.
+  [.] Install gdb pretty printers.
       See: http://sourceware.org/gdb/wiki/STLSupport
+      [ ] check the pretty printers match user's gcc and install in a versioned
+          directory
   [ ] Install lcov when missing
-  [ ] Install jekyll if ruby is available
+  [ ] Install pelican
+  [ ] Install perl if user has an incomplete version
+      [ ] Ask before and abort if unsure
 
 [x] Vim Plugins:
   [x] Move to vim-plug
@@ -25,7 +75,6 @@ TODO
       in and out scripts, could be implemented that way.
   [ ] It is possible for a plugin to install nerdtree menu item.
 
-
 [ ] Tmux: include https://github.com/erikw/tmux-powerline
   [ ] split the configuration file in pieces
     [ ] One configuration file for theming
@@ -37,13 +86,9 @@ TODO
     [ ] Colors
     [ ] Icons used for tabs in status bar
 
-[ ] Fonts:
-  [ ] update Xresources using the fc-list name instead of hard coding
-  [ ] Fix font download url
+[/] Fonts:
+  [x] Fix font download url
   [ ] fonts and Xresources installed only if `xterm` is present on host
-  [ ] Ask user if he wants to patch his own fonts instead of installing nerd
-  [ ] update Xresources using the name coming from fc-list instead of hard
-      coding
 
 [ ] Better detection of prerequisites:
   [ ] gcc (for gnu global)
@@ -77,7 +122,7 @@ TODO
       This will solve most of the problems with setup scripts (perl, ruby, ...)
       which updates the .bashrc with host specific lines.
 
-[ ] Better UI:
+[ ] Better setup:
   [ ] Use dialog to let user choose what he wants to install (similar to linux
       kernel build system)
       see: http://invisible-island.net/dialog/manpage/dialog.html
@@ -86,6 +131,7 @@ TODO
       the file accordingly. For instance one could enable alias and history,
       but not ssh-agent launch part of the .bashrc)
   [ ] Help user setup its ssh keys (through GUI)
+  [ ] Help user create XDG configs for remote sessions
 
 [ ] Possibility to run setup.sh directly from a curl pipe (as is the current:
    fashion ...)
@@ -96,4 +142,12 @@ DONE
 [x] Add ssh-agent stuff...
 [x] apt-cyg should be embedded in installer
   [x] checkout the file at make time and embedd in the shar
+
+
+Add include-if in .gitconfig:
+
+[includeIf "gitdir:~/perso/"]
+    path = ~/perso/gitconfig
+[includeIf "gitdir:~/Documents/Perso/"]
+    path = ~/perso/gitconfig
 
