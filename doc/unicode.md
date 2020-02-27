@@ -108,11 +108,32 @@ like:
 | nf-oct-server                               | f473             |          |
 | nf-mdi-clock                                | f64f             |          |
 |                                             |                  |           |
+| nf-mdi-bowling                              | f5d2             |          |
+| nf-mdi-wall                                 | fcfc             | ﳼ         |
+| nf-fa-bars                                  | f0c9             |          |
+|                                             |                  |           |
+| large-circle                                | 25ef             | ◯         |
+| square-with-rounded-corners                 | 25a2             | ▢         |
+| square-with-horizontal-fill                 | 25a4             | ▤         |
+| square-with-vertical-fill                   | 25a5             | ▥         |
+| square-with-orthogonal-crosshatch-fill      | 25a6             | ▦         |
+| square-with-upper-left-to-lower-right-fill  | 25a7             | ▧         |
+| square-with-upper-right-to-lower-left-fill  | 25a8             | ▨         |
+| square-with-diagonal-crosshatch-fill        | 25a9             | ▩         |
+| white-rectangle                             | 25ad             | ▭         |
+| black-parallelogram                         | 25b0             | ▰         |
+| white-parallelogram                         | 25b1             | ▱         |
+|                                             |                  |           |
+| block-light-shade                           | 2591             | ░         |
 |                                             |                  |           |
 |                                             |                  |           |
 |                                             |                  |           |
 |                                             |                  |           |
 |                                             |                  |           |
+|                                             |                  |           |
+|                                             |                  |           |
+
+
 
 
 
