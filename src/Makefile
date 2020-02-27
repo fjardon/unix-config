@@ -16,9 +16,7 @@ MAN1_FILES = byzanz-helper.1 \
              msvc-shell.1 \
 			 sixel2tmux.1 \
              yank.1
-SHAR_FILES = scripts/codefmt \
-             scripts/codemv \
-			 config.site \
+SHAR_FILES = config.site \
              dot_bash_profile \
              dot_bashrc \
              dot_gdbinit \
@@ -30,17 +28,21 @@ SHAR_FILES = scripts/codefmt \
              dot_Xresources \
              dot_Xresources_user \
              dot_XWinrc \
-             scripts/byzanz-helper \
+             ibase.sh \
+			 scripts/byzanz-helper \
+             scripts/codefmt \
+             scripts/codemv \
              scripts/ffmpeg-helper \
              scripts/hyper-v \
-             ibase.sh \
              scripts/msvc-shell \
              scripts/sixel2tmux \
              scripts/yank \
+             share-gdb.tar \
              tmux-256color.tinfo \
 			 uudecode.pl \
              runcron \
-             share-gdb.tar \
+			 vscode-term.env \
+			 vscode.sh \
              $(GIT_FILES) \
              $(MAN1_FILES)
 

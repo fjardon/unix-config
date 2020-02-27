@@ -104,6 +104,7 @@ install -m 0644 dot_bashrc       "${PREFIX}/.bashrc"
 echo "local ..."
 install -m 0755 -d "${PREFIX}/.local/bin"
 install -m 0755 -d "${PREFIX}/.local/lib"
+install -m 0755 -d "${PREFIX}/.local/opt"
 install -m 0755 -d "${PREFIX}/.local/share"
 install -m 0755 -d "${PREFIX}/.local/share/man/man1"
 install -m 0755 -d "${PREFIX}/.local/var"
@@ -113,7 +114,8 @@ install -m 0755 -d "${PREFIX}/.local/var/run"
 install -m 0755 -d "${PREFIX}/.local/etc/cron"
 install -m 0755 -d "${PREFIX}/.local/etc/profile.d"
 install -m 0755 runcron "${PREFIX}/.local/bin"
-export PATH="${PATH}:${PREFIX}/.local/bin"
+PATH="${PATH}:${PREFIX}/.local/bin"
+export PATH
 
 # Cron setup
 echo "cron ..."
@@ -165,6 +167,19 @@ if [[ "${os_name}" == CYGWIN* ]]; then
     install -m 0755 scripts/msvc-shell "${PREFIX}/.local/bin"
     install -m 0644 msvc-shell.1       "${PREFIX}/.local/share/man/man1"
     install -m 0755 apt-cyg            "${PREFIX}/.local/bin"
+fi
+
+# VSCode on cygwin
+if [[ "${os_name}" == CYGWIN* ]]; then
+    if [[ ! -d "${PREFIX}/.local/opt/vscode" ]]; then
+        curl -L -o 'vscode.zip' 'https://update.code.visualstudio.com/latest/win32-x64-archive/stable'
+        install -d "${PREFIX}/.local/opt/vscode"
+        unzip -d "${PREFIX}/.local/opt/vscode" 'vscode.zip'
+        find "${PREFIX}/.local/opt/vscode" -name \*.dll -exec chmod 'a+x' {} \;
+        find "${PREFIX}/.local/opt/vscode" -name \*.exe -exec chmod 'a+x' {} \;
+    fi
+    install -m 0644 vscode.sh          "${PREFIX}/.local/etc/profile.d"
+    install -m 0644 vscode-term.env    "${PREFIX}/.local/etc/profile.d"
 fi
 
 # Python
