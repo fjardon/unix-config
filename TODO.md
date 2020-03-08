@@ -1,6 +1,12 @@
 TODO
 ====
 
+[ ] Move XTerm*fontFaceName out of .Xresources
+    The true-type fonts are rendered client-side, this means they should be
+    configured to a font that is present on the client not the server. The
+    .Xresources are loaded on the server and thus should only configure
+    values not dependent on the client. A better resource files here would be
+    .Xdefaults
 [ ] Setup remote connections
   [ ] Add a .local/share/desktop-directories/RemoteAccess.directories file
     -------
