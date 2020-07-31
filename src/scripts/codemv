@@ -1,7 +1,7 @@
 #!/usr/bin/env perl
 #*===========================================================================*
 #*                                                                           *
-#*  codefmt - Code formatting tool                                           *
+#*  codemv - Code formatting tool                                           *
 #*                                                                           *
 #*  Copyright (c) 2019 Frederic Jardon  <frederic.jardon@gmail.com>          *
 #*                                                                           *
