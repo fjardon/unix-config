@@ -1,0 +1,634 @@
+#!/usr/bin/env perl
+#*===========================================================================*
+#*                                                                           *
+#*  plgen - Generate perl plain-old-data record modules
+#*                                                                           *
+#*  Copyright (c) 2019 Frederic Jardon  <frederic.jardon@gmail.com>          *
+#*                                                                           *
+#*  ------------------ GPL Licensed Source Code ------------------           *
+#*  Frederic Jardon makes this software available under the GNU              *
+#*  General Public License (GPL) license for open source projects.           *
+#*  For details of the GPL license please see www.gnu.org or read            *
+#*  the file license.gpl provided in this package.                           *
+#*                                                                           *
+#*  This program is free software; you can redistribute it and/or            *
+#*  modify it under the terms of the GNU General Public License as           *
+#*  published by the Free Software Foundation; either version 3 of           *
+#*  the License, or (at your option) any later version.                      *
+#*                                                                           *
+#*  This program is distributed in the hope that it will be useful,          *
+#*  but WITHOUT ANY WARRANTY; without even the implied warranty of           *
+#*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the            *
+#*  GNU General Public License for more details.                             *
+#*                                                                           *
+#*  You should have received a copy of the GNU General Public                *
+#*  License along with this program in the file 'license.gpl'; if            *
+#*  not, see <http://www.gnu.org/licenses/>.                                 *
+#*  --------------------------------------------------------------           *
+#*===========================================================================*
+
+use strict;
+use warnings 'all';
+
+use Carp;
+use Data::Dumper;
+use File::Basename;
+use Getopt::Long qw(GetOptionsFromArray :config no_ignore_case pass_through);
+use Pod::Usage;
+use SelectSaver;
+
+main() unless caller;
+
+sub generate_field_ctor_for_array {
+    my ($field) = @_;
+    my $pl_name = $field->{'pl_name'};
+    my $value   = $field->{'value'} // 'undef';
+
+    my $codegen =<<"CODEGEN";
+        '${pl_name}' => $value,
+CODEGEN
+    return $codegen;
+}
+
+sub generate_field_methods_for_array {
+    my ($field) = @_;
+    my $name      = $field->{'name'};
+    my $pl_name   = $field->{'pl_name'};
+    my $item_type = $field->{'item_type'} // "'undefined'";
+
+    my $codegen =<<"CODEGEN";
+
+# Field: ${name} methods
+# ------
+sub count_${pl_name} {
+    my (\$self) = \@_;
+    return scalar \@{ \$self->{'_${pl_name}'} };
+}
+
+sub get_${pl_name} {
+    my (\$self) = \@_;
+    return \@{ \$self->{'_${pl_name}'} };
+}
+
+sub set_${pl_name} {
+    my (\$self, \@new_values) = \@_;
+    \@{ \$self->{'_${pl_name}'} } = (\@new_values);
+}
+
+sub push_${pl_name} {
+    my (\$self, \@new_values) = \@_;
+    push(\@{ \$self->{'_${pl_name}'} }, \@new_values);
+}
+
+sub clear_${pl_name} {
+    my (\$self) = \@_;
+    \@{ \$self->{'_${pl_name}'} } = ();
+}
+
+sub apply_${pl_name} {
+    my (\$self, \$sub) = \@_;
+    map { \$sub->(\$_) } \@{ \$self->{'_${pl_name}'} };
+}
+CODEGEN
+    return $codegen;
+}
+
+sub generate_field_methods_for_scalar {
+    my ($field) = @_;
+    my $name      = $field->{'name'};
+    my $item_type = $field->{'item_type'} // "'undefined'";
+    my $pl_name   = $field->{'pl_name'};
+
+    my $codegen =<<"CODEGEN";
+
+# Field: ${name} methods
+# ------
+sub get_${pl_name} {
+    my (\$self) = \@_;
+    return \$self->{'_${pl_name}'};
+}
+
+sub set_${pl_name} {
+    my (\$self, \$new_value) = \@_;
+    \$self->{'_${pl_name}'} = \$new_value;
+}
+CODEGEN
+    return $codegen;
+}
+
+sub generate_field_pod_for_array {
+    my ($field) = @_;
+    my $name      = $field->{'name'};
+    my $pl_name   = $field->{'pl_name'};
+    my $item_type = $field->{'item_type'} // "'undefined'";
+
+    my $codegen =<<"CODEGEN";
+
+#=item count_field_name()
+
+Returns the count of elements in the array
+
+#=item get_field_name()
+
+Which returns a list
+
+#=item set_field_name(I<\@new_values>)
+
+Which copies the items in the internal array
+
+#=item push_field_name(I<\@new_values>)
+
+Which append items to the internal array
+
+#=item clear_field_name()
+
+Which clears the internal array
+
+#=item apply_field_name(I<sub {...}>)
+
+Which applies the sub on the array's items
+CODEGEN
+    return $codegen;
+}
+
+sub generate_field_pod_for_scalar {
+    my ($field) = @_;
+    my $name      = $field->{'name'};
+    my $item_type = $field->{'item_type'} // "'undefined'";
+    my $pl_name   = $field->{'pl_name'};
+
+    my $codegen =<<"CODEGEN";
+
+#=item get_${pl_name}()
+
+Gets the scalar value of the field.
+
+#=item set_${pl_name}(I<\$new_value>)
+
+Sets the scalar value of the new field.
+CODEGEN
+    return $codegen;
+}
+
+sub generate_header {
+    my ($parameters_ref) = @_;
+    my $filename   = basename $parameters_ref->{'filename'};
+    my $version    = $parameters_ref->{'version'};
+    my $class_name = $parameters_ref->{'class_name'};
+    my @fields     = @{ $parameters_ref->{'fields'} };
+    my $codegen =<<"CODEGEN";
+#!/usr/bin/env perl
+#*===========================================================================*
+#*                                                                           *
+#*  ${filename} - Generate perl plain-old-data record modules
+#*                                                                           *
+#*  Copyright (c) 2019 Frederic Jardon  <frederic.jardon\@gmail.com>          *
+#*                                                                           *
+#*  ------------------ GPL Licensed Source Code ------------------           *
+#*  Frederic Jardon makes this software available under the GNU              *
+#*  General Public License (GPL) license for open source projects.           *
+#*  For details of the GPL license please see www.gnu.org or read            *
+#*  the file license.gpl provided in this package.                           *
+#*                                                                           *
+#*  This program is free software; you can redistribute it and/or            *
+#*  modify it under the terms of the GNU General Public License as           *
+#*  published by the Free Software Foundation; either version 3 of           *
+#*  the License, or (at your option) any later version.                      *
+#*                                                                           *
+#*  This program is distributed in the hope that it will be useful,          *
+#*  but WITHOUT ANY WARRANTY; without even the implied warranty of           *
+#*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the            *
+#*  GNU General Public License for more details.                             *
+#*                                                                           *
+#*  You should have received a copy of the GNU General Public                *
+#*  License along with this program in the file 'license.gpl'; if            *
+#*  not, see <http://www.gnu.org/licenses/>.                                 *
+#*  --------------------------------------------------------------           *
+#*===========================================================================*
+package ${class_name};
+
+use strict;
+use warnings 'all';
+
+require Exporter;
+
+our \@ISA = qw(Exporter);
+
+# Items to export into callers namespace by default. Note: do not export
+# names by default without a very good reason. Use EXPORT_OK instead.
+# Do not simply export all your public functions/methods/constants.
+
+# This allows declaration	use ${class_name} ':all';
+# If you do not need this, moving things directly into \@EXPORT or \@EXPORT_OK
+# will save memory.
+our \%EXPORT_TAGS = ( 'all' => [ qw(
+
+) ] );
+
+our \@EXPORT_OK = ( \@{ \$EXPORT_TAGS{'all'} } );
+
+our \@EXPORT = qw(
+
+);
+
+our \$VERSION = '${version}';
+
+# Preloaded methods go here.
+#
+sub new {
+    my (\$class, \$parameters_ref) = \@_;
+    my \$self = {
+ @{[ map { generate_field_ctor_for_array($_) } @fields ]}
+    };
+    return bless \$self, \$class;
+}
+CODEGEN
+    return $codegen;
+}
+
+sub generate_footer {
+    my ($parameters_ref) = @_;
+    my $filename   = basename $parameters_ref->{'filename'};
+    my $version    = $parameters_ref->{'version'};
+    my $class_name = $parameters_ref->{'class_name'};
+    my @fields     = @{ $parameters_ref->{'fields'} };
+
+    my $pod_generator_for_field_type_ref = {
+        'array'  => \&generate_field_pod_for_array,
+        'scalar' => \&generate_field_pod_for_scalar,
+    };
+
+    my $codegen =<<"CODEGEN";
+
+if(!caller) {
+    use Test::More;
+    ok(1);
+    done_testing;
+}
+
+1;
+
+#__END__
+
+#=head1 NAME
+
+${class_name} - Plain Old Perl Data Record
+
+#=head1 VERSION
+
+This documentation refers to ${class_name} version ${version}.
+
+#=head1 SYNOPSIS
+
+    use ${class_name};
+
+    my \$record = ${class_name}->new();
+
+#=head1 DESCRIPTION
+
+This module implements a plain old data record.
+
+#=head1 SUBROUTINES/METHODS
+
+#=over 5
+
+@{[ map { $pod_generator_for_field_type_ref->{$_->{'type'}}->($_) } @fields ]}
+
+#=back
+
+#=head1 DIAGNOSTICS
+
+none
+
+#=head1 CONFIGURATION AND ENVIRONMENT
+
+none
+
+#=head1 DEPENDENCES
+
+none
+
+#=head1 INCOMPATIBILITIES
+
+none
+
+#=head1 BUGS AND LIMITATIONS
+
+none
+
+#=head1 SEE ALSO
+
+
+#=head1 AUTHOR
+
+Frederic JARDON <frederic.jardon\@gmail.com>
+
+#=head1 COPYRIGHT AND LICENSE
+
+Copyright (C) 2020 by Frederic JARDON <frederic.jardon\@gmail.com>
+
+This program is free software; you can redistribute it and/or modify
+it under the GPL license.
+
+#=cut
+
+CODEGEN
+    return $codegen;
+}
+
+
+#=item get_options({ argv => \@ARGV, env => \%env })
+#
+#Returns a HASH reference whose keys are the parsed options.
+#
+#- input, the input filename
+#- output, the output filename
+#
+#=cut
+sub get_options {
+    my ($parameters_ref) = @_;
+    my $argv = $parameters_ref->{'argv'};
+    my ($opt_help, $opt_c, $opt_o,);
+
+    GetOptionsFromArray($argv,
+        'h|help' => \$opt_help,
+        'c=s'    => \$opt_c,
+        'o=s'    => \$opt_o,
+    ) or croak "Error while parsing command-line arguments";
+
+    # Handle help option
+    pod2usage(-exitval => 0) if ($opt_help);
+
+    $opt_c //= '-';
+    $opt_o //= '-';
+
+    if(@{$argv}) {
+        print STDERR "Extra arguments on command line\n";
+        pod2usage(-exitval => 1);
+    }
+
+    my $opts = {
+        'input'  => $opt_c,
+        'output' => $opt_o,
+    };
+    return $opts;
+}
+
+#=item read_input_file({filename => $filename})
+#
+#Returns a HASH reference whose keys are:
+#
+#- class_name: the class name defined in the input file
+#- version:    the version defined in the input file
+#- fields:     an ARRAY reference containing field descriptions
+#
+#Each field description is a HASH reference whose keys are:
+#
+#- name:      the name of the field as defined in the input file
+#- pl_name:   the name of the field converted to a suitable perl identifier
+#- type:      one of: array, hash, scalar
+#- item_type: the type of items stored in the array if the field is an array
+#- value:     the initial value of the field
+#
+#=cut
+sub read_input_file {
+    my ($parameters_ref) = @_;
+
+    my $filename = $parameters_ref->{'filename'};
+    croak "Missing parameter 'filename'" if(!defined($filename));
+
+    my ($class_name, $version);
+    my @fields = ();
+
+    my $in_fh = \*STDIN;
+    if($filename ne '-') {
+        open(my $in, '<', $filename)
+            or croak("Unable to open: '$filename' for reading");
+        $in_fh = $in;
+    }
+    while(my $line = <$in_fh>) {
+        # Remove leading and trailing spaces
+        chomp $line;
+        $line =~ s/^\s+//g;
+
+        # Remove comments and blank lines
+        next if('' eq $line or $line =~ m/^#/);
+
+        # Handle the ':class-name:' attribute
+        if($line =~ m/^:class-name:\s*([a-zA-Z:]+)$/) {
+            $class_name = $1;
+            next;
+        }
+
+        # Handle the ':version:' attribute
+        if($line =~ m/^:version:\s*([a-zA-Z0-9_.-]+)$/) {
+            $version = $1;
+            next;
+        }
+
+        # Handle field
+        my $field_line = $line;
+        if($field_line =~ s/^(\S+)\s+//g) {
+            my $field = { 'name' => $1 };
+            if($field_line =~ s/\s+([a-zA-Z:]+)$//g) {
+                $field->{ 'item_type' } = $1;
+            }
+
+            $field->{ 'value' } = $field_line;
+            if($field->{ 'value' } ne '') {
+                $field->{ 'type' }   = 'array' if($field->{'value'} =~ m/^\[/);
+                $field->{ 'type' } //= 'scalar';
+                push(@fields, $field);
+                next;
+            }
+
+            print STDERR "Unknown field definition: '$line'\n";
+        }
+
+        # Erroneous line
+        print STDERR "Unknown line format: '$line'\n";
+    }
+    close($in_fh)
+        if($filename ne '-');
+
+    foreach my $field (@fields) {
+        my $pl_name = $field->{'name'};
+        $pl_name =~ s/[^\w\d]/_/g;
+        $field->{'pl_name'} = $pl_name;
+    }
+
+    my $spec_ref = {
+        'class_name' => $class_name // 'Plain::Old::Data',
+        'version'    => $version    // '0.01',
+        'fields'     => \@fields,
+    };
+    return $spec_ref;
+}
+
+#=item generate_output({filename => $filename, class_name => '...', fields => [...]})
+#
+#Generate the output file whose fields are described by I<fields>.
+#
+#=cut
+sub generate_output {
+    my ($parameters_ref) = @_;
+    my $class_name = $parameters_ref->{'class_name'};
+    my $fields_ref = $parameters_ref->{'fields'};
+    my $filename   = $parameters_ref->{'filename'};
+    croak "Missing parameter 'class_name'" if(!defined($class_name));
+    croak "Missing parameter 'fields'"     if(!defined($fields_ref));
+    croak "Missing parameter 'filename'"   if(!defined($filename));
+    my @fields = @{ $fields_ref };
+
+    my $method_generators = {
+        'array'  => \&generate_field_methods_for_array,
+        'scalar' => \&generate_field_methods_for_scalar,
+    };
+
+    my $codegen =<<"CODEGEN";
+${\( generate_header($parameters_ref) )}
+@{[ map { $method_generators->{$_->{'type'}}->($_) } @fields ]}
+${\( generate_footer($parameters_ref) )}
+CODEGEN
+    $codegen =~ s/^#=/=/mg;
+    $codegen =~ s/^#__END__/__END__/mg;
+
+    my $out_fh = \*STDOUT;
+    if($filename ne '-') {
+        open(my $out, '>', $filename)
+            or croak("Unable to open: '$filename' for writing");
+        $out_fh = $out;
+    }
+    {
+        my $saver = SelectSaver->new($out_fh);
+        print $codegen;
+    }
+    close($out_fh)
+        if($filename ne '-');
+
+    return;
+}
+
+sub main {
+    my $opts = get_options({argv => \@ARGV, env => \%ENV});
+    my $spec = read_input_file({filename => $opts->{'input'}});
+    generate_output({'filename' => $opts->{'output'}, %{$spec}});
+}
+
+__END__
+=head1 NAME
+
+plgen - Code Formatter tool
+
+=head1 SYNOPSIS
+
+B<plgen> B<-h>|B<--help>
+
+B<plgen> [B<OPTIONS>] -c B<FILE>
+
+=head1 DESCRIPTION
+
+This tool format tabular data into fixed size columns.
+
+=head1 OPTIONS
+
+=over
+
+=item B<-h>|B<--help>
+
+Print the usage, help and version information for this program and exit.
+
+=item B<-c> I<FILE>
+
+Sets the input file to compile.
+
+=item B<-o> I<OUTPUT>
+
+Sets the output file to generate.
+
+=back
+
+=head1 INPUT FILE FORMAT
+
+The input file describe a simple data record. The file format is line oriented
+and should start with a header:
+
+    :class-name: The::Class::Name
+    :version: 0.0.2a
+    # Some comment
+    #
+    # Field       Default-Value   Item-Type_opt
+    field-name-1  ''
+    field-name-2  []              Item::Type
+    field-name-3  0
+
+The following methods are created for scalar fields:
+
+=over 5
+
+=item get_field_name()
+
+Gets the scalar value of the field.
+
+=item set_field_name(I<$new_value>)
+
+Sets the scalar value of the new field.
+
+=back
+
+For array fields, the following methods are created:
+
+=over 5
+
+=item count_field_name()
+
+Returns the count of elements in the array.
+
+=item get_field_name()
+
+Which returns a list.
+
+=item set_field_name(I<@new_values>)
+
+Which copies the items in the internal array.
+
+=item push_field_name(I<@new_values>)
+
+Which append items to the internal array.
+
+=item clear_field_name()
+
+Which clears the internal array.
+
+=item apply_field_name(I<sub {...}>)
+
+Which applies the sub on the array's items.
+
+=back
+
+
+=head1 DIAGNOSTICS
+
+=head1 CONFIGURATION AND ENVIRONMENT
+
+=head1 DEPENDENCIES
+
+=head1 INCOMPATIBILITIES
+
+=head1 BUGS AND LIMITATIONS
+
+=head1 SEE ALSO
+
+=head1 AUTHOR
+
+Frederic JARDON <frederic.jardon@gmail.com>
+
+=head1 COPYRIGHT AND LICENSE
+
+Copyright (C) 2019 by Frederic JARDON <frederic.jardon@gmail.com>
+
+This program is free software; you can redistribute it and/or modify
+it under the GPL license.
+
+=cut
+

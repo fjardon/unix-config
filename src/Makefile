@@ -11,6 +11,7 @@ GIT_FILES  = apt-cyg
 MAN1_FILES = byzanz-helper.1 \
 			 codefmt.1 \
 			 codemv.1 \
+			 plgen.1 \
              ffmpeg-helper.1 \
              hyper-v.1 \
              msvc-shell.1 \
@@ -32,6 +33,7 @@ SHAR_FILES = config.site \
 			 scripts/byzanz-helper \
              scripts/codefmt \
              scripts/codemv \
+             scripts/plgen \
              scripts/ffmpeg-helper \
              scripts/hyper-v \
              scripts/msvc-shell \
@@ -57,6 +59,9 @@ codefmt.1 : scripts/codefmt
 	$(POD2MAN) $< $@
 
 codemv.1 : scripts/codemv
+	$(POD2MAN) $< $@
+
+plgen.1 : scripts/plgen
 	$(POD2MAN) $< $@
 
 ffmpeg-helper.1 : scripts/ffmpeg-helper
