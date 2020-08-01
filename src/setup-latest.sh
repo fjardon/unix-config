@@ -57,8 +57,8 @@ cat <<'SETUP_SHAR_EOF'> setup.shar
 # To extract the files from this archive, save it to some FILE, remove
 # everything before the '#!/bin/sh' line above, then type 'sh FILE'.
 #
-lock_dir=_sh17203
-# Made on 2020-07-31 08:41 CEST by <fjardon@white-fang>.
+lock_dir=_sh09348
+# Made on 2020-08-01 13:03 CEST by <fjardon@white-fang>.
 # Source directory was '/home/fjardon/Documents/workspace/github/unix-config/src'.
 #
 # Existing files will *not* be overwritten, unless '-c' is specified.
@@ -82,7 +82,7 @@ lock_dir=_sh17203
 #   2541 -rwxr-xr-x scripts/byzanz-helper
 #   8094 -rwxr-xr-x scripts/codefmt
 #   4685 -rwxr-xr-x scripts/codemv
-#  16818 -rwxr-xr-x scripts/plgen
+#  16939 -rwxr-xr-x scripts/plgen
 #   3766 -rwxr-xr-x scripts/ffmpeg-helper
 #   1820 -rwxr-xr-x scripts/hyper-v
 #   6290 -rwxr-xr-x scripts/msvc-shell
@@ -2036,7 +2036,7 @@ X    my $codegen =<<"CODEGEN";
 #!/usr/bin/env perl
 #*===========================================================================*
 #*                                                                           *
-#*  ${filename} - Generate perl plain-old-data record modules
+#*  ${filename} - A perl plain-old-data record modules
 #*                                                                           *
 #*  Copyright (c) 2019 Frederic Jardon  <frederic.jardon\@gmail.com>          *
 #*                                                                           *
@@ -2271,7 +2271,7 @@ X        # Remove comments and blank lines
 X        next if('' eq $line or $line =~ m/^#/);
 X
 X        # Handle the ':class-name:' attribute
-X        if($line =~ m/^:class-name:\s*([a-zA-Z:]+)$/) {
+X        if($line =~ m/^:class-name:\s*([a-zA-Z0-9_:]+)$/) {
 X            $class_name = $1;
 X            next;
 X        }
@@ -2286,7 +2286,7 @@ X        # Handle field
 X        my $field_line = $line;
 X        if($field_line =~ s/^(\S+)\s+//g) {
 X            my $field = { 'name' => $1 };
-X            if($field_line =~ s/\s+([a-zA-Z:]+)$//g) {
+X            if($field_line =~ s/\s+([a-zA-Z0-9_:]+)$//g) {
 X                $field->{ 'item_type' } = $1;
 X            }
 X
@@ -2346,8 +2346,12 @@ ${\( generate_header($parameters_ref) )}
 @{[ map { $method_generators->{$_->{'type'}}->($_) } @fields ]}
 ${\( generate_footer($parameters_ref) )}
 CODEGEN
+X
+X    # Transform the escaped pod and __END__ macros
 X    $codegen =~ s/^#=/=/mg;
 X    $codegen =~ s/^#__END__/__END__/mg;
+X    # Trim whitespaces at end of line
+X    $codegen =~ s/\s+$/\n/mg;
 X
 X    my $out_fh = \*STDOUT;
 X    if($filename ne '-') {
@@ -2489,7 +2493,7 @@ X
 =cut
 X
 SHAR_EOF
-  (set 20 20 07 31 08 36 23 'scripts/plgen'
+  (set 20 20 07 31 17 43 40 'scripts/plgen'
    eval "${shar_touch}") && \
   chmod 0755 'scripts/plgen'
 if test $? -ne 0
@@ -2499,12 +2503,12 @@ fi
   then (
        ${MD5SUM} -c >/dev/null 2>&1 || ${echo} 'scripts/plgen': 'MD5 check failed'
        ) << \SHAR_EOF
-7af69463466b2119bb37f71c0b820adb  scripts/plgen
+4c0548f326d9f5060c786e6fc0f7195a  scripts/plgen
 SHAR_EOF
 
 else
-test `LC_ALL=C wc -c < 'scripts/plgen'` -ne 16818 && \
-  ${echo} "restoration warning:  size of 'scripts/plgen' is not 16818"
+test `LC_ALL=C wc -c < 'scripts/plgen'` -ne 16939 && \
+  ${echo} "restoration warning:  size of 'scripts/plgen' is not 16939"
   fi
 fi
 # ============= scripts/ffmpeg-helper ==============
@@ -8423,7 +8427,7 @@ X.PP
 This program is free software; you can redistribute it and/or modify
 it under the \s-1GPL\s0 license.
 SHAR_EOF
-  (set 20 20 07 31 08 41 22 'plgen.1'
+  (set 20 20 08 01 13 03 24 'plgen.1'
    eval "${shar_touch}") && \
   chmod 0664 'plgen.1'
 if test $? -ne 0
