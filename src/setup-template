@@ -215,6 +215,9 @@ if ! has_prog cppman; then
         pip3 install --user cppman > install.log 2>&1
     fi
 fi
+if has_prog pip3 && ! has_prog syntrax; then
+    pip3 install --user syntrax
+fi
 
 # Ruby
 if [ -e "${PREFIX}/.gemrc" ]; then
