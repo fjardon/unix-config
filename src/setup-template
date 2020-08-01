@@ -241,8 +241,8 @@ if has_prog fc-cache; then
     echo "nerd fonts ..."
     install -d "${PREFIX}/.fonts"
     install -d "${PREFIX}/.local/share/fonts"
-    if [ ! -d "${PREFIX}/.local/share/fonts/NerdFonts" ]; then
-        install -d "${PREFIX}/.local/share/fonts/NerdFonts"
+    if [ ! -d "${PREFIX}/.local/share/fonts/nerd-fonts" ]; then
+        install -d "${PREFIX}/.local/share/fonts/nerd-fonts"
         curl -O 'https://raw.githubusercontent.com/fjardon/nerd-fonts/master/patched-fonts/DejaVuSansMono/Regular/complete/DejaVu%20Sans%20Mono%20Nerd%20Font%20Complete%20Mono.ttf' \
             > install.log 2>&1
         mv 'DejaVu%20Sans%20Mono%20Nerd%20Font%20Complete%20Mono.ttf' 'DejaVu Sans Mono Nerd Font Complete Mono.ttf'
