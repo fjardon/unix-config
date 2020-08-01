@@ -61,6 +61,7 @@ Plug 'godlygeek/tabular'
 "Plug 'tpope/vim-dispatch'
 
 " Programming
+Plug 'neoclide/coc.nvim', {'branch': 'release'}
 "Plug 'honza/vim-snippets'
 "Plug 'Townk/vim-autoclose'
 "Plug 'vim-syntastic/syntastic'
@@ -84,7 +85,6 @@ Plug 'ryanoasis/vim-devicons'
 Plug 'vim-airline/vim-airline'   	" Lean & mean status/tabline for vim
 Plug 'vim-airline/vim-airline-themes'
 "Plug 'fisadev/FixedTaskList.vim'  	" Pending tasks list
-"Plug 'rosenfeld/conque-term'      	" Consoles as buffers
 Plug 'tpope/vim-surround'	   	" Parentheses, brackets, quotes, XML tags, and more
 "Plug 'ctags.vim'
 
@@ -100,7 +100,7 @@ Plug 'tpope/vim-fugitive'
 "Plug 'airblade/vim-gitgutter'
 
 " Abolish (completion, typo fixes, casing)
-"Plug 'tpope/vim-abolish'
+Plug 'tpope/vim-abolish'
 
 " Repeat (repeat plugin commands)
 "Plug 'tpope/vim-repeat'

@@ -354,3 +354,15 @@ if has_prog kpsewhich; then
     fi
 fi
 
+# Asciidoctor
+echo "Asciidoctor ..."
+if has_prog gem && has_prog bison && has_prog flex && has_prog cmake; then
+    gem install --user-install pygments.rb
+    gem install --user-install asciimath
+    gem install --user-install asciidoctor-pdf
+    gem install --user-install mathematical
+    gem install --user-install asciidoctor-mathematical
+    gem install --user-install asciidoctor-diagram
+fi
+
+

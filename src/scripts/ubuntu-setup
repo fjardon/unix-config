@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -e
+
 apt-get -y install sharutils
 apt-get -y install vim
 apt-get -y install lynx
@@ -13,20 +15,28 @@ apt-get -y install automake
 apt-get -y install gcc
 apt-get -y install g++
 apt-get -y install gdb
+apt-get -y install cmake
+apt-get -y install bison
+apt-get -y install flex
 apt-get -y install xsel
+apt-get -y install graphviz
+apt-get -y install boxes
+apt-get -y install asciio
 apt-get -y install fontconfig
 apt-get -y install fontconfig-config
 apt-get -y install ncurses-bin
 apt-get -y install libncurses-dev
 apt-get -y install ncurses-doc
+apt-get -y install libffi-dev
 apt-get -y install libxml2-dev
 apt-get -y install libxml2-doc
 apt-get -y install libxml2-utils
 apt-get -y install expat
+apt-get -y install python-setuptools
+apt-get -y install python-pip-whl
 apt-get -y install python3-setuptools
 apt-get -y install python3-pip
-apt-get -y install python-setuptools
-apt-get -y install python-pip
+apt-get -y install python3-blockdiag
 apt-get -y install cppman
 apt-get -y install perl
 apt-get -y install libxml-libxml-perl
@@ -38,5 +48,10 @@ apt-get -y install visidata
 apt-get -y install asciidoctor
 apt-get -y install asciidoctor-doc
 apt-get -y install ruby-asciidoctor-pdf
-
-
+apt-get -y install ruby-rouge
+apt-get -y install libgdk-pixbuf2.0-dev
+apt-get -y install libcairo2-dev
+apt-get -y install libpango1.0-dev
+apt-get -y install fonts-lyx
+apt-get -y install ruby-dev
+apt-get -y install nodejs
