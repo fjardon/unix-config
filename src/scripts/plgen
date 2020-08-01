@@ -180,7 +180,7 @@ sub generate_header {
 #!/usr/bin/env perl
 #*===========================================================================*
 #*                                                                           *
-#*  ${filename} - Generate perl plain-old-data record modules
+#*  ${filename} - A perl plain-old-data record modules
 #*                                                                           *
 #*  Copyright (c) 2019 Frederic Jardon  <frederic.jardon\@gmail.com>          *
 #*                                                                           *
@@ -415,7 +415,7 @@ sub read_input_file {
         next if('' eq $line or $line =~ m/^#/);
 
         # Handle the ':class-name:' attribute
-        if($line =~ m/^:class-name:\s*([a-zA-Z:]+)$/) {
+        if($line =~ m/^:class-name:\s*([a-zA-Z0-9_:]+)$/) {
             $class_name = $1;
             next;
         }
@@ -430,7 +430,7 @@ sub read_input_file {
         my $field_line = $line;
         if($field_line =~ s/^(\S+)\s+//g) {
             my $field = { 'name' => $1 };
-            if($field_line =~ s/\s+([a-zA-Z:]+)$//g) {
+            if($field_line =~ s/\s+([a-zA-Z0-9_:]+)$//g) {
                 $field->{ 'item_type' } = $1;
             }
 
@@ -490,8 +490,12 @@ ${\( generate_header($parameters_ref) )}
 @{[ map { $method_generators->{$_->{'type'}}->($_) } @fields ]}
 ${\( generate_footer($parameters_ref) )}
 CODEGEN
+
+    # Transform the escaped pod and __END__ macros
     $codegen =~ s/^#=/=/mg;
     $codegen =~ s/^#__END__/__END__/mg;
+    # Trim whitespaces at end of line
+    $codegen =~ s/\s+$/\n/mg;
 
     my $out_fh = \*STDOUT;
     if($filename ne '-') {
