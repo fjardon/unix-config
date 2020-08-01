@@ -1,0 +1,42 @@
+#!/usr/bin/env bash
+
+apt-get -y install sharutils
+apt-get -y install vim
+apt-get -y install lynx
+apt-get -y install tmux
+apt-get -y install build-essential
+apt-get -y install git
+apt-get -y install tig
+apt-get -y install subversion
+apt-get -y install autoconf
+apt-get -y install automake
+apt-get -y install gcc
+apt-get -y install g++
+apt-get -y install gdb
+apt-get -y install xsel
+apt-get -y install fontconfig
+apt-get -y install fontconfig-config
+apt-get -y install ncurses-bin
+apt-get -y install libncurses-dev
+apt-get -y install ncurses-doc
+apt-get -y install libxml2-dev
+apt-get -y install libxml2-doc
+apt-get -y install libxml2-utils
+apt-get -y install expat
+apt-get -y install python3-setuptools
+apt-get -y install python3-pip
+apt-get -y install python-setuptools
+apt-get -y install python-pip
+apt-get -y install cppman
+apt-get -y install perl
+apt-get -y install libxml-libxml-perl
+apt-get -y install libjson-xs-perl
+apt-get -y install libtext-csv-perl
+apt-get -y install libtext-csv-xs-perl
+apt-get -y install libperl6-form-perl
+apt-get -y install visidata
+apt-get -y install asciidoctor
+apt-get -y install asciidoctor-doc
+apt-get -y install ruby-asciidoctor-pdf
+
+
