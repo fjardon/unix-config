@@ -24,6 +24,7 @@ SHAR_FILES = config.site \
              dot_gemrc \
              dot_profile \
              dot_tmux_conf \
+             dot_tmux_3_conf \
              dot_vimrc \
 			 dot_xprofile \
              dot_Xresources \

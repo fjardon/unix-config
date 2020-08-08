@@ -271,9 +271,16 @@ echo "tmux ..."
 if [ -e "${PREFIX}/.tmux.conf" ]; then
     cp -f "${PREFIX}/.tmux.conf" "${BACKUPDIR}"
 fi
-install -m 0644 dot_tmux_conf "${PREFIX}/.tmux.conf"
-install -m 0755 scripts/yank  "${PREFIX}/.local/bin"
-install -m 0644 yank.1        "${PREFIX}/.local/share/man/man1"
+TMUX_CONF="dot_tmux_conf"
+if has_prog 'tmux'; then
+    TMUX_VERSION_MAJOR=$(tmux -V | awk -F[[:space:].] '{print $2}')
+    if [ "${TMUX_VERSION_MAJOR}" -ge 3 ]; then
+        TMUX_CONF="dot_tmux_3_conf"
+    fi
+fi
+install -m 0644 "${TMUX_CONF}" "${PREFIX}/.tmux.conf"
+install -m 0755 scripts/yank   "${PREFIX}/.local/bin"
+install -m 0644 yank.1         "${PREFIX}/.local/share/man/man1"
 
 echo "terminfo ..."
 if has_prog tic; then
