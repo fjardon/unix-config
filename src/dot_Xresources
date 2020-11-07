@@ -12,10 +12,10 @@ XTerm*disallowedWindowOps: 20,21,SetXprop
 XTerm*vt100.initialFont: 3
 ! Fix for the infamous Ctrl+H issue
 ! see: http://www.hypexr.org/linux_ruboff.php
-XTerm*ttyModes:         erase ^?
-XTerm*VT100.Translations: \
-  #override <Key>BackSpace: string(0x7f) \n\
-            <Key>Delete:    string(0x1b) string("[3~")
+!XTerm*ttyModes:         erase ^?
+!XTerm*VT100.Translations: \
+!  #override <Key>BackSpace: string(0x7f) \n\
+!            <Key>Delete:    string(0x1b) string("[3~")
 
 !XTerm*dynamicColors: true
 !XTerm*backarrowKey: false
