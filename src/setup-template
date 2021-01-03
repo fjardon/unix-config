@@ -375,4 +375,11 @@ if has_prog gem && has_prog bison && has_prog flex && has_prog cmake; then
     gem install --user-install asciidoctor-diagram
 fi
 
+# FreeCAD
+echo "FreeCAD ..."
+curl -O 'https://raw.githubusercontent.com/FreeCAD/FreeCAD-library/master/PartsLibrary.FCMacro'
+install -m 0644 "freecad.sh" "${PREFIX}/.local/etc/profile.d"
+install -m 0755 -d "${PREFIX}/.FreeCAD/Macro"
+install -m 0644 "PartsLibrary.FCMacro" "${PREFIX}/.FreeCAD/Macro"
+
 
