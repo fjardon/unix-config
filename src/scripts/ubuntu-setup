@@ -78,3 +78,29 @@ apt-get -y install libwinpr2-dev
 apt-get -y install gnuplot
 apt-get -y install gnuplot-data
 apt-get -y install gnuplot-doc
+apt-get -y install dconf-editor
+
+#add-apt-repository ppa:freecad-maintainers/freecad-daily
+#apt-get update
+#apt-get -y install freecad-daily
+
+apt-get -y install freecad kicad
+apt-get -y install freecad-python3
+apt-get -y install kicad-packages3d
+apt-get -y install slic3r
+apt-get -y install python3-pyqt5
+apt-get -y install python3-vtk7
+apt-get -y install freecad-common freecad-python3
+apt-get -y install fonts-osifont
+apt-get -y install libnglib-dev
+apt-get -y install python3-git
+apt-get -y install calculix-cgx
+apt-get -y install libnglib-dev
+apt-get -y install netgen
+apt-get -y install python3-netgen
+apt-get -y install calculix-ccx
+apt-get -y install gmsh
+apt-get -y install python3-gmsh
+apt-get -y install python3-vtkplotter
+apt-get -y install python3-meshio
+apt-get -y install meshio-tools

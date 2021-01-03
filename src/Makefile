@@ -30,6 +30,7 @@ SHAR_FILES = config.site \
              dot_Xresources \
              dot_Xresources_user \
              dot_XWinrc \
+             freecad.sh \
              ibase.sh \
 			 scripts/byzanz-helper \
              scripts/codefmt \
