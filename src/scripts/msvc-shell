@@ -67,7 +67,7 @@ sub call_vcvarsall {
 CD "$bat_dir_win"
 CALL vcvarsall.bat $vcvarsall_params
 CD "$bash_dir_win"
-bash -l -c "perl -MStorable -e 'Cygwin::sync_winenv();' -e 'Storable::store \\%%ENV, \\\"$tmp_env_filename\\\";'"
+bash -c "perl -MStorable -e 'Cygwin::sync_winenv();' -e 'Storable::store \\%%ENV, \\\"$tmp_env_filename\\\";'"
 BATCH
     chmod 0755, $tmp_bat;
     chdir $tmp_bat_dir;
@@ -83,7 +83,7 @@ BATCH
     # Start subshell with modified environment
     %ENV = %vc_env;
     $ENV{VS_KIT}=join('-', 'msvc', $vc_env{VSCMD_VER}, @{$vcvarsall_args});
-    system 'bash', '-l', '-i';
+    system 'bash', '-i';
 
     # Restore saved environment
     chdir $cwd;
