@@ -1,0 +1,4145 @@
+#!/usr/bin/env bash
+
+if [ "$1" = "--help" ] || [ "$1" = "-h" ]; then
+  cat <<EOF
+Usage: $0 [-h|--help]
+       $0 [--no-dry-run] [--prefix PREFIX]
+EOF
+  exit 0
+fi
+
+DRYRUN=yes
+PREFIX=''
+
+if [ "$1" = '--no-dry-run' ]; then
+  DRYRUN=no
+  shift
+fi
+
+if [ "$1" = '--prefix' ]; then
+  shift
+  if [ -n "$1" ]; then
+    PREFIX="$1"
+  fi
+fi
+
+if [ -z "${PREFIX}" ]; then
+  if [ 'no' = "${DRYRUN}" ]; then
+    PREFIX="${PREFIX:-${HOME}}"
+  else
+    PREFIX="$(mktemp -d)"
+  fi
+fi
+
+
+if [ 'no' != "${DRYRUN}" ]; then
+  echo "Dry-Run mode, install to: '${PREFIX}'"
+else
+  echo "Install to: '${PREFIX}'"
+fi
+mkdir -p "${PREFIX}"
+
+
+case "$(uname -o)" in
+  Msys)
+	  INSTALL_X="install"
+	  INSTALL_R="install"
+	  INSTALL_P="install"
+	  ;;
+  *)
+	  INSTALL_X="install -m 0755"
+	  INSTALL_R="install -m 0644"
+	  INSTALL_P="install -m 0700"
+	  ;;
+esac
+
+# =============================================================================
+# Exit on any errors
+set -e
+function echoerr() { echo "$@" 1>&2; }
+# =============================================================================
+
+# =============================================================================
+# Configure some shell variables
+PATH="${PATH}:${PREFIX}/.local/bin"
+LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:${PREFIX}/.local/lib"
+DATAROOTDIR="${PREFIX}/.local/share"
+# =============================================================================
+
+# =============================================================================
+# Autodetect current install capabilities
+function has_prog() {
+    hash "$1" > /dev/null 2>&1
+    return $?
+}
+
+REQUIRED_PROGS=(curl git grep install mktemp sed tar)
+has_errors=
+for p in ${REQUIRED_PROGS[@]};
+do
+    if ! has_prog "${p}"; then
+       echoerr " - ${p} required"
+       has_errors=Yes
+    fi
+done
+if ! has_prog uudecode && ! has_prog perl; then
+    echoerr " - uudecode or perl required"
+    has_errors=Yes
+fi
+[[ -z "${has_errors}" ]] || exit 1
+
+os_name=
+if has_prog uname; then
+    os_name=$(uname -s)
+fi
+# =============================================================================
+
+# =============================================================================
+# Prepare temporary directory to unarchive files
+# ----------------------------------------------
+RUN_CWD=$(pwd)
+SHAR_TMPDIR=$(mktemp -d)
+cd "${SHAR_TMPDIR}"
+echo "Unsharing files in '${SHAR_TMPDIR}' ..."
+cat <<'SETUP_SHAR_EOF'> setup.shar
+# @SHAR_ARCHIVE@
+#!/bin/sh
+# This is a shell archive (produced by GNU sharutils 4.15.2).
+# To extract the files from this archive, save it to some FILE, remove
+# everything before the '#!/bin/sh' line above, then type 'sh FILE'.
+#
+lock_dir=_sh11972
+# Made on 2025-12-23 21:22 CET by <frede@white-fang>.
+# Source directory was '/f/workspace/github/unix-config/src'.
+#
+# Existing files will *not* be overwritten, unless '-c' is specified.
+#
+# This shar contains:
+# length mode       name
+# ------ ---------- ------------------------------------------
+#    620 -rw-r--r-- data/config.site
+#    475 -rw-r--r-- dot/bash_profile
+#   3171 -rw-r--r-- dot/bashrc
+#     92 -rw-r--r-- dot/gemrc
+#   2561 -rw-r--r-- dot/profile
+#   1025 -rw-r--r-- dot/tmux.conf
+#   1552 -rw-r--r-- dot/vimrc
+#    349 -rwxr-xr-x dot/xprofile
+#    859 -rw-r--r-- dot/Xresources
+#    860 -rw-r--r-- dot/Xresources_user
+#   4215 -rw-r--r-- dot/XWinrc
+#   2648 -rwxr-xr-x scripts/byzanz-helper
+#   8354 -rwxr-xr-x scripts/codefmt
+#   4827 -rwxr-xr-x scripts/codemv
+#  17577 -rwxr-xr-x scripts/plgen
+#   3914 -rwxr-xr-x scripts/ffmpeg-helper
+#   1911 -rwxr-xr-x scripts/hyper-v
+#   6509 -rwxr-xr-x scripts/msvc-shell
+#   3748 -rwxr-xr-x scripts/sixel2tmux
+#   4300 -rwxr-xr-x scripts/yank
+#   2883 -rw-r--r-- data/tmux-256color.tinfo
+#    347 -rwxr-xr-x scripts/uudecode.pl
+#    948 -rwxr-xr-x scripts/runcron
+#   3231 -rw-r--r-- man/byzanz-helper.1
+#   2786 -rw-r--r-- man/codefmt.1
+#   2844 -rw-r--r-- man/codemv.1
+#   4364 -rw-r--r-- man/plgen.1
+#   3187 -rw-r--r-- man/ffmpeg-helper.1
+#   2643 -rw-r--r-- man/hyper-v.1
+#   3402 -rw-r--r-- man/msvc-shell.1
+#   3947 -rw-r--r-- man/sixel2tmux.1
+#   4604 -rw-r--r-- man/yank.1
+#
+MD5SUM=${MD5SUM-md5sum}
+f=`${MD5SUM} --version | egrep '^md5sum .*(core|text)utils'`
+test -n "${f}" && md5check=true || md5check=false
+${md5check} || \
+  echo 'Note: not verifying md5sums.  Consider installing GNU coreutils.'
+if test "X$1" = "X-c"
+then keep_file=''
+else keep_file=true
+fi
+echo=echo
+save_IFS="${IFS}"
+IFS="${IFS}:"
+gettext_dir=
+locale_dir=
+set_echo=false
+
+for dir in $PATH
+do
+  if test -f $dir/gettext \
+     && ($dir/gettext --version >/dev/null 2>&1)
+  then
+    case `$dir/gettext --version 2>&1 | sed 1q` in
+      *GNU*) gettext_dir=$dir
+      set_echo=true
+      break ;;
+    esac
+  fi
+done
+
+if ${set_echo}
+then
+  set_echo=false
+  for dir in $PATH
+  do
+    if test -f $dir/shar \
+       && ($dir/shar --print-text-domain-dir >/dev/null 2>&1)
+    then
+      locale_dir=`$dir/shar --print-text-domain-dir`
+      set_echo=true
+      break
+    fi
+  done
+
+  if ${set_echo}
+  then
+    TEXTDOMAINDIR=$locale_dir
+    export TEXTDOMAINDIR
+    TEXTDOMAIN=sharutils
+    export TEXTDOMAIN
+    echo="$gettext_dir/gettext -s"
+  fi
+fi
+IFS="$save_IFS"
+if (echo "testing\c"; echo 1,2,3) | grep c >/dev/null
+then if (echo -n test; echo 1,2,3) | grep n >/dev/null
+     then shar_n= shar_c='
+'
+     else shar_n=-n shar_c= ; fi
+else shar_n= shar_c='\c' ; fi
+f=shar-touch.$$
+st1=200112312359.59
+st2=123123592001.59
+st2tr=123123592001.5 # old SysV 14-char limit
+st3=1231235901
+
+if   touch -am -t ${st1} ${f} >/dev/null 2>&1 && \
+     test ! -f ${st1} && test -f ${f}; then
+  shar_touch='touch -am -t $1$2$3$4$5$6.$7 "$8"'
+
+elif touch -am ${st2} ${f} >/dev/null 2>&1 && \
+     test ! -f ${st2} && test ! -f ${st2tr} && test -f ${f}; then
+  shar_touch='touch -am $3$4$5$6$1$2.$7 "$8"'
+
+elif touch -am ${st3} ${f} >/dev/null 2>&1 && \
+     test ! -f ${st3} && test -f ${f}; then
+  shar_touch='touch -am $3$4$5$6$2 "$8"'
+
+else
+  shar_touch=:
+  echo
+  ${echo} 'WARNING: not restoring timestamps.  Consider getting and
+installing GNU '\''touch'\'', distributed in GNU coreutils...'
+  echo
+fi
+rm -f ${st1} ${st2} ${st2tr} ${st3} ${f}
+#
+if test ! -d ${lock_dir} ; then :
+else ${echo} "lock directory ${lock_dir} exists"
+     exit 1
+fi
+if mkdir ${lock_dir}
+then ${echo} "x - created lock directory ${lock_dir}."
+else ${echo} "x - failed to create lock directory ${lock_dir}."
+     exit 1
+fi
+# ============= data/config.site ==============
+if test ! -d 'data'; then
+  mkdir 'data'
+if test $? -eq 0
+then ${echo} "x - created directory data."
+else ${echo} "x - failed to create directory data."
+     exit 1
+fi
+fi
+if test -n "${keep_file}" && test -f 'data/config.site'
+then
+${echo} "x - SKIPPING data/config.site (file already exists)"
+
+else
+${echo} "x - extracting data/config.site (text)"
+  sed 's/^X//' << 'SHAR_EOF' | uudecode &&
+begin 600 data/config.site
+M(R`D>TA/345]+RYL;V-A;"]E=&,O8V]N9FEG+G-I=&4@9F]R(&-O;F9I9W5R
+M90T*(PT*(R!#:&%N9V4@<V]M92!D969A=6QT<RX-"G1E<W0@(B1P<F5F:7@B
+M(#T@3D].12`F)B!P<F5F:7@](B1[2$]-17TO+FQO8V%L(@T*#0HC($=I=F4@
+M075T;V-O;F8@,BYX(&=E;F5R871E9"!C;VYF:6=U<F4@<V-R:7!T<R!A('-H
+M87)E9"!D969A=6QT#0HC(&-A8VAE(&9I;&4@9F]R(&9E871U<F4@=&5S="!R
+M97-U;'1S+"!A<F-H:71E8W1U<F4M<W!E8VEF:6,N#0II9B!T97-T("(D8V%C
+M:&5?9FEL92(@/2`O9&5V+VYU;&P[('1H96X-"B`@(R!!(&-A8VAE(&9I;&4@
+M:7,@;VYL>2!V86QI9"!F;W(@;VYE($,@8V]M<&EL97(N#0H@(&EF('1E<W0@
+M+7H@(B1[0T-](CL@=&AE;@T*("`@($-#/6=C8PT*("!F:0T*#0H@(&EF(&AA
+M<V@@(FUD-7-U;2(@/B`O9&5V+VYU;&P@,CXF,3L@=&AE;@T*("`@(&UD-3U@
+M96-H;R`B0T9,04=3/2<D>T-&3$%'4WTG($-86$9,04=3/2<D>T-86$9,04=3
+M?2<@3$1&3$%'4STG)'M,1$9,04=3?2<B('P@;60U<W5M('P@87=K("=[<')I
+M;G0@)#%])V`-"B`@("!C86-H95]F:6QE/2(D>W!R969I>'TO=F%R+V-O;F9I
+C9RYC86-H92XD>T-#?2XD>VUD-7TB#0H@(&9I#0IF:0T*#0HO
+`
+end
+SHAR_EOF
+  (set 20 25 12 23 17 07 12 'data/config.site'
+   eval "${shar_touch}") && \
+  chmod 0644 'data/config.site'
+if test $? -ne 0
+then ${echo} "restore of data/config.site failed"
+fi
+  if ${md5check}
+  then (
+       ${MD5SUM} -c >/dev/null 2>&1 || ${echo} 'data/config.site': 'MD5 check failed'
+       ) << \SHAR_EOF
+bed2623dc2cf19c2830165389bfb4ba6  data/config.site
+SHAR_EOF
+
+else
+test `LC_ALL=C wc -c < 'data/config.site'` -ne 620 && \
+  ${echo} "restoration warning:  size of 'data/config.site' is not 620"
+  fi
+fi
+# ============= dot/bash_profile ==============
+if test ! -d 'dot'; then
+  mkdir 'dot'
+if test $? -eq 0
+then ${echo} "x - created directory dot."
+else ${echo} "x - failed to create directory dot."
+     exit 1
+fi
+fi
+if test -n "${keep_file}" && test -f 'dot/bash_profile'
+then
+${echo} "x - SKIPPING dot/bash_profile (file already exists)"
+
+else
+${echo} "x - extracting dot/bash_profile (text)"
+  sed 's/^X//' << 'SHAR_EOF' | uudecode &&
+begin 600 dot/bash_profile
+M(R`N8F%S:%]P<F]F:6QE(&5X96-U=&5D(&)Y(&)A<V@H,2D@9F]R(&QO9VEN
+M('-H96QL<RX-"@T*+B!^+RYP<F]F:6QE#0H-"FEF(%L@+60@?B\N;&]C86PO
+M971C+W!R;V9I;&4N9"!=.R!T:&5N#0H@("`@9F]R('!R;V9I;&5?<V-R:7!T
+M(&EN('XO+FQO8V%L+V5T8R]P<F]F:6QE+F0O*BYB87-H#0H@("`@9&\-"B`@
+M("`@("`@6R`M92`B)'MP<F]F:6QE7W-C<FEP='TB(%T@?'P@8V]N=&EN=64-
+M"B`@("`@("`@+B`B)'MP<F]F:6QE7W-C<FEP='TB#0H@("`@9&]N90T*9FD-
+M"@T*(R!"87-H(')E861S.@T*(R`M("YB87-H7W!R;V9I;&4@9F]R(&EN=&5R
+M86-T:79E(&QO9VEN('-H96QL<PT*(R`M("YB87-H<F,@9F]R(&YO;BUL;V=I
+M;B!I;G1E8V%C=&EV92!S:&5L;',N#0HC#0HC('-O=7)C92!T:&4@=7-E<B=S
+M(&)A<VAR8R!I9B!I="!E>&ES=',-"FEF(%L@+68@?B\N8F%S:')C(%T[('1H
+996X-"B`@("`N('XO+F)A<VAR8PT*9FD-"EL@
+`
+end
+SHAR_EOF
+  (set 20 25 12 23 17 07 12 'dot/bash_profile'
+   eval "${shar_touch}") && \
+  chmod 0644 'dot/bash_profile'
+if test $? -ne 0
+then ${echo} "restore of dot/bash_profile failed"
+fi
+  if ${md5check}
+  then (
+       ${MD5SUM} -c >/dev/null 2>&1 || ${echo} 'dot/bash_profile': 'MD5 check failed'
+       ) << \SHAR_EOF
+d08cc8151076078a1ab759db11f5ee3e  dot/bash_profile
+SHAR_EOF
+
+else
+test `LC_ALL=C wc -c < 'dot/bash_profile'` -ne 475 && \
+  ${echo} "restoration warning:  size of 'dot/bash_profile' is not 475"
+  fi
+fi
+# ============= dot/bashrc ==============
+if test ! -d 'dot'; then
+  mkdir 'dot'
+if test $? -eq 0
+then ${echo} "x - created directory dot."
+else ${echo} "x - failed to create directory dot."
+     exit 1
+fi
+fi
+if test -n "${keep_file}" && test -f 'dot/bashrc'
+then
+${echo} "x - SKIPPING dot/bashrc (file already exists)"
+
+else
+${echo} "x - extracting dot/bashrc (text)"
+  sed 's/^X//' << 'SHAR_EOF' | uudecode &&
+begin 600 dot/bashrc
+M(R!)9B!N;W0@<G5N;FEN9R!I;G1E<F%C=&EV96QY+"!D;VXG="!D;R!A;GET
+M:&EN9PT*6UL@(B0M(B`A/2`J:2H@75T@)B8@<F5T=7)N#0H-"B,@4')O;7!T
+M(&-U<W1O;6EZ871I;VX-"E10550])"AW:&EC:"!T<'5T*0T*:68@6R`M="`Q
+M("UA("UN("(D>U10551](B!=.R!T:&5N#0H@("`@3D-/3$]24STD*'1P=70@
+M8V]L;W)S*0T*("`@(&EF(%L@+6X@(B1[3D-/3$]24WTB("UA("(D>TY#3TQ/
+M4E-](B`M9V4@."!=.R!T:&5N#0H@("`@("`@("-"3$%#2U]&1STD*'1P=70@
+M<V5T868@,"D-"B`@("`@("`@4D5$7T9'/20H='!U="!S971A9B`Q*0T*("`@
+M("`@("!'4D5%3E]&1STD*'1P=70@<V5T868@,BD-"B`@("`@("`@645,3$]7
+M7T9'/20H='!U="!S971A9B`S*0T*("`@("`@("`C0DQ515]&1STD*'1P=70@
+M<V5T868@-"D-"B`@("`@("`@34%'14Y405]&1STD*'1P=70@<V5T868@-2D-
+M"B`@("`@("`@0UE!3E]&1STD*'1P=70@<V5T868@-BD-"B`@("`@("`@5TA)
+M5$5?1D<])"AT<'5T('-E=&%F(#<I#0H@("`@("`@($1%1D%53%1?1D<])"AT
+M<'5T('-G<C`I#0H@("`@9FD-"F9I#0H-"F-A<V4@(B1[5$5237TB(&EN#0H@
+M("IX=&5R;2H@?"!T;75X*BD-"B`@("!315185$52351)5$Q%/2=<6UQE73`[
+M7&@@+2!<=UQA7%U<;B<[#0H@("`@4%,Q/2(D>U-%5%A415)-5$E43$5])'M0
+M4S%](@T*("`@(#L[#0IE<V%C#0II9B!;6R`M;B`B)'M624U254Y424U%?2(@
+M75T[('1H96X-"B`@("!624U?3$5$/2(D>U)%1%]&1WU;=FEM72`B#0IF:0T*
+M:68@6UL@+6X@(B1[5E-?2TE4?2(@75T[('1H96X-"B`@("!64U],140](B1[
+M0UE!3E]&1WU;;7-V8R`D>U937TM)5'T@)'M64U]615)324]..C`Z,GTN)'M6
+M4U]615)324]..C(Z,7U=("(-"F9I#0I04S$](B1[4T546%1%4DU4251,17TD
+M>U9)35],141])'M64U],141])'M'4D5%3E]&1WU<7'5`7%QH("1[34%'14Y4
+M05]&1WU<7'0@)'M914Q,3U=?1D=]7%QW)'M$149!54Q47T9'?5QN7"0@(@T*
+M97AP;W)T(%!3,0T*#0HC($UA:V4@8F%S:"!A<'!E;F0@<F%T:&5R('1H86X@
+M;W9E<G=R:71E('1H92!H:7-T;W)Y(&]N(&1I<VL-"G-H;W!T("US(&AI<W1A
+M<'!E;F0-"@T*(R!$;VXG="!P=70@9'5P;&EC871E(&QI;F5S(&EN('1H92!H
+M:7-T;W)Y+@T*97AP;W)T($A)4U1#3TY44D],/21(25-40T].5%)/3"1[2$E3
+M5$-/3E123TPK+'UI9VYO<F5D=7!S#0H-"B,@5VAE;F5V97(@9&ES<&QA>6EN
+M9R!T:&4@<')O;7!T+"!W<FET92!T:&4@<')E=FEO=7,@;&EN92!T;R!D:7-K
+M#0IE>'!O<G0@4%)/35!47T-/34U!3D0](FAI<W1O<GD@+6$B#0H-"B,@3&]A
+M9"!B87-H+6-O;7!L971I;VX@:68@879A:6QA8FQE#0II9B!;("UF("]U<W(O
+M<VAA<F4O8F%S:"UC;VUP;&5T:6]N+V)A<VA?8V]M<&QE=&EO;B!=.R!T:&5N
+M#0H@("`@<V]U<F-E("]U<W(O<VAA<F4O8F%S:"UC;VUP;&5T:6]N+V)A<VA?
+M8V]M<&QE=&EO;@T*9FD-"@T*(R!&;VQL;W=I;F<@;&EN92!I<R!U<W5A;&QY
+M(&%D9&5D(&)Y('1R879I<R!G96T@9F]R(&)A<V@@875T;V-O;7!L971I;VX-
+M"B,@861D960@8GD@=')A=FES(&=E;0T*6R`M9B!^+RYT<F%V:7,O=')A=FES
+M+G-H(%T@)B8@<V]U<F-E('XO+G1R879I<R]T<F%V:7,N<V@-"@T*(R!!;&EA
+M<V5S#0HC#0HC(%-O;64@<&5O<&QE('5S92!A(&1I9F9E<F5N="!F:6QE(&9O
+M<B!A;&EA<V5S#0II9B!;("UF("(D>TA/345]+RYB87-H7V%L:6%S97,B(%T[
+M('1H96X-"B`@("!S;W5R8V4@(B1[2$]-17TO+F)A<VA?86QI87-E<R(-"F9I
+M#0IA;&EA<R!G<F5P/2=G<F5P("TM8V]L;W(G("`@("`@("`@("`@("`@("`@
+M("`@(R!S:&]W(&1I9F9E<F5N8V5S(&EN(&-O;&]U<@T*86QI87,@96=R97`]
+M)V5G<F5P("TM8V]L;W(]875T;R<@("`@("`@("`@("`@(",@<VAO=R!D:69F
+M97)E;F-E<R!I;B!C;VQO=7(-"F%L:6%S(&9G<F5P/2=F9W)E<"`M+6-O;&]R
+M/6%U=&\G("`@("`@("`@("`@("`C('-H;W<@9&EF9F5R96YC97,@:6X@8V]L
+M;W5R#0H-"B,@4V]M92!S:&]R=&-U=',@9F]R(&1I9F9E<F5N="!D:7)E8W1O
+M<GD@;&ES=&EN9W,-"F%L:6%S(&QS/2=L<R`M:$8@+2UC;VQO<CUT='DG("`@
+M("`@("`@("`@("`@("`C(&-L87-S:69Y(&9I;&5S(&EN(&-O;&]U<@T*86QI
+M87,@9&ER/2=L<R`M+6-O;&]R/6%U=&\@+2UF;W)M870]=F5R=&EC86PG#0IA
+M;&EA<R!V9&ER/2=L<R`M+6-O;&]R/6%U=&\@+2UF;W)M870];&]N9R<-"F%L
+M:6%S(&QL/2=L<R`M;"<@("`@("`@("`@("`@("`@("`@("`@("`@("`@("`C
+M(&QO;F<@;&ES=`T*86QI87,@;&$])VQS("U!)R`@("`@("`@("`@("`@("`@
+M("`@("`@("`@("`@(",@86QL(&)U="`N(&%N9"`N+@T*86QI87,@;#TG;',@
+M+4-&)R`@("`@("`@("`@("`@("`@("`@("`@("`@("`@(",-"@T*(R!&=6YC
+M=&EO;G,-"B,-"B,@4V]M92!P96]P;&4@=7-E(&$@9&EF9F5R96YT(&9I;&4@
+M9F]R(&9U;F-T:6]N<PT*:68@6R`M9B`B)'M(3TU%?2\N8F%S:%]F=6YC=&EO
+M;G,B(%T[('1H96X-"B`@("!S;W5R8V4@(B1[2$]-17TO+F)A<VA?9G5N8W1I
+M;VYS(@T*9FD-"@T*(R!3;VUE(&5X86UP;&4@9G5N8W1I;VYS.@T*(PT*(R!A
+M*2!F=6YC=&EO;B!S971T:71L90T*<V5T=&ET;&4@*"D-"GL-"B`@("!E8VAO
+M("UN92`B7&5=,CLD0%QA7&5=,3LD0%QA(CL-"GT-"@T*(R!B*2!F=6YC=&EO
+M;B!I<U]S<VA?86=E;G1?<G5N;FEN9PT*:7-?<W-H7V%G96YT7W)U;FYI;F<H
+M*0T*>PT*("`@('!S("UP("(D,2(@?"!G<F5P("=S<V@M86=E;G0D)R`^("]D
+M978O;G5L;"`R/B8Q#0H@("`@<F5T=7)N("0_#0I]#0H-"B,@4F5M;W1E(%!U
+M;'-E075D:6\-"B,@+2TM+2TM+2TM+2TM+2TM+2T-"B,@97AP;W)T(%!53%-%
+M7U-%4E9%4CUT8W`Z;&]C86QH;W-T.C0W,3,-"B,@97AP;W)T(%-$3%]!541)
+M3T12259%4CUP=6QS90T*#0HC(%-32"U!1T5.5"!S;W5R8VEN9PT*:68@6R`M
+M92!^+RYS<V@O<W-H+6%G96YT+G!I9"!=.R!T:&5N#0H@("`@<V]U<F-E('XO
+M+G-S:"]S<V@M86=E;G0N<&ED(#X@+V1E=B]N=6QL(#(^)C$-"F9I#0II9B`A
+M(&ES7W-S:%]A9V5N=%]R=6YN:6YG("(D>U-32%]!1T5.5%]0240Z+3%](CL@
+M=&AE;@T*("`@('-S:"UA9V5N="`^('XO+G-S:"]S<V@M86=E;G0N<&ED(#(^
+M("]D978O;G5L;`T*("`@('-O=7)C92!^+RYS<V@O<W-H+6%G96YT+G!I9"`^
+5("]D978O;G5L;"`R/B8Q#0IF:0T*
+`
+end
+SHAR_EOF
+  (set 20 25 12 23 17 07 12 'dot/bashrc'
+   eval "${shar_touch}") && \
+  chmod 0644 'dot/bashrc'
+if test $? -ne 0
+then ${echo} "restore of dot/bashrc failed"
+fi
+  if ${md5check}
+  then (
+       ${MD5SUM} -c >/dev/null 2>&1 || ${echo} 'dot/bashrc': 'MD5 check failed'
+       ) << \SHAR_EOF
+e05306d131000d14fe6a67ea5c1450c1  dot/bashrc
+SHAR_EOF
+
+else
+test `LC_ALL=C wc -c < 'dot/bashrc'` -ne 3171 && \
+  ${echo} "restoration warning:  size of 'dot/bashrc' is not 3171"
+  fi
+fi
+# ============= dot/gemrc ==============
+if test -n "${keep_file}" && test -f 'dot/gemrc'
+then
+${echo} "x - SKIPPING dot/gemrc (file already exists)"
+
+else
+${echo} "x - extracting dot/gemrc (text)"
+  sed 's/^X//' << 'SHAR_EOF' | uudecode &&
+begin 600 dot/gemrc
+M9V5M.B`M+75S97(M:6YS=&%L;"`M+6)I;F1I<B!^+RYL;V-A;"]B:6X-"FEN
+M<W1A;&PZ("TM=7-E<BUI;G-T86QL("TM8FEN9&ER('XO+FQO8V%L+V)I;@T*
+"#0IA
+`
+end
+SHAR_EOF
+  (set 20 25 12 23 17 07 12 'dot/gemrc'
+   eval "${shar_touch}") && \
+  chmod 0644 'dot/gemrc'
+if test $? -ne 0
+then ${echo} "restore of dot/gemrc failed"
+fi
+  if ${md5check}
+  then (
+       ${MD5SUM} -c >/dev/null 2>&1 || ${echo} 'dot/gemrc': 'MD5 check failed'
+       ) << \SHAR_EOF
+9e376fd30e8188f7f85fe178a6c9fac8  dot/gemrc
+SHAR_EOF
+
+else
+test `LC_ALL=C wc -c < 'dot/gemrc'` -ne 92 && \
+  ${echo} "restoration warning:  size of 'dot/gemrc' is not 92"
+  fi
+fi
+# ============= dot/profile ==============
+if test -n "${keep_file}" && test -f 'dot/profile'
+then
+${echo} "x - SKIPPING dot/profile (file already exists)"
+
+else
+${echo} "x - extracting dot/profile (text)"
+  sed 's/^X//' << 'SHAR_EOF' | uudecode &&
+begin 600 dot/profile
+M(R`N<')O9FEL92!E>&5C=71E9"!B>2!S:"@Q*2!F;W(@;&]G:6X@<VAE;&QS
+M+@T*#0HC(%-A=F4@<WES=&5M('!A=&AS('1H92!F:7)S="!T:6UE#0II9B!;
+M("UZ("(D>U-94U1%35]0051(?2(@72`[('1H96X-"B`@("!E>'!O<G0@4UE3
+M5$5-7U!!5$@](B1[4$%42'TB#0H@("`@97AP;W)T(%-94U1%35],1%],24)2
+M05)97U!!5$@](B1[3$1?3$E"4D%265]0051(?2(-"B`@("!E>'!O<G0@4UE3
+M5$5-7TU!3E!!5$@](B1[34%.4$%42'TB#0H@("`@97AP;W)T(%-94U1%35]0
+M15),-4Q)0CTB)'M015),-4Q)0GTB#0H@("`@97AP;W)T(%-94U1%35]02T=?
+M0T].1DE'7U!!5$@](B1[4$M'7T-/3D9)1U]0051(?2(-"F5L<V4-"B`@("!E
+M>'!O<G0@4$%42#TB)'M365-414U?4$%42'TB#0H@("`@97AP;W)T($Q$7TQ)
+M0E)!4EE?4$%42#TB)'M365-414U?3$1?3$E"4D%265]0051(?2(-"B`@("!E
+M>'!O<G0@34%.4$%42#TB)'M365-414U?34%.4$%42'TB#0H@("`@97AP;W)T
+M(%!%4DPU3$E"/2(D>U-94U1%35]015),-4Q)0GTB#0H@("`@97AP;W)T(%!+
+M1U]#3TY&24=?4$%42#TB)'M365-414U?4$M'7T-/3D9)1U]0051(?2(-"F9I
+M#0H-"FEF(%L@+68@?B\N<&%T:%]D:7)S(%T[('1H96X-"B`@("!W:&EL92!R
+M96%D("UR('AT<F%D('Q\(%L@+6X@(B1[>'1R861](B!=.PT*("`@(&1O#0H@
+M("`@("`@(&EF(&5C:&\@(B1[>'1R861](B!\(&=R97`@)UY;6SIS<&%C93I=
+M72I<*",N*EPI7#\D)R`^("]D978O;G5L;"`R/B8Q(#L@=&AE;@T*("`@("`@
+M("`@("`@8V]N=&EN=64-"B`@("`@("`@9FD-"B`@("`@("`@(R!3970@4$%4
+M2"!S;R!I="!I;F-L=61E<R!U<V5R)W,@<')I=F%T92!B:6X@:68@:70@97AI
+M<W1S#0H@("`@("`@(&EF(%L@+60@(B1[>'1R861]+V)I;B(@73L@=&AE;@T*
+M("`@("`@("`@("`@4$%42#TB)'MX=')A9'TO8FEN)'M0051(.BLZ)'M0051(
+M?7TB#0H@("`@("`@(&9I#0H-"B`@("`@("`@(R!3970@4$%42"!S;R!I="!I
+M;F-L=61E<R!U<V5R)W,@<')I=F%T92!L:6(@:68@:70@97AI<W1S#0H@("`@
+M("`@(&EF(%L@+60@(B1[>'1R861]+VQI8B(@73L@=&AE;@T*("`@("`@("`@
+M("`@4$%42#TB)'MX=')A9'TO;&EB)'M0051(.BLZ)'M0051(?7TB#0H@("`@
+M("`@("`@("!,1%],24)205)97U!!5$@](B1[>'1R861]+VQI8B1[3$1?3$E"
+M4D%265]0051(.BLZ)'M,1%],24)205)97U!!5$A]?2(-"B`@("`@("`@9FD-
+M"@T*("`@("`@("`C(%-E="!02T=?0T].1DE'7U!!5$@@<V\@:70@:6YC;'5D
+M97,@=7-E<B=S('!R:79A=&4@:68@:70@97AI<W1S#0H@("`@("`@(&EF(%L@
+M+60@(B1[>'1R861]+VQI8B]P:V=C;VYF:6<B(%T[('1H96X-"B`@("`@("`@
+M("`@(%!+1U]#3TY&24=?4$%42#TB)'MX=')A9'TO;&EB+W!K9V-O;F9I9R1[
+M4$M'7T-/3D9)1U]0051(.BLZ)'M02T=?0T].1DE'7U!!5$A]?2(-"B`@("`@
+M("`@9FD-"@T*("`@("`@("`C(%-E="!-04Y0051(('-O(&ET(&EN8VQU9&5S
+M('5S97)S)R!P<FEV871E(&UA;B!I9B!I="!E>&ES=',-"B`@("`@("`@:68@
+M6R`M9"`B)'MX=')A9'TO;6%N(B!=.R!T:&5N#0H@("`@("`@("`@("!-04Y0
+M051(/2(D>WAT<F%D?2]M86XZ)'M-04Y0051(?2(-"B`@("`@("`@9FD-"B`@
+M("`@("`@:68@6R`M9"`B)'MX=')A9'TO<VAA<F4O;6%N(B!=.R!T:&5N#0H@
+M("`@("`@("`@("!-04Y0051(/2(D>WAT<F%D?2]S:&%R92]M86XZ)'M-04Y0
+M051(?2(-"B`@("`@("`@9FD-"@T*("`@("`@("`C(%-E="!)3D9/4$%42"!S
+M;R!I="!I;F-L=61E<R!U<V5R<R<@<')I=F%T92!I;F9O(&EF(&ET(&5X:7-T
+M<PT*("`@("`@("!I9B!;("UD("(D>WAT<F%D?2]I;F9O(B!=.R!T:&5N#0H@
+M("`@("`@("`@("!)3D9/4$%42#TB)'MX=')A9'TO:6YF;R1[24Y&3U!!5$@Z
+M*SHD>TE.1D]0051(?7TB#0H@("`@("`@(&9I#0H-"B`@("!D;VYE(#P@?B\N
+M<&%T:%]D:7)S#0IF:0T*#0II9B!;("U/('XO+G!A=&AS(%T[('1H96X-"B`@
+M("!W:&EL92!R96%D("UR('AT<F%D('Q\(%L@+6X@(B1[>'1R861](B!=.PT*
+M("`@(&1O#0H@("`@("`@(&EF(&5C:&\@(B1[>'1R861](B!\(&=R97`@)UY;
+M6SIS<&%C93I=72I<*",N*EPI7#\D)R`^("]D978O;G5L;"`R/B8Q(#L@=&AE
+M;@T*("`@("`@("`@("`@8V]N=&EN=64-"B`@("`@("`@9FD-"B`@("`@("`@
+M4$%42#TB)'M0051(?3HD>WAT<F%D?2(-"B`@("!D;VYE(#P@?B\N<&%T:',-
+M"F9I#0H-"F5X<&]R="!0051(#0IE>'!O<G0@3$1?3$E"4D%265]0051(#0IE
+M>'!O<G0@4$M'7T-/3D9)1U]0051(#0IE>'!O<G0@34%.4$%42`T*97AP;W)T
+M($E.1D]0051(#0H-"B,@1F]R(&YE9&ET(&)U9RXN+@T*97AP;W)T(%A,24)?
+M4TM)4%]!4D="7U9)4U5!3%,],0T*#0II9B!;("UD('XO+FQO8V%L+V5T8R]P
+M<F]F:6QE+F0@73L@=&AE;@T*("`@(&9O<B!P<F]F:6QE7W-C<FEP="!I;B!^
+M+RYL;V-A;"]E=&,O<')O9FEL92YD+RHN<V@-"B`@("!D;PT*("`@("`@("!;
+M("UE("(D>W!R;V9I;&5?<V-R:7!T?2(@72!\?"!C;VYT:6YU90T*("`@("`@
+I("`N("(D>W!R;V9I;&5?<V-R:7!T?2(-"B`@("!D;VYE#0IF:0T*#0H@
+`
+end
+SHAR_EOF
+  (set 20 25 12 23 17 07 12 'dot/profile'
+   eval "${shar_touch}") && \
+  chmod 0644 'dot/profile'
+if test $? -ne 0
+then ${echo} "restore of dot/profile failed"
+fi
+  if ${md5check}
+  then (
+       ${MD5SUM} -c >/dev/null 2>&1 || ${echo} 'dot/profile': 'MD5 check failed'
+       ) << \SHAR_EOF
+93bf61cff8a7c1d58e77bd3f9cc79eb5  dot/profile
+SHAR_EOF
+
+else
+test `LC_ALL=C wc -c < 'dot/profile'` -ne 2561 && \
+  ${echo} "restoration warning:  size of 'dot/profile' is not 2561"
+  fi
+fi
+# ============= dot/tmux.conf ==============
+if test -n "${keep_file}" && test -f 'dot/tmux.conf'
+then
+${echo} "x - SKIPPING dot/tmux.conf (file already exists)"
+
+else
+${echo} "x - extracting dot/tmux.conf (text)"
+  sed 's/^X//' << 'SHAR_EOF' | uudecode &&
+begin 600 dot/tmux.conf
+M(R`M+2T@9V5N97)A;"`M+2TM+2TM+2TM+2TM+2TM+2TM+2TM+2TM+2TM+2TM
+M+2TM+2TM+2TM+2TM+2TM+2TM+2TM+2TM#0IS970@+6<@9&5F875L="UT97)M
+M:6YA;"`B=&UU>"TR-39C;VQO<B(-"G-E='<@+6<@>'1E<FTM:V5Y<R!O;@T*
+M<V5T("UG('-E="UC;&EP8F]A<F0@;VX-"G-E='<@+6<@;6]D92UK97ES('9I
+M#0IS970@+7,@9F]C=7,M979E;G1S(&]N#0H-"G-E='<@+7$@+6<@=71F."!O
+M;@T*#0HC(&,P+6-H86YG92UI;G1E<G9A;"!I;G1E<G9A;"`C('!R979E;G1S
+M(&9L;V]D:6YG('1O(&)R96%K($-T<FPK0PT*(R!C,"UC:&%N9V4M=')I9V=E
+M<B!T<FEG9V5R("`@(PT*#0HC("TM+2!D:7-P;&%Y("TM+2TM+2TM+2TM+2TM
+M+2TM+2TM+2TM+2TM+2TM+2TM+2TM+2TM+2TM+2TM+2TM+2TM+2TM+2T-"G-E
+M="`M9R!B87-E+6EN9&5X(#$@("`@("`@("`C('-T87)T('=I;F1O=R!N=6UB
+M97)I;F<@870@,0T*<V5T=R`M9R!P86YE+6)A<V4M:6YD97@@,2`@(",@<W1A
+M<G0@<&%N92!N=6UB97)I;F<@870@,0T*#0IS971W("UG(&%U=&]M871I8RUR
+M96YA;64@;VX@(R!R96YA;64@=VEN9&]W('1O(&-U<G)E;G0@<')O9W)A;0T*
+M<V5T("UG(')E;G5M8F5R+7=I;F1O=W,@;VX@(",@<F5N86UE('=I;F1O=R!W
+M:&5N('=I;F1O=R!I<R!C;&]S960-"@T*<V5T("UG('-E="UT:71L97,@;VX@
+M("`@("`@(",@<V5T('1E<FUI;F%L('1I=&QE#0IS970@+6<@<V5T+71I=&QE
+M<RUS=')I;F<@)R-H("`@(U,@("`C22`C5R<-"@T*<V5T("UG(&1I<W!L87DM
+M<&%N97,M=&EM92`X,#`@(R!L;VYG97(@<&%N92!I;F1I8V%T;W(@9&ES<&QA
+M>2!T:6UE#0IS970@+6<@9&ES<&QA>2UT:6UE(#$P,#`@("`@("`C(&QO;F=E
+M<B!S=&%T=7,@:6YD:6-A=&]R(&1I<W!L87D@=&EM90T*<V5T("UG('-T871U
+M<RUI;G1E<G9A;"`Q,"`@("`@(R!R969R97-H('-T871U<R!E=F5R>2`Q,"!S
+M96-O;F1S#0H-"B,@86-T:79I='D-"G-E="`M9R!M;VYI=&]R+6%C=&EV:71Y
+C(&]N#0IS970@+6<@=FES=6%L+6%C=&EV:71Y(&]F9@T*#0IR
+`
+end
+SHAR_EOF
+  (set 20 25 12 23 17 20 29 'dot/tmux.conf'
+   eval "${shar_touch}") && \
+  chmod 0644 'dot/tmux.conf'
+if test $? -ne 0
+then ${echo} "restore of dot/tmux.conf failed"
+fi
+  if ${md5check}
+  then (
+       ${MD5SUM} -c >/dev/null 2>&1 || ${echo} 'dot/tmux.conf': 'MD5 check failed'
+       ) << \SHAR_EOF
+d0fef6c80bb5e671e296686901ba9f76  dot/tmux.conf
+SHAR_EOF
+
+else
+test `LC_ALL=C wc -c < 'dot/tmux.conf'` -ne 1025 && \
+  ${echo} "restoration warning:  size of 'dot/tmux.conf' is not 1025"
+  fi
+fi
+# ============= dot/vimrc ==============
+if test -n "${keep_file}" && test -f 'dot/vimrc'
+then
+${echo} "x - SKIPPING dot/vimrc (file already exists)"
+
+else
+${echo} "x - extracting dot/vimrc (text)"
+  sed 's/^X//' << 'SHAR_EOF' | uudecode &&
+begin 600 dot/vimrc
+M(B!);B!C87-E('5S=6%L('=I;F1O=W,@;6]V92!C;VUM86YD(&1O97-N)W0@
+M=V]R:PT*(B`Z;FUA<"`\<VEL96YT/B`\02U5<#X@.G=I;F-M9"!K/$-2/@T*
+M(B`Z;FUA<"`\<VEL96YT/B`\02U$;W=N/B`Z=VEN8VUD(&H\0U(^#0HB(#IN
+M;6%P(#QS:6QE;G0^(#Q!+4QE9G0^(#IW:6YC;60@:#Q#4CX-"B(@.FYM87`@
+M/'-I;&5N=#X@/$$M4FEG:'0^(#IW:6YC;60@;#Q#4CX-"@T*(B!(:6=H;&EG
+M=&@@8VAA<F%C=&5R<R!A9G1E<B`X,'1H(&-O;'5M;G,-"G-E="!C;VQO<F-O
+M;'5M;CTX,`T*:&EG:&QI9VAT($-O;&]R0V]L=6UN(&-T97)M8F<];&EG:'1G
+M<F5Y(&=U:6)G/6QI9VAT9W)E>0T*#0HB(%5S92!E>'!L;W)E<B!I;B!T<F5E
+M(&UO9&4-"FQE="!G.FYE=')W7VQI<W1S='EL93TS#0H-"B(@57-E('-O9G0@
+M=&%B<RP@<VEZ92`T#0IS970@=&%B<W1O<#TT('-H:69T=VED=&@]-"!E>'!A
+M;F1T86(-"@T*(B!!=71O(&EN9&5N="!F:6QE#0IA=71O8VUD($9I;&54>7!E
+M("H@("`@("!S970@9F]R;6%T;W!T:6]N<SUT8W%L(&YO8VEN9&5N="!C;VUM
+M96YT<R8-"F%U=&]C;60@1FEL951Y<&4@8RQC<'`@('-E="!F;W)M871O<'1I
+M;VYS/6-R;W%L(&-I;F1E;G0@8V]M;65N=',]<W(Z+RHL;6(Z*BQE>#HJ+RPZ
+M+R\-"G-E="!A=71O:6YD96YT#0H-"B(@2&EG:&QI9VAT('-E87)C:&5D('1A
+M<F=E=',-"G-E="!H;'-E87)C:`T*#0HB(%-H;W<@;&EN92!N=6UB97)S#0IS
+M970@;G5M8F5R#0H-"B(@16YC;V1I;F<@=71F.`T*<V5T(&5N8V]D:6YG/75T
+M9C@-"@T*(B!";&]C:R!C=7)S;W(-"FQE="`F=%]322X](EQE6S$@<2(-"FQE
+M="`F=%]%22X](EQE6S$@<2(-"FQE="`F=%]T:2X](EQE6S$@<2(-"FQE="`F
+M=%]T92X](EQE6S$@<2(-"@T*(B!3:&]W(&-U<G-O<B!L:6YE#0IH:2!#=7)S
+M;W),:6YE(&-T97)M/4Y/3D4@8W1E<FUB9SUD87)K<F5D(&-T97)M9F<]=VAI
+M=&4-"FAI($-U<G-O<D-O;'5M;B!C=&5R;3U.3TY%(&-T97)M8F<]9&%R:W)E
+M9"!C=&5R;69G/7=H:71E#0IS970@8W5R<V]R;&EN90T*;FYO<F5M87`@/$QE
+M861E<CYC(#IS970@8W5R<V]R8V]L=6UN(0T*#0IS970@;F]C;VUP871I8FQE
+M("`@("`@("`@("`@("`B(&)E(&E-<')O=F5D+"!R97%U:7)E9`T*#0IS>6YT
+M87@@;VX-"G-E="!R=6QE<@T*#0IS970@;G4-"G-E="!N;V)A8VMU<`T*<V5T
+M('-M87)T=&%B#0IS970@=&%B<W1O<#TT#0IS970@<VAI9G1W:61T:#TT#0IS
+M970@97AP86YD=&%B#0H-"B(@8V]P>2!T:&4@8W5R<F5N="!T97AT('-E;&5C
+M=&EO;B!T;R!T:&4@<WES=&5M(&-L:7!B;V%R9`T*:68@:&%S*"=G=6E?<G5N
+M;FEN9R<I('Q\(&AA<R@G;G9I;2<I("8F(&5X:7-T<R@G)$1)4U!,05DG*0T*
+M("!N;W)E;6%P(#Q,96%D97(^>2`B*WD-"F5L<V4-"B`@(B!C;W!Y('1O(&%T
+M=&%C:&5D('1E<FUI;F%L('5S:6YG('1H92!Y86YK*#$I('-C<FEP=#H-"B`@
+M;F]R96UA<"`\<VEL96YT/B`\3&5A9&5R/GD@>3IC86QL('-Y<W1E;2@G>6%N
+M:R<L($`P*3Q2971U<FX^#0IE;F1I9@T*#0IH:2!497)M:6YA;"!C=&5R;6)G
+6/6)L86-K(&-T97)M9F<]=VAI=&4-"@T*
+`
+end
+SHAR_EOF
+  (set 20 25 12 23 17 18 56 'dot/vimrc'
+   eval "${shar_touch}") && \
+  chmod 0644 'dot/vimrc'
+if test $? -ne 0
+then ${echo} "restore of dot/vimrc failed"
+fi
+  if ${md5check}
+  then (
+       ${MD5SUM} -c >/dev/null 2>&1 || ${echo} 'dot/vimrc': 'MD5 check failed'
+       ) << \SHAR_EOF
+ee4dcef1950d6a5d82cacbbb989d3bbd  dot/vimrc
+SHAR_EOF
+
+else
+test `LC_ALL=C wc -c < 'dot/vimrc'` -ne 1552 && \
+  ${echo} "restoration warning:  size of 'dot/vimrc' is not 1552"
+  fi
+fi
+# ============= dot/xprofile ==============
+if test -n "${keep_file}" && test -f 'dot/xprofile'
+then
+${echo} "x - SKIPPING dot/xprofile (file already exists)"
+
+else
+${echo} "x - extracting dot/xprofile (text)"
+  sed 's/^X//' << 'SHAR_EOF' | uudecode &&
+begin 600 dot/xprofile
+M(R$O=7-R+V)I;B]E;G8@8F%S:`T*#0HC(%-O;64@*&UO<W0I('-E<W-I;VX@
+M;6%N86=E<G,@;&EK92`G9V1M)R!P87-S('1H92`G+6YO+6-P<'`G(&]P=&EO
+M;B!T;R`G>')D8B<-"B,@=VAI8V@@8V%U<V5S(&]U<B`N6')E<V]U<F-E<RYU
+M<V5R(&9I;&4@=&\@;F]T(&)E(&QO861E9"X-"B,-"B,@3W5R('-O;'5T:6]N
+M(&ES('1O(&5X<&QI8VET;'D@;65R9V4@;W5R("Y8<F5S;W5R8V5S(&9I;&4@
+M:6X@+GAP<F]F:6QE('=H:6-H#0HC(&ES("AS=&EL;"D@<F5S<&5C=&5D(&)Y
+M('1H97-E('-E<W-I;VX@;6%N86=E<G,N#0I;("UF('XO+EAR97-O=7)C97,@
+B72`F)B!X<F1B("UM97)G92!^+RY8<F5S;W5R8V5S#0H-"EAR
+`
+end
+SHAR_EOF
+  (set 20 25 12 23 17 07 12 'dot/xprofile'
+   eval "${shar_touch}") && \
+  chmod 0755 'dot/xprofile'
+if test $? -ne 0
+then ${echo} "restore of dot/xprofile failed"
+fi
+  if ${md5check}
+  then (
+       ${MD5SUM} -c >/dev/null 2>&1 || ${echo} 'dot/xprofile': 'MD5 check failed'
+       ) << \SHAR_EOF
+69881f6d4cbcb9e9b14c974899555ed0  dot/xprofile
+SHAR_EOF
+
+else
+test `LC_ALL=C wc -c < 'dot/xprofile'` -ne 349 && \
+  ${echo} "restoration warning:  size of 'dot/xprofile' is not 349"
+  fi
+fi
+# ============= dot/Xresources ==============
+if test -n "${keep_file}" && test -f 'dot/Xresources'
+then
+${echo} "x - SKIPPING dot/Xresources (file already exists)"
+
+else
+${echo} "x - extracting dot/Xresources (text)"
+  sed 's/^X//' << 'SHAR_EOF' | uudecode &&
+begin 600 dot/Xresources
+M(VEN8VQU9&4@(BY8<F5S;W5R8V5S+G5S97(B#0H-"EA497)M*F5I9VAT0FET
+M26YP=70Z('1R=64-"EA497)M*FUE=&%396YD<T5S8V%P93H@=')U90T*6%1E
+M<FTJ<F5N9&5R1F]N=#H@=')U90T*6%1E<FTJ=&5R;4YA;64Z('AT97)M+3(U
+M-F-O;&]R#0I85&5R;2IU=&8X1F]N=',Z('1R=64-"EA497)M*G5T9CA4:71L
+M93H@=')U90T*(2!#;VYT<F%R>2!T;R!W:&%T('1H92!S=&%T96UE;G0@;&]O
+M:W,@;&EK92P@:70@:7,@96YA8FQI;F<@=&AE(%-E=%-E;&5C=&EO;@T*(2!W
+M:6YD;W<@;W!E<F%T:6]N+B!4:&4@9&5F875L="!V86QU92!I<SH@,C`L,C$L
+M4V5T6'!R;W`L4V5T4V5L96-T:6]N#0I85&5R;2ID:7-A;&QO=V5D5VEN9&]W
+M3W!S.B`R,"PR,2Q39718<')O<`T*6%1E<FTJ=G0Q,#`N:6YI=&EA;$9O;G0Z
+M(#,-"B$@1FEX(&9O<B!T:&4@:6YF86UO=7,@0W1R;"M((&ES<W5E#0HA('-E
+M93H@:'1T<#HO+W=W=RYH>7!E>'(N;W)G+VQI;G5X7W)U8F]F9BYP:'`-"B%8
+M5&5R;2IT='E-;V1E<SH@("`@("`@("!E<F%S92!>/PT*(5A497)M*E94,3`P
+M+E1R86YS;&%T:6]N<SH@7`T*(2`@(V]V97)R:61E(#Q+97D^0F%C:U-P86-E
+M.B!S=')I;F<H,'@W9BD@7&Y<#0HA("`@("`@("`@("`@/$ME>3Y$96QE=&4Z
+M("`@('-T<FEN9R@P>#%B*2!S=')I;F<H(ELS?B(I#0H-"B%85&5R;2ID>6YA
+M;6EC0V]L;W)S.B!T<G5E#0HA6%1E<FTJ8F%C:V%R<F]W2V5Y.B!F86QS90T*
+M(5A497)M*F)A8VMA<G)O=TME>4ES17)A<V4Z('1R=64-"@T*(2!3:7AE;"!E
+M;F%B;&EN9R!W:71H(&UO<F4@=&AA;B`Q-B!C;VQO<G,-"EA497)M*F1E8U1E
+M<FUI;F%L240Z('9T,S0P#0I85&5R;2IN=6U#;VQO<E)E9VES=&5R<SH@,C4V
+$#0H-"F%L
+`
+end
+SHAR_EOF
+  (set 20 25 12 23 17 07 12 'dot/Xresources'
+   eval "${shar_touch}") && \
+  chmod 0644 'dot/Xresources'
+if test $? -ne 0
+then ${echo} "restore of dot/Xresources failed"
+fi
+  if ${md5check}
+  then (
+       ${MD5SUM} -c >/dev/null 2>&1 || ${echo} 'dot/Xresources': 'MD5 check failed'
+       ) << \SHAR_EOF
+017fafacd6661565ca5a76294ee4818c  dot/Xresources
+SHAR_EOF
+
+else
+test `LC_ALL=C wc -c < 'dot/Xresources'` -ne 859 && \
+  ${echo} "restoration warning:  size of 'dot/Xresources' is not 859"
+  fi
+fi
+# ============= dot/Xresources_user ==============
+if test -n "${keep_file}" && test -f 'dot/Xresources_user'
+then
+${echo} "x - SKIPPING dot/Xresources_user (file already exists)"
+
+else
+${echo} "x - extracting dot/Xresources_user (text)"
+  sed 's/^X//' << 'SHAR_EOF' | uudecode &&
+begin 600 dot/Xresources_user
+M(2!4:&ES(&9I;&4@:7,@<')E<')O8V5S<V5D(&)Y("=C<'`G('=H:6-H(&1E
+M9FEN97,@=&AE(&9O;&QO=VEN9R!M86-R;W,Z#0HA(%A?4D533TQ55$E/3CH@
+M=&AE(%@@<F5S;VQU=&EO;B!O9B!T:&4@<V-R965N(&EN('!I>&5L('!E<B!M
+M971E<@T*(2!97U)%4T],551)3TXZ('1H92!9(')E<V]L=71I;VX@;V8@=&AE
+M('-C<F5E;B!I;B!P:7AE;"!P97(@;65T97(-"B$-"B$@0GD@<G5N;FEN9R!@
+M>')D8B`M<WEM8F]L<V`@=V4@8V%N(&EN<W!E8W0@=&AE<V4@;6%C<F]S(&9O
+M<B!T:&4@8W5R<F5N="!8#0HA('-E<W-I;VXN#0HA#0HA(%=E(&-A;B!U<V4@
+M=&AE<V4@;6%C<F]S('1O(&1E9FEN92!T:&4@9F]N="!F86-E('-I>F4@;V8@
+M;W5R(%A497)M+@T*(V1E9FEN92!85$5235]&04-%7U-)6D5?355,5$E03$4@
+M*"A97U)%4T],551)3TXK,S<W-2DO,S<W-BD-"@T*6%1E<FTJ9F%C94YA;64Z
+M($1E:F%6=5-A;G--;VYO($YE<F0@1F]N="!-;VYO#0HC:68@6%1%4DU?1D%#
+M15]325I%7TU53%1)4$Q%(#T](#$-"EA497)M*F9A8V53:7IE.B`Q-`T*(V5N
+M9&EF#0HC:68@6%1%4DU?1D%#15]325I%7TU53%1)4$Q%(#T](#(-"EA497)M
+M*F9A8V53:7IE.B`R-`T*(V5N9&EF#0HC:68@6%1%4DU?1D%#15]325I%7TU5
+M3%1)4$Q%(#X](#,-"EA497)M*F9A8V53:7IE.B`S-@T*(V5N9&EF#0I85&5R
+M;2IR979E<G-E5FED96\Z(&9A;'-E#0I85&5R;2IF;W)E9W)O=6YD.B!W:&ET
+M90T*6%1E<FTJ8F%C:V=R;W5N9#H@8FQA8VL-"EA497)M*G)I9VAT4V-R;VQL
+M0F%R.B!T<G5E#0I85&5R;2IS8W)O;&Q"87(Z('1R=64-"EA497)M*G1O;VQ"
+M87(Z(&9A;'-E#0I85&5R;2IU=&8X.B`R#0I85&5R;2IV:7-U86Q"96QL.B!T
+%<G5E#0IA
+`
+end
+SHAR_EOF
+  (set 20 25 12 23 17 07 12 'dot/Xresources_user'
+   eval "${shar_touch}") && \
+  chmod 0644 'dot/Xresources_user'
+if test $? -ne 0
+then ${echo} "restore of dot/Xresources_user failed"
+fi
+  if ${md5check}
+  then (
+       ${MD5SUM} -c >/dev/null 2>&1 || ${echo} 'dot/Xresources_user': 'MD5 check failed'
+       ) << \SHAR_EOF
+9ab3e306e4e33e860e6de93ab7de8112  dot/Xresources_user
+SHAR_EOF
+
+else
+test `LC_ALL=C wc -c < 'dot/Xresources_user'` -ne 860 && \
+  ${echo} "restoration warning:  size of 'dot/Xresources_user' is not 860"
+  fi
+fi
+# ============= dot/XWinrc ==============
+if test -n "${keep_file}" && test -f 'dot/XWinrc'
+then
+${echo} "x - SKIPPING dot/XWinrc (file already exists)"
+
+else
+${echo} "x - extracting dot/XWinrc (text)"
+  sed 's/^X//' << 'SHAR_EOF' | uudecode &&
+begin 600 dot/XWinrc
+M(R!85VEN(%-E<G9E<B!297-O=7)C92!&:6QE("T@15A!35!,10T*(R!%87)L
+M92!&+B!0:&EL:&]W97(L($E)20T*#0HC(%!L86-E(&EN('XO+EA7:6YR8R!O
+M<B!I;B`O971C+U@Q,2]S>7-T96TN6%=I;G)C#0H-"B,@2V5Y=V]R9',@87)E
+M(&-A<V4@:6YS96YS:71I=F4L(&-O;6UE;G1S(&QE9V%L('!R971T>2!M=6-H
+M(&%N>7=H97)E#0HC('EO=2!C86X@:&%V92!A;B!E;F0M;V8M;&EN90T*#0HC
+M($-O;6UE;G1S(&)E9VEN('=I=&@@(B,B(&]R("(O+R(@86YD(&=O('1O('1H
+M92!E;F0M;V8M;&EN90T*#0HC(%!A=&AS('1O(&-O;6UA;F1S(&%R92`J*F-Y
+M9W=I;BHJ(&)A<V5D("AI+F4N("]U<W(O;&]C86PO8FEN+WAC86QC*0T*#0HC
+M(%!A=&AS('1O(&EC;VYS(&%R92`J*E=)3D1/5U,J*B!B87-E9"`H:2YE+B!C
+M.EQW:6YD;W=S7&EC;VYS*0T*#0HC($UE;G5S(&%R92!D969I;F5D(&%S+BXN
+M#0HC($U%3E4@/&YA;64^('L-"B,)/$UE;G4@5&5X=#X)15A%0PD\8V]M;6%N
+M9#X-"B,@("`@("`@("`@("`@("`@("`@("`@("`@("`@("`@7EX@5&AI<R!C
+M;VUM86YD('=I;&P@:&%V92!A;GD@(B5D:7-P;&%Y)2(-"B,@("`@("`@("`@
+M("`@("`@("`@("`@("`@("`@("`@("`@<W1R:6YG(')E<&QA8V5D('=I=&@@
+M=&AE('!R;W!E<B!D:7-P;&%Y#0HC("`@("`@("`@("`@("`@("`@("`@("`@
+M("`@("`@("`@('9A<FEA8FQE("AI+F4N(#$R-RXP+C`N,3H\9&ES<&QA>3XN
+M,"D-"B,@("`@("`@("`@("`@("`@("`@("`@("`@("`@("`@("`@*%1H:7,@
+M<VAO=6QD(&]N;'D@<F%R96QY(&)E(&YE961E9"!A<PT*(R`@("`@("`@("`@
+M("`@("`@("`@("`@("`@("`@("`@("!T:&4@1$E34$Q!62!E;G9I<F]N;65N
+M="!V87)I86)L92!I<R!A;'-O#0HC("`@("`@("`@("`@("`@("`@("`@("`@
+M("`@("`@("`@('-E="!C;W)R96-T;'DI#0HC("!O<@D\365N=2!497AT/@E-
+M14Y5"3QN86UE+6]F+7-O;64M<')I;W(M9&5F:6YE9"UM96YU/@T*(R`@;W()
+M/$UE;G4@5&5X=#X)04Q705E33TY43U`-"B,@("`@("`@("`@("`@("`@("`@
+M("`@("`@7EX@4V5T<R!T:&4@=VEN9&]W('1O(&1I<W!L87D@86)O=F4@86QL
+M(&]T:&5R<PT*(R`@;W(@("`\365N=2!497AT/@E214Q/040-"B,@("`@("`@
+M("`@("`@("`@("`@("`@("`@7EX@0V%U<V5S('XO+EA7:6YR8R!O<B!T:&4@
+M<WES=&5M+EA7:6YR8R!F:6QE#0HC("`@("`@("`@("`@("`@("`@("`@("`@
+M("`@('1O(&)E(')E;&]A9&5D(&%N9"!I8V]N<R!A;F0@;65N=7,@<F5G96YE
+M<F%T960-"B,@(&]R"5-%4$%2051/4@T*(R`@("`@("`N+BX-"B,@?0T*#0HC
+M(%-E="!T:&4@=&%S:VUA<B!M96YU('=I=&@-"B,@4D]/5$U%3E4@/&YA;64M
+M;V8M<V]M92UP<FEO<BUD969I;F5D+6UE;G4^#0H-"B,@268@>6]U('=A;G0@
+M82!M96YU('1O(&)E(&%P<&QI960@=&\@86QL('!O<'5P('=I;F1O=R=S('-Y
+M<W1E;2!M96YU#0HC($1%1D%53%1365--14Y5(#QN86UE+6]F+7-O;64M<')I
+M;W(M9&5F:6YE9"UM96YU/B`\871S=&%R='QA=&5N9#X-"@T*(R!4;R!C:&]O
+M<V4@82!S<&5C:69I8R!M96YU(&9O<B!A('-P96-I9FEC(%=-7T-,05-3(&]R
+M(%=-7TY!344@=7-E("XN+@T*(R!365--14Y5('L-"B,)/&-L87-S+6]R+6YA
+M;64M;V8M=VEN9&]W/B`\;F%M92UO9BUP<FEO<BUD969I;F5D+6UE;G4^(#QA
+M='-T87)T?&%T96YD/@T*(PDN+BX-"B,@?0T*#0HC(%=H96X@<W!E8VEF>6EN
+M9R!A;B!)0T].1DE,12!I;B!T:&4@9F]L;&]W:6YG(&-O;6UA;F1S('-E=F5R
+M86P@9&EF9F5R96YT#0HC(&9O<FUA=',@87)E(&%L;&]W960Z#0HC(#$N($YA
+M;64@;V8@82!R96=U;&%R(%=I;F1O=W,@+FEC;R!F;W)M870@9FEL90T*(R`@
+M("`H97@Z("`B8WEG=VEN+FEC;R(L(")A<'!L92YI8V\B*0T*(R`R+B!.86UE
+M(&%N9"!I;F1E>"!I;G1O(&$@5VEN9&]W<R`N1$Q,#0HC("`@("AE>#H@(F,Z
+M7'=I;F1O=W-<<WES=&5M,S)<<VAE;&PS,BYD;&PL-"(@9VEV97,@=&AE(&1E
+M9F%U;'0@9F]L9&5R(&EC;VX-"B,@("`@("`@("`B8SI<=VEN9&]W<UQS>7-T
+M96TS,EQS:&5L;#,R+F1L;"PU(B!G:79E<R!T:&4@9FQO<'!Y(&1R:79E(&EC
+M;VXI#0HC(#,N($EN9&5X(&EN=&\@6%=I;BY%6$4@:6YT97)N86P@24-/3B!R
+M97-O=7)C90T*(R`@("`H97@Z("(L,3`Q(B!I<R!T:&4@,7-T(&EC;VX@:6YS
+M:61E(%A7:6XN97AE*0T*#0HC(%1O(&1E9FEN92!W:&5R92!)0T\@9FEL97,@
+M;&EV92`H*BH@5VEN9&]W<R!P871H*BHI#0HC($E#3TY$25)%0U1/4ED)/'=I
+M;F1O=W,M<&%T:"!I+F4N(&,Z7&-Y9W=I;EQU<W)<:6-O;G,^#0HC($Y/5$4Z
+M($EF('EO=2!S<&5C:69Y(&$@9G5L;'D@<75A;&EF:65D('!A=&@@=&\@86X@
+M24-/3B!B96QO=PT*(R`@("`@("`@("`@("`H:2YE+B`B8SI<>'AX(B!O<B`B
+M9#I<>'AX>"(I#0HC("`@("`@('1H:7,@24-/3D1)4D5#5$]262!W:6QL(&YO
+M="!B92!P<F5P96YD960-"@T*(R!4;R!C:&%N9V4@=&AE('1A<VMB87(@:6-O
+M;B!U<V4N+BX-"B,@5%)!64E#3TX@("`@("`@/&YA;64M;V8M=VEN9&]W<RUI
+M8V\M9FEL92UI;BUI8V]N9&ER96-T;W)Y/@T*#0HC(%1O(&1E9FEN92!A(')E
+M<&QA8V5M96YT(&9O<B!T:&4@<W1A;F1A<F0@6"!I8V]N(&9O<B!A<'!S('<O
+M;R!S<&5C:69I960@:6-O;G,-"B,@1$5&055,5$E#3TX)/&YA;64M;V8M=VEN
+M9&]W<RUI8V\M9FEL92UI;BUI8V]N9&ER96-T;W)Y/@T*#0HC(%1O(&1E9FEN
+M92!S=6)S=&ET=71E(&EC;VYS(&]N(&$@<&5R+7=I;F1O=R!B87-I<R!U<V4N
+M+BX-"B,@24-/3E,@>PT*(PD\8VQA<W,M;W(M;F%M92UO9BUW:6YD;W<^(#QI
+M8V]N+69I;&4M;F%M92YI8V\^#0HC"2XN+@T*(R!]#0HC($EN('1H92!C87-E
+M('=H97)E(&UU;'1I<&QE(&UA=&-H97,@;V-C=7(L('1H92!F:7)S="!L:7-T
+M960@:6X@=&AE($E#3TY3#0HC('-E8W1I;VX@=VEL;"!B92!C:&]S96XN#0H-
+M"B,@5&\@9&ES86)L92!E>&ET(&-O;F9I<FUA=&EO;B!D:6%L;V<@861D('1H
+M92!L:6YE(&-O;G1A:6YI;F<@4VEL96YT17AI=`T*#0HC($1%0E5'(#QS=')I
+M;F<^('!R:6YT<R!O=70@=&AE('-T<FEN9R!T;R!T:&4@6%=I;BYL;V<@9FEL
+M90T*#0HO+R!"96QO=R!A<F4@:G5S="!S;VUE('-I;&QY(&UE;G5S('1O(&1E
+M;6]N<W1R871E('=R:71I;F<@>6]U<@T*+R\@;W=N(&-O;F9I9W5R871I;VX@
+M9FEL92X-"@T*+R\@36%K92!S;VUE(&UE;G5S+BXN#0IM96YU(&%P<',@>PT*
+M"7AT97)M"65X96,)(GAT97)M(@T*"2)%;6%C<R()97AE8PDB>'1E<FT@+64@
+M96UA8W,@+6YW(@T*"6YO=&5P860)97AE8PEN;W1E<&%D#0H)>&QO860)97AE
+M8PDB>&QO860@+61I<W!L87D@)61I<W!L87DE(B`@(R!#;VUM96YT#0I]#0H-
+M"FUE;G4@<F]O="![#0H@("`@("`@(")X=&5R;2(@("`@("`@("!E>&5C("`@
+M(")X=&5R;2(-"@E315!!4D%43U(-"@DB07!P;&EC871I;VYS(@EM96YU"6%P
+M<',-"B\O($-O;6UE;G1S(&9I="!H97)E+"!T;V\N+BX-"@T*+R\)4T5005)!
+M5$]2#0HO+PE&05$@("`@("`@("`@("!%6$5#(")C>6=S=&%R="!H='1P.B\O
+M>"YC>6=W:6XN8V]M+V1O8W,O9F%Q+V-Y9W=I;BUX+69A<2YH=&UL(@T*+R\)
+M(E5S97(G<R!'=6ED92(@15A%0R`B8WEG<W1A<G0@:'1T<#HO+W@N8WEG=VEN
+M+F-O;2]D;V-S+W5G+V-Y9W=I;BUX+75G+FAT;6PB#0H)4T5005)!5$]2#0H)
+M(E9I97<@;&]G9FEL92(@15A%0R`B>'1E<FT@+64@;&5S<R`K1B`D6%=)3DQ/
+M1T9)3$4B#0H)4T5005)!5$]2#0H-"@DB4F5L;V%D("Y85VEN<F,B"5)%3$]!
+M1`T*"5-%4$%2051/4@T*?0T*#0IM96YU(&%O="![#0H)4V5P87)A=&]R#0H)
+M(D%L=V%Y<R!O;B!4;W`B"6%L=V%Y<V]N=&]P#0I]#0H-"FUE;G4@>'1E<FUS
+M<&5C:6%L('L-"B`@("`@("`@(EA497)M(B!E>&5C(")X=&5R;2(-"@DB16UA
+M8W,B"0EE>&5C"2)X=&5R;2`M92!E;6%C<R`M;G<B#0H)(D%L=V%Y<R!O;B!4
+M;W`B"6%L=V%Y<V]N=&]P#0H)4V5P07)!=&]R#0I]#0H-"E)O;W1-96YU(')O
+M;W0-"@T*1&5F875L=%-Y<TUE;G4@86]T(&%T96YD#0H-"E-Y<TUE;G4@>PT*
+M"2)X=&5R;2()>'1E<FUS<&5C:6%L(&%T<W1A<G0-"GT-"@T*(R!)8V]N1&ER
+M96-T;W)Y"2)C.EQW:6YN=%PB#0H-"B,@1&5F875L=$EC;VX)(G)E:6YS=&%L
+M;"YI8V\B#0H-"B,@26-O;G,@>PT*(R`)(GAT97)M(@DB=6YI;G-T86QL+FEC
+M;R(-"B,@?0T*#0I3:6QE;G1%>&ET#0H-"D1%0E5'(")$;VYE('!A<G-I;F<@
+>=&AE(&-O;F9I9W5R871I;VX@9FEL92XN+B(-"@T*
+`
+end
+SHAR_EOF
+  (set 20 25 12 23 17 07 12 'dot/XWinrc'
+   eval "${shar_touch}") && \
+  chmod 0644 'dot/XWinrc'
+if test $? -ne 0
+then ${echo} "restore of dot/XWinrc failed"
+fi
+  if ${md5check}
+  then (
+       ${MD5SUM} -c >/dev/null 2>&1 || ${echo} 'dot/XWinrc': 'MD5 check failed'
+       ) << \SHAR_EOF
+4dbc4841f7b30e41c8f101bc9838b7c1  dot/XWinrc
+SHAR_EOF
+
+else
+test `LC_ALL=C wc -c < 'dot/XWinrc'` -ne 4215 && \
+  ${echo} "restoration warning:  size of 'dot/XWinrc' is not 4215"
+  fi
+fi
+# ============= scripts/byzanz-helper ==============
+if test ! -d 'scripts'; then
+  mkdir 'scripts'
+if test $? -eq 0
+then ${echo} "x - created directory scripts."
+else ${echo} "x - failed to create directory scripts."
+     exit 1
+fi
+fi
+if test -n "${keep_file}" && test -f 'scripts/byzanz-helper'
+then
+${echo} "x - SKIPPING scripts/byzanz-helper (file already exists)"
+
+else
+${echo} "x - extracting scripts/byzanz-helper (text)"
+  sed 's/^X//' << 'SHAR_EOF' | uudecode &&
+begin 600 scripts/byzanz-helper
+M(R$O=7-R+V)I;B]E;G8@<&5R;`T*#0IU<V4@-2XP,#@P,#`[#0IU<V4@<W1R
+M:6-T.PT*=7-E('=A<FYI;F=S("=A;&PG.PT*#0IU<V4@0V%R<#L-"G5S92!#
+M=V0[#0IU<V4@1FEL93HZ0F%S96YA;64[#0IU<V4@1FEL93HZ5&5M<#L-"G5S
+M92!'971O<'0Z.DQO;F<@<7<H1V5T3W!T:6]N<T9R;VU!<G)A>2`Z8V]N9FEG
+M(&YO7VEG;F]R95]C87-E*3L-"G5S92!0;V0Z.E5S86=E.PT*#0H-"B,@4&%R
+M<V4@;W!T:6]N<PT*;7D@*"1O<'1?:&5L<"P@)&]P=%]T+"`D;W!T7V\I.PT*
+M1V5T3W!T:6]N<T9R;VU!<G)A>2@-"B`@("!<0$%21U8L#0H@("`@)VAE;'!\
+M:"<@("`@("`@/3X@7"1O<'1?:&5L<"P-"B`@("`G='QD=7)A=&EO;CUS)R`]
+M/B!<)&]P=%]T+`T*("`@("=O?&]U='!U=#US)R`@(#T^(%PD;W!T7V\L#0HI
+M(&]R(&-R;V%K*"=%<G)O<B!P87)S:6YG(&-O;6UA;F0@;&EN92!A<F=U;65N
+M=',G*3L-"@T*(R!(86YD;&4@:&5L<"!O<'1I;VX-"G!O9#)U<V%G92@M97AI
+M='9A;"`]/B`P*2!I9B`H)&]P=%]H96QP*3L-"@T*:68H(61E9FEN960H)&]P
+M=%]O*2!\?"`D;W!T7V\@97$@)R<I('L-"B`@("!P<FEN="!35$1%4E(@(D]P
+M=&EO;B`G+6\G(&]R("<M+6]U='!U="<@:7,@;6%N9&%T;W)Y7&XB.PT*("`@
+M('!O9#)U<V%G92@M97AI='9A;"`]/B`Q*3L-"GT-"@T*(R!$969A=6QT(&]P
+M=&EO;B!V86QU97,-"B1O<'1?="`O+ST@,S`[#0H-"B,@1V5T('1H92!R96-O
+M<F1E9"!W:6YD;W<@<&%R86UE=&5R<PT*;7D@)'AW:6Y?:6YF;R`](&!X=VEN
+M:6YF;V`[#0IC<F]A:R@G17)R;W(@9V5T=&EN9R!8+5=I;F1O=R!I;F9O<FUA
+M=&EO;B<I(&EF*"0_*3L-"@T*;7D@*"1X+"`D>2P@)'=I9'1H+"`D:&5I9VAT
+M*3L-"B1X=VEN7VEN9F\@/7X@;2]!8G-O;'5T92!U<'!E<BUL969T(%@Z7',J
+M*%QD*RDO9SL-"B1X(#T@)#$[#0HD>'=I;E]I;F9O(#U^(&TO06)S;VQU=&4@
+M=7!P97(M;&5F="!9.EQS*BA<9"LI+V<[#0HD>2`]("0Q.PT*)'AW:6Y?:6YF
+M;R`]?B!M+U=I9'1H.EQS*BA<9"LI+V<[#0HD=VED=&@@/2`D,3L-"B1X=VEN
+M7VEN9F\@/7X@;2](96EG:'0Z7',J*%QD*RDO9SL-"B1H96EG:'0@/2`D,3L-
+M"@T*<')I;G0@(E)E8V]R9&EN9R!A<F5A.B!;)'@L)'D@+3X@)'=I9'1H+"1H
+M96EG:'1=7&XB.PT*97AE8R`B8GEZ86YZ+7)E8V]R9"(L("(M9"(L("1O<'1?
+M="P@(BUX(BP@)'@L("(M>2(L("1Y+"`B+7<B+"`D=VED=&@L("(M:"(L("1H
+M96EG:'0L("1O<'1?;SL-"@T*7U]%3D1?7PT*/6AE860Q($Y!344-"@T*8GEZ
+M86YZ+6AE;'!E<B`M($AE;'!E<B!S8W)I<'0@=&\@<F5C;W)D(&%N(%@M5VEN
+M9&]W('=I=&@@8GEZ86YZ+7)E8V]R9`T*#0H]:&5A9#$@4UE.3U!325,-"@T*
+M0CQB>7IA;GHM:&5L<&5R/B!"/"UH/GQ"/"TM:&5L<#X-"@T*0CQB>7IA;GHM
+M:&5L<&5R/B!;0CQ/4%1)3TY3/ET@0CPM;SX@23Q&24Q%/@T*#0H]:&5A9#$@
+M1$530U))4%1)3TX-"@T*5&AI<R!T;V]L(&AE;'!S(')E8V]R9"!A('-P96-I
+M9FEC($(\6#$Q/B!W:6YD;W<@=7-I;F<@0CQB>7IA;GHM<F5C;W)D/BX@5VAE
+M;@T*<G5N+"!T:&4@<V-R:7!T('=I;&P@87-K('1H92!U<V5R('1O('!I8VL@
+M=&AE(&1E<VER960@6"U7:6YD;W<@=7-I;F<@=&AE(&UO=7-E+@T*5&AE(')E
+M8V]R9&EN9R!W:6QL('1H96X@<W1A<G0@9F]R('1H92!S<&5C:69I960@9'5R
+M871I;VXN#0H-"DEN=&5R;F%L;'D@=&AE('-C<FEP="!U<V5S($(\>'=I;FEN
+M9F\^('1O(&]B=&%I;B!T:&4@<&]S:71I;VX@86YD('-I>F4@;V8@=&AE#0IR
+M96-O<F1E9"!V:61E;RX@5&AE<V4@<&%R86UE=&5R<R!A<F4@;F]T('5P9&%T
+M960@=VAI;&4@=&AE('9I9&5O(&ES(')E8V]R9&5D+@T*270@=&AE(')E8V]R
+M9&5D('=I;F1O=R!I<R!M;W9E9"!I="!W:6QL(&QE879E('1H92!A<F5A(&]F
+M(')E8V]R9&EN9R!A;F0@8F4-"F]N;'D@<&%R=&EA;&QY('9I<VEB;&4@:6X@
+M=&AE(')E<W5L=&EN9R!V:61E;RX-"@T*/6AE860Q($]05$E/3E,-"@T*/6]V
+M97(-"@T*/6ET96T@0CPM:#Y\0CPM+6AE;'`^#0H-"E!R:6YT('1H92!U<V%G
+M92P@:&5L<"!A;F0@=F5R<VEO;B!I;F9O<FUA=&EO;B!F;W(@=&AI<R!P<F]G
+M<F%M(&%N9"!E>&ET+@T*#0H]:71E;2!"/"UO/B!)/$9)3$4^?$(\+2UO=71P
+M=70^/4D\1DE,13X-"@T*4V5T<R!T:&4@;W5T<'5T(&9I;&4@9F]R('1H92!R
+M96-O<F1E9"!V:61E;RX-"@T*/6ET96T@0CPM=#X@23Q$55)!5$E/3CY\0CPM
+M+61U<F%T:6]N/CU)/$154D%424]./@T*#0I3971S('1H92!R96-O<F1I;F<@
+M9'5R871I;VX@:6X@<V5C;VYD<RX@1&5F875L="!I<R`S,"!S96-O;F1S+@T*
+M#0H]8F%C:PT*#0H]:&5A9#$@4T5%($%,4T\-"@T*8GEZ86YZ+7)E8V]R9"@Q
+M*2P@8GEZ86YZ+7!L87EB86-K*#$I+"!X=VEN:6YF;R@Q*0T*#0H]:&5A9#$@
+M05542$]2#0H-"D9R961E<FEC($I!4D1/3B`\9G)E9&5R:6,N:F%R9&]N0&=M
+M86EL+F-O;3X-"@T*/6AE860Q($-/4%E224=(5"!!3D0@3$E#14Y310T*#0I#
+M;W!Y<FEG:'0@*$,I(#(P,3@@8GD@1G)E9&5R:6,@2D%21$].(#QF<F5D97)I
+M8RYJ87)D;VY`9VUA:6PN8V]M/@T*#0I4:&ES('!R;V=R86T@:7,@9G)E92!S
+M;V9T=V%R93L@>6]U(&-A;B!R961I<W1R:6)U=&4@:70@86YD+V]R(&UO9&EF
+F>0T*:70@=6YD97(@=&AE($U)5"!L:6-E;G-E+@T*#0H]8W5T#0IR
+`
+end
+SHAR_EOF
+  (set 20 25 12 23 17 07 12 'scripts/byzanz-helper'
+   eval "${shar_touch}") && \
+  chmod 0755 'scripts/byzanz-helper'
+if test $? -ne 0
+then ${echo} "restore of scripts/byzanz-helper failed"
+fi
+  if ${md5check}
+  then (
+       ${MD5SUM} -c >/dev/null 2>&1 || ${echo} 'scripts/byzanz-helper': 'MD5 check failed'
+       ) << \SHAR_EOF
+5ef477d2101d7f7a510c09ed8cd57352  scripts/byzanz-helper
+SHAR_EOF
+
+else
+test `LC_ALL=C wc -c < 'scripts/byzanz-helper'` -ne 2648 && \
+  ${echo} "restoration warning:  size of 'scripts/byzanz-helper' is not 2648"
+  fi
+fi
+# ============= scripts/codefmt ==============
+if test ! -d 'scripts'; then
+  mkdir 'scripts'
+if test $? -eq 0
+then ${echo} "x - created directory scripts."
+else ${echo} "x - failed to create directory scripts."
+     exit 1
+fi
+fi
+if test -n "${keep_file}" && test -f 'scripts/codefmt'
+then
+${echo} "x - SKIPPING scripts/codefmt (file already exists)"
+
+else
+${echo} "x - extracting scripts/codefmt (text)"
+  sed 's/^X//' << 'SHAR_EOF' | uudecode &&
+begin 600 scripts/codefmt
+M(R$O=7-R+V)I;B]E;G8@<&5R;`T*(RH]/3T]/3T]/3T]/3T]/3T]/3T]/3T]
+M/3T]/3T]/3T]/3T]/3T]/3T]/3T]/3T]/3T]/3T]/3T]/3T]/3T]/3T]/3T]
+M/3T]/3T]/3TJ#0HC*B`@("`@("`@("`@("`@("`@("`@("`@("`@("`@("`@
+M("`@("`@("`@("`@("`@("`@("`@("`@("`@("`@("`@("`@("`@("`@("H-
+M"B,J("!C;V1E9FUT("T@0V]D92!F;W)M871T:6YG('1O;VP@("`@("`@("`@
+M("`@("`@("`@("`@("`@("`@("`@("`@("`@("`@("`@*@T*(RH@("`@("`@
+M("`@("`@("`@("`@("`@("`@("`@("`@("`@("`@("`@("`@("`@("`@("`@
+M("`@("`@("`@("`@("`@("`@("`@("`J#0HC*B`@0V]P>7)I9VAT("AC*2`R
+M,#$Y($9R961E<FEC($IA<F1O;B`@/&9R961E<FEC+FIA<F1O;D!G;6%I;"YC
+M;VT^("`@("`@("`@("H-"B,J("`@("`@("`@("`@("`@("`@("`@("`@("`@
+M("`@("`@("`@("`@("`@("`@("`@("`@("`@("`@("`@("`@("`@("`@("`@
+M("`@*@T*(RH@("TM+2TM+2TM+2TM+2TM+2TM+2!'4$P@3&EC96YS960@4V]U
+M<F-E($-O9&4@+2TM+2TM+2TM+2TM+2TM+2TM("`@("`@("`@("`J#0HC*B`@
+M1G)E9&5R:6,@2F%R9&]N(&UA:V5S('1H:7,@<V]F='=A<F4@879A:6QA8FQE
+M('5N9&5R('1H92!'3E4@("`@("`@("`@("`@("H-"B,J("!'96YE<F%L(%!U
+M8FQI8R!,:6-E;G-E("A'4$PI(&QI8V5N<V4@9F]R(&]P96X@<V]U<F-E('!R
+M;VIE8W1S+B`@("`@("`@("`@*@T*(RH@($9O<B!D971A:6QS(&]F('1H92!'
+M4$P@;&EC96YS92!P;&5A<V4@<V5E('=W=RYG;G4N;W)G(&]R(')E860@("`@
+M("`@("`@("`J#0HC*B`@=&AE(&9I;&4@;&EC96YS92YG<&P@<')O=FED960@
+M:6X@=&AI<R!P86-K86=E+B`@("`@("`@("`@("`@("`@("`@("`@("`@("H-
+M"B,J("`@("`@("`@("`@("`@("`@("`@("`@("`@("`@("`@("`@("`@("`@
+M("`@("`@("`@("`@("`@("`@("`@("`@("`@("`@("`@*@T*(RH@(%1H:7,@
+M<')O9W)A;2!I<R!F<F5E('-O9G1W87)E.R!Y;W4@8V%N(')E9&ES=')I8G5T
+M92!I="!A;F0O;W(@("`@("`@("`@("`J#0HC*B`@;6]D:69Y(&ET('5N9&5R
+M('1H92!T97)M<R!O9B!T:&4@1TY5($=E;F5R86P@4'5B;&EC($QI8V5N<V4@
+M87,@("`@("`@("`@("H-"B,J("!P=6)L:7-H960@8GD@=&AE($9R964@4V]F
+M='=A<F4@1F]U;F1A=&EO;CL@96ET:&5R('9E<G-I;VX@,R!O9B`@("`@("`@
+M("`@*@T*(RH@('1H92!,:6-E;G-E+"!O<B`H870@>6]U<B!O<'1I;VXI(&%N
+M>2!L871E<B!V97)S:6]N+B`@("`@("`@("`@("`@("`@("`@("`J#0HC*B`@
+M("`@("`@("`@("`@("`@("`@("`@("`@("`@("`@("`@("`@("`@("`@("`@
+M("`@("`@("`@("`@("`@("`@("`@("`@("`@("H-"B,J("!4:&ES('!R;V=R
+M86T@:7,@9&ES=')I8G5T960@:6X@=&AE(&AO<&4@=&AA="!I="!W:6QL(&)E
+M('5S969U;"P@("`@("`@("`@*@T*(RH@(&)U="!7251(3U54($%.62!705)2
+M04Y463L@=VET:&]U="!E=F5N('1H92!I;7!L:65D('=A<G)A;G1Y(&]F("`@
+M("`@("`@("`J#0HC*B`@34520TA!3E1!0DE,2519(&]R($9)5$Y%4U,@1D]2
+M($$@4$%25$E#54Q!4B!055)03U-%+B`@4V5E('1H92`@("`@("`@("`@("H-
+M"B,J("!'3E4@1V5N97)A;"!0=6)L:6,@3&EC96YS92!F;W(@;6]R92!D971A
+M:6QS+B`@("`@("`@("`@("`@("`@("`@("`@("`@("`@*@T*(RH@("`@("`@
+M("`@("`@("`@("`@("`@("`@("`@("`@("`@("`@("`@("`@("`@("`@("`@
+M("`@("`@("`@("`@("`@("`@("`@("`J#0HC*B`@66]U('-H;W5L9"!H879E
+M(')E8V5I=F5D(&$@8V]P>2!O9B!T:&4@1TY5($=E;F5R86P@4'5B;&EC("`@
+M("`@("`@("`@("`@("H-"B,J("!,:6-E;G-E(&%L;VYG('=I=&@@=&AI<R!P
+M<F]G<F%M(&EN('1H92!F:6QE("=L:6-E;G-E+F=P;"<[(&EF("`@("`@("`@
+M("`@*@T*(RH@(&YO="P@<V5E(#QH='1P.B\O=W=W+F=N=2YO<F<O;&EC96YS
+M97,O/BX@("`@("`@("`@("`@("`@("`@("`@("`@("`@("`@("`J#0HC*B`@
+M+2TM+2TM+2TM+2TM+2TM+2TM+2TM+2TM+2TM+2TM+2TM+2TM+2TM+2TM+2TM
+M+2TM+2TM+2TM+2TM+2TM+2T@("`@("`@("`@("H-"B,J/3T]/3T]/3T]/3T]
+M/3T]/3T]/3T]/3T]/3T]/3T]/3T]/3T]/3T]/3T]/3T]/3T]/3T]/3T]/3T]
+M/3T]/3T]/3T]/3T]/3T]/3T]*@T*#0IU<V4@<W1R:6-T.PT*=7-E('=A<FYI
+M;F=S("=A;&PG.PT*=7-E($1A=&$Z.D1U;7!E<CL-"G5S92!#87)P.PT*=7-E
+M($=E=&]P=#HZ3&]N9R!Q=RA'971/<'1I;VYS1G)O;4%R<F%Y(#IC;VYF:6<@
+M;F]?:6=N;W)E7V-A<V4@<&%S<U]T:')O=6=H*3L-"G5S92!,:7-T.CI5=&EL
+M('%W*&UA>"!S=6TI.PT*=7-E(%!O9#HZ57-A9V4[#0H-"G-U8B!S:'5F9FQE
+M7W=O<F1S7VEN7V-O;'5M;G,@>PT*("`@(&UY("5A<F=S(#T@0%\[#0H@("`@
+M8W)O86L@(G=O<F1S(&ES(&YO="!D969I;F5D(B!I9B`H(61E9FEN960@*"1A
+M<F=S>W=O<F1S?2DI.PT*("`@(&-R;V%K(")F;70@:7,@;F]T(&1E9FEN960B
+M("`@:68@*"%D969I;F5D("@D87)G<WMF;71]*2D[#0H-"B`@("!M>2!`=V]R
+M9',@/2!`>R1A<F=S>W=O<F1S?7T[#0H@("`@;7D@)&9M="`@(#T@)&%R9W-[
+M9FUT?3L-"@T*("`@(&UY("1N7V-O;',@/2!L96YG=&@@*"1F;70I.PT*("`@
+M(&UY("1N7W)O=W,@/2!I;G0@*"A`=V]R9',K)&Y?8V]L<RTQ*2\D;E]C;VQS
+M*3L-"B`@("!M>2!`8V]L<R`@(#T@*"D[#0H@("`@9F]R("AM>2`D:3TP.R`D
+M:3PD;E]C;VQS.R`K*R1I*2![#0H@("`@("`@(&UY($!I;F1E>&5S(#T@;6%P
+M('L@)&DK)&Y?8V]L<RHD7R!]("@P+BXH)&Y?<F]W<RTQ*2D[#0H@("`@("`@
+M(&UY($!C;VQU;6X@(#T@;6%P('L@)%\@+R\]("<G('T@0'=O<F1S6T!I;F1E
+M>&5S73L-"B`@("`@("`@<'5S:"`H0&-O;',L(%Q`8V]L=6UN*3L-"B`@("!]
+M#0H@("`@<F5T=7)N($!C;VQS.PT*?0T*#0IS=6(@;&EN95]W:61T:"![#0H@
+M("`@;7D@)6%R9W,@/2!`7SL-"@T*("`@(&-R;V%K(")C;VQS(&ES(&YO="!D
+M969I;F5D(B!I9B`H(61E9FEN960@*"1A<F=S>V-O;'-]*2D[#0H-"B`@("!M
+M>2!`8V]L<R`@("`@(#T@0'LD87)G<WMC;VQS?7T[#0H@("`@;7D@)'1E>'1W
+M:61T:"`]("1A<F=S>W1E>'1W:61T:'T[#0H@("`@;7D@)&-?<V5P("`@("`]
+M("1A<F=S>W-E<&%R871O<GT[#0H@("`@;7D@)&5O;%]S97`@("`]("1A<F=S
+M>V5O;%]S97!A<F%T;W)].PT*("`@("1T97AT=VED=&@@("\O/2`W,#L-"B`@
+M("`D8U]S97`@("`@("`O+ST@)R`G.PT*("`@("1E;VQ?<V5P("`@("\O/2`G
+M(%Q<)SL-"@T*("`@(&UY("1N7V-O;',@/2!`8V]L<SL-"B`@("!M>2!`=VED
+M=&AS(#T@;6%P('L@;6%X("AM87`@<V-A;&%R($![)%]]("D@?2!`8V]L<SL-
+M"B`@("!M>2`D=VED=&@@(#T@*"1N7V-O;',@+2`Q*2IL96YG=&@@*"1C7W-E
+M<"D@*R!S=6T@*$!W:61T:',I("L@;&5N9W1H("@D96]L7W-E<"D[#0H@("`@
+M<F5T=7)N("1W:61T:#L-"GT-"@T*#0IS=6(@9F]R;6%T7V%R9W,@>PT*("`@
+M(&UY("@D9FUT+"!`87)G<RD@/2!`7SL-"B`@("`D7D$@/2`G)SL-"B`@("!F
+M;W)M;&EN92`H)&9M="P@0&%R9W,I.PT*("`@(')E='5R;B`G)RXD7D$[#0I]
+M#0H-"G-U8B!F;W)M871?8V]L=6UN<U]T;U]L:6YE<R![#0H@("`@;7D@)6%R
+M9W,@/2!`7SL-"@T*("`@(&-R;V%K(")C;VQS(&ES(&YO="!D969I;F5D(B`@
+M("`@:68@*"%D969I;F5D("@D87)G<WMC;VQS?2DI.PT*("`@(&-R;V%K(")F
+M;70@:7,@;F]T(&1E9FEN960B("`@("`@:68@*"%D969I;F5D("@D87)G<WMF
+M;71]*2D[#0H@("`@8W)O86L@(FY?=V]R9',@:7,@;F]T(&1E9FEN960B("!I
+M9B`H(61E9FEN960@*"1A<F=S>VY?=V]R9'-]*2D[#0H-"B`@("!M>2!`8V]L
+M<R`@("`@(#T@0'LD87)G<WMC;VQS?7T[#0H@("`@;7D@)&9M="`@("`@("`]
+M("1A<F=S>V9M='T[#0H@("`@;7D@)'1E>'1W:61T:"`]("1A<F=S>W1E>'1W
+M:61T:'T[#0H@("`@;7D@)&-?<V5P("`@("`]("1A<F=S>W-E<&%R871O<GT[
+M#0H@("`@;7D@)&5O;%]S97`@("`]("1A<F=S>V5O;%]S97!A<F%T;W)].PT*
+M("`@(&UY("1N7W=O<F1S("`@/2`D87)G<WMN7W=O<F1S?3L-"B`@("`D=&5X
+M='=I9'1H("`O+ST@-S`[#0H@("`@)&-?<V5P("`@("`@+R\]("<@)SL-"B`@
+M("`D96]L7W-E<"`@("`O+ST@)R!<7"<[#0H-"B`@("!M>2`D96]L7VQE;B`@
+M(#T@;&5N9W1H("@D96]L7W-E<"D[#0H@("`@;7D@)&Y?8V]L<R`@("`]('-C
+M86QA<B!`8V]L<SL-"B`@("!M>2!`8U]I;F1E>&5S(#T@*#`N+B0C8V]L<RD[
+M#0H@("`@;7D@0'=I9'1H<R`@("`](&UA<"![#0H@("`@("`@("`@("`@("`@
+M("`@("`@("!M>2`D8V]L(#T@)%\[#0H@("`@("`@("`@("`@("`@("`@("`@
+M("!M87@@*&UA<"![;&5N9W1H("@D7RE]($![)&-O;'TI#0H@("`@("`@("`@
+M("`@("`@("`@('T@0&-O;',[#0H-"B`@("!M>2!`<&5R;%]F;71A(#T@;6%P
+M('L-"B`@("`@("`@("`@("`@("`@("`@("`@(&UY("@D8RP@)'=I9'1H*2`]
+M("AS=6)S='(@*"1F;70L("1?+"`Q*2P@)'=I9'1H<ULD7UTI.PT*("`@("`@
+M("`@("`@("`@("`@("`@("`@)'=I9'1H("T](#$[#0H@("`@("`@("`@("`@
+M("`@("`@("`@("!M>2`D<B`]("=`)RXG/"=X)'=I9'1H.PT*("`@("`@("`@
+M("`@("`@("`@("`@("`@)'(@/2`G0"<N)WPG>"1W:61T:"!I9B`H)&,@97$@
+M)V,G*3L-"B`@("`@("`@("`@("`@("`@("`@("`@("1R(#T@)T`G+B<^)W@D
+M=VED=&@@:68@*"1C(&5Q("=R)RD[#0H@("`@("`@("`@("`@("`@("`@("`@
+M("`D<CL-"B`@("`@("`@("`@("`@("`@("`@?2!`8U]I;F1E>&5S.PT*("`@
+M(&UY("1P97)L7V9M="`@/2!J;VEN("@D8U]S97`L($!P97)L7V9M=&$I.PT*
+M("`@("1P97)L7V9M="`@("`N/2`G(%XG+B@G/"=X*"1E;VQ?;&5N+3$I*2XB
+M7&XB.PT*#0H@("`@;7D@)&QA<W1?;E]C;VQS(#T@)&Y?8V]L<RTH*"TD;E]W
+M;W)D<RD@)2`D;E]C;VQS*3L-"B`@("!M>2!`;&%S=%]C7VEN9&5X97,@/2`H
+M,"XN*"1L87-T7VY?8V]L<RTQ*2D[#0H@("`@;7D@0&QA<W1?<&5R;%]F;71A
+M(#T@0'!E<FQ?9FUT85M`;&%S=%]C7VEN9&5X97-=.PT*("`@(&UY("1L87-T
+M7W!E<FQ?9FUT("`](&IO:6X@*"1C7W-E<"P@0&QA<W1?<&5R;%]F;71A*3L-
+M"@T*("`@(&UY("1N7VQI;F5S("`@/2!`>R1C;VQS6S!=?3L-"B`@("!M>2!`
+M;%]I;F1E>&5S(#T@*#`N+B@D;E]L:6YE<RTR*2D[#0H@("`@;7D@0&QI;F5S
+M("`@("`](&UA<"![#0H@("`@("`@("`@("`@("`@("`@("`@("!M>2`D;%]N
+M;R`]("1?.PT*("`@("`@("`@("`@("`@("`@("`@("`@;7D@0'=O<F1S(#T@
+M;6%P('L@)%\M/ELD;%]N;UT@?2!`8V]L<SL-"B`@("`@("`@("`@("`@("`@
+M("`@("`@('!U<V@@*$!W;W)D<RP@)&5O;%]S97`I.PT*("`@("`@("`@("`@
+M("`@("`@("`@("`@9F]R;6%T7V%R9W,@*"1P97)L7V9M="P@0'=O<F1S*0T*
+M("`@("`@("`@("`@("`@("`@("!]($!L7VEN9&5X97,[#0H@("`@;7D@)&QA
+M<W1?;&EN92`](&9O<FUA=%]A<F=S("@D;&%S=%]P97)L7V9M="P@;6%P('L@
+M)%\M/ELD;E]L:6YE<RTQ72!]($!C;VQS*3L-"B`@("`D;&%S=%]L:6YE(#U^
+M(',O6R!<=%TJ)"\O9SL-"B`@("!P=7-H("A`;&EN97,L("1L87-T7VQI;F4I
+M.PT*("`@(')E='5R;B!`;&EN97,[#0I]#0H-"B,@0TQ)(&%R9W5M96YT<R!P
+M<F]C97-S:6YG#0IM>2`H)&]P=%]H96QP+`T*("`@("1O<'1?9FUT+`T*("`@
+M("1O<'1?96]L+`T*("`@("1O<'1?<')E9FEX+`T*("`@("1O<'1?<V5P87)A
+M=&]R+`T*("`@("1O<'1?=&5X='=I9'1H+`T**3L-"@T*1V5T3W!T:6]N<T9R
+M;VU!<G)A>2A<0$%21U8L#0H@("`@)VA\:&5L<"<@("`@("`@("`]/B!<)&]P
+M=%]H96QP+`T*("`@("=F?&9O<FUA=#US)R`@("`@/3X@7"1O<'1?9FUT+`T*
+M("`@("=E?&5O;#US)R`@("`@("`@/3X@7"1O<'1?96]L+`T*("`@("=P?'!R
+M969I>#US)R`@("`@/3X@7"1O<'1?<')E9FEX+`T*("`@("=S?'-E<&%R871O
+M<CUS)R`@/3X@7"1O<'1?<V5P87)A=&]R+`T*("`@("=W?'=I9'1H/6DG("`@
+M("`@/3X@7"1O<'1?=&5X='=I9'1H+`T**2!O<B!C<F]A:R`B17)R;W(@=VAI
+M;&4@<&%R<VEN9R!C;VUM86YD+6QI;F4@87)G=6UE;G1S(CL-"@T*(R!(86YD
+M;&4@:&5L<"!O<'1I;VX-"G!O9#)U<V%G92@M97AI='9A;"`]/B`P*2!I9B`H
+M)&]P=%]H96QP*3L-"@T*)&]P=%]F;70@("`@("`@+R\]("=L;&PG.PT*)&]P
+M=%]E;VP@("`@("`@+R\]("(@7%PB.PT*)&]P=%]P<F5F:7@@("`@+R\]("<@
+M("`@)SL-"B1O<'1?<V5P87)A=&]R("\O/2`G("<[#0HD;W!T7W1E>'1W:61T
+M:"`O+ST@-S`[#0H-"FUY($!W;W)D<R`]("@I.PT*=VAI;&4@*#P^*2![#0H@
+M("`@8VAO;7`[#0H@("`@;7D@0&QI;F4@/2`H*3L-"B`@("!W:&EL92`H)%\@
+M;F4@)R<I('L-"B`@("`@("`@;7D@)'=O<F0@/2!U;F1E9CL-"B`@("`@("`@
+M:68@*"1?(#U^(',O7EL@7'1=*EQ1)&]P=%]E;VQ<120O+V<I('L-"B`@("`@
+M("`@("`@(&QA<W0[#0H@("`@("`@('T-"B`@("`@("`@96QS:68@*"1?(#U^
+M(',O7EL@7'1=*EQ1)&]P=%]S97!A<F%T;W)<12\O9RD@>PT*("`@("`@("`@
+M("`@;F5X=#L-"B`@("`@("`@?0T*("`@("`@("!E;'-I9B`H)%\@/7X@<R]>
+M6R!<=%TK+R]G*2![#0H@("`@("`@("`@("!N97AT.PT*("`@("`@("!]#0H@
+M("`@("`@(&5L<VEF("@D7R`]?B!S+UXH(BA;7B)<7%U\7%PN*2HB*2\O9RD@
+M>PT*("`@("`@("`@("`@<'5S:"`H0&QI;F4L("0Q*3L-"B`@("`@("`@?0T*
+M("`@("`@("!E;'-I9B`H)%\@/7X@<R]>*"<H6UXG7%Q=?%Q<+BDJ)RDO+V<I
+M('L-"B`@("`@("`@("`@('!U<V@@*$!L:6YE+"`D,2D[#0H@("`@("`@('T-
+M"B`@("`@("`@96QS:68@*"1?(#U^(',O7BA;7B!<=%TK*2\O9RD@>PT*("`@
+M("`@("`@("`@<'5S:"`H0&QI;F4L("0Q*3L-"B`@("`@("`@?0T*("`@("`@
+M("!E;'-E('L-"B`@("`@("`@("`@(&-R;V%K(")5;F5X<&5C=&5D('1O:V5N
+M<SH@)R(N<75O=&5M971A*"1?*2XB)R([#0H@("`@("`@('T-"B`@("!]#0H@
+M("`@;F5X="!I9B`H(2!`;&EN92D[#0H@("`@<'5S:"`H0'=O<F1S+"!`;&EN
+M92D[#0I]#0H-"FEF("@P(#T]($!W;W)D<RD@>PT*("`@(&5X:70@,#L-"GT-
+M"@T*#0IM>2!`8V]L<R`@/2!S:'5F9FQE7W=O<F1S7VEN7V-O;'5M;G,@*'=O
+M<F1S(#T^(%Q`=V]R9',L(&9M="`]/B`D;W!T7V9M="D[#0IM>2!`;&EN97,@
+M/2!F;W)M871?8V]L=6UN<U]T;U]L:6YE<R`H8V]L<R`]/B!<0&-O;',L(&9M
+M="`]/B`D;W!T7V9M="P@<V5P87)A=&]R(#T^("1O<'1?<V5P87)A=&]R+"!E
+M;VQ?<V5P87)A=&]R(#T^("1O<'1?96]L+"!N7W=O<F1S(#T^('-C86QA<B!`
+M=V]R9',I.PT*9F]R96%C:"!M>2`D;&EN92`H0&QI;F5S*2![#0H@("`@<')I
+M;G0@)&]P=%]P<F5F:7@N)&QI;F4[#0I]#0H-"F5X:70@,#L-"@T*7U]%3D1?
+M7PT*/6AE860Q($Y!344-"@T*8V]D969M="`M($-O9&4@1F]R;6%T=&5R('1O
+M;VP-"@T*/6AE860Q(%-93D]04TE3#0H-"D(\8V]D969M=#X@0CPM:#Y\0CPM
+M+6AE;'`^#0H-"D(\8V]D969M=#X@6T(\3U!424].4SY=(%M"/$9)3$4^("XN
+M+ET-"@T*/6AE860Q($1%4T-225!424].#0H-"E1H:7,@=&]O;"!F;W)M870@
+M=&%B=6QA<B!D871A(&EN=&\@9FEX960@<VEZ92!C;VQU;6YS+@T*#0H]:&5A
+M9#$@3U!424].4PT*#0H];W9E<@T*#0H]:71E;2!"/"UH/GQ"/"TM:&5L<#X-
+M"@T*4')I;G0@=&AE('5S86=E+"!H96QP(&%N9"!V97)S:6]N(&EN9F]R;6%T
+M:6]N(&9O<B!T:&ES('!R;V=R86T@86YD(&5X:70N#0H-"CUI=&5M($(\+64^
+M($D\14],+5-%4$%2051/4CY\0CPM+65O;#X]23Q%3TPM4T5005)!5$]2/@T*
+M#0I3971S('1H92!E;F0M;V8M;&EN92!S97!A<F%T;W(N($1E9F%U;'0@=F%L
+M=64@:7,Z($,\(%Q</BX-"@T*/6ET96T@0CPM<SX@23Q#3TQ534XM4T5005)!
+M5$]2/GQ"/"TM<V5P87)A=&]R/CU)/$-/3%5-3BU315!!4D%43U(^#0H-"E-E
+M=',@=&AE(&5N9"UO9BUL:6YE('-E<&%R871O<BX@1&5F875L="!V86QU92!I
+M<SH@0SP@/BX-"@T*/6)A8VL-"@T*/6AE860Q(%-%12!!3%-/#0H-"F9M="@Q
+M*2P@8V]L=6UN*#$I+"!C;V1E;78H,2D-"@T*/6AE860Q($%55$A/4@T*#0I&
+M<F5D97)I8R!*05)$3TX@/&9R961E<FEC+FIA<F1O;D!G;6%I;"YC;VT^#0H-
+M"CUH96%D,2!#3U!94DE'2%0@04Y$($Q)0T5.4T4-"@T*0V]P>7)I9VAT("A#
+M*2`R,#$Y(&)Y($9R961E<FEC($I!4D1/3B`\9G)E9&5R:6,N:F%R9&]N0&=M
+M86EL+F-O;3X-"@T*5&AI<R!P<F]G<F%M(&ES(&9R964@<V]F='=A<F4[('EO
+M=2!C86X@<F5D:7-T<FEB=71E(&ET(&%N9"]O<B!M;V1I9GD-"FET('5N9&5R
+=('1H92!'4$P@;&EC96YS92X-"@T*/6-U=`T*#0IM
+`
+end
+SHAR_EOF
+  (set 20 25 12 23 17 07 12 'scripts/codefmt'
+   eval "${shar_touch}") && \
+  chmod 0755 'scripts/codefmt'
+if test $? -ne 0
+then ${echo} "restore of scripts/codefmt failed"
+fi
+  if ${md5check}
+  then (
+       ${MD5SUM} -c >/dev/null 2>&1 || ${echo} 'scripts/codefmt': 'MD5 check failed'
+       ) << \SHAR_EOF
+f86c4d093528360407acb41025ae2e63  scripts/codefmt
+SHAR_EOF
+
+else
+test `LC_ALL=C wc -c < 'scripts/codefmt'` -ne 8354 && \
+  ${echo} "restoration warning:  size of 'scripts/codefmt' is not 8354"
+  fi
+fi
+# ============= scripts/codemv ==============
+if test -n "${keep_file}" && test -f 'scripts/codemv'
+then
+${echo} "x - SKIPPING scripts/codemv (file already exists)"
+
+else
+${echo} "x - extracting scripts/codemv (text)"
+  sed 's/^X//' << 'SHAR_EOF' | uudecode &&
+begin 600 scripts/codemv
+M(R$O=7-R+V)I;B]E;G8@<&5R;`T*(RH]/3T]/3T]/3T]/3T]/3T]/3T]/3T]
+M/3T]/3T]/3T]/3T]/3T]/3T]/3T]/3T]/3T]/3T]/3T]/3T]/3T]/3T]/3T]
+M/3T]/3T]/3TJ#0HC*B`@("`@("`@("`@("`@("`@("`@("`@("`@("`@("`@
+M("`@("`@("`@("`@("`@("`@("`@("`@("`@("`@("`@("`@("`@("`@("H-
+M"B,J("!C;V1E;78@+2!#;V1E(&9O<FUA='1I;F<@=&]O;"`@("`@("`@("`@
+M("`@("`@("`@("`@("`@("`@("`@("`@("`@("`@("`J#0HC*B`@("`@("`@
+M("`@("`@("`@("`@("`@("`@("`@("`@("`@("`@("`@("`@("`@("`@("`@
+M("`@("`@("`@("`@("`@("`@("`@("H-"B,J("!#;W!Y<FEG:'0@*&,I(#(P
+M,3D@1G)E9&5R:6,@2F%R9&]N("`\9G)E9&5R:6,N:F%R9&]N0&=M86EL+F-O
+M;3X@("`@("`@("`@*@T*(RH@("`@("`@("`@("`@("`@("`@("`@("`@("`@
+M("`@("`@("`@("`@("`@("`@("`@("`@("`@("`@("`@("`@("`@("`@("`@
+M("`J#0HC*B`@+2TM+2TM+2TM+2TM+2TM+2TM($=03"!,:6-E;G-E9"!3;W5R
+M8V4@0V]D92`M+2TM+2TM+2TM+2TM+2TM+2T@("`@("`@("`@("H-"B,J("!&
+M<F5D97)I8R!*87)D;VX@;6%K97,@=&AI<R!S;V9T=V%R92!A=F%I;&%B;&4@
+M=6YD97(@=&AE($=.52`@("`@("`@("`@("`@*@T*(RH@($=E;F5R86P@4'5B
+M;&EC($QI8V5N<V4@*$=03"D@;&EC96YS92!F;W(@;W!E;B!S;W5R8V4@<')O
+M:F5C=',N("`@("`@("`@("`J#0HC*B`@1F]R(&1E=&%I;',@;V8@=&AE($=0
+M3"!L:6-E;G-E('!L96%S92!S964@=W=W+F=N=2YO<F<@;W(@<F5A9"`@("`@
+M("`@("`@("H-"B,J("!T:&4@9FEL92!L:6-E;G-E+F=P;"!P<F]V:61E9"!I
+M;B!T:&ES('!A8VMA9V4N("`@("`@("`@("`@("`@("`@("`@("`@("`@*@T*
+M(RH@("`@("`@("`@("`@("`@("`@("`@("`@("`@("`@("`@("`@("`@("`@
+M("`@("`@("`@("`@("`@("`@("`@("`@("`@("`@("`J#0HC*B`@5&AI<R!P
+M<F]G<F%M(&ES(&9R964@<V]F='=A<F4[('EO=2!C86X@<F5D:7-T<FEB=71E
+M(&ET(&%N9"]O<B`@("`@("`@("`@("H-"B,J("!M;V1I9GD@:70@=6YD97(@
+M=&AE('1E<FUS(&]F('1H92!'3E4@1V5N97)A;"!0=6)L:6,@3&EC96YS92!A
+M<R`@("`@("`@("`@*@T*(RH@('!U8FQI<VAE9"!B>2!T:&4@1G)E92!3;V9T
+M=V%R92!&;W5N9&%T:6]N.R!E:71H97(@=F5R<VEO;B`S(&]F("`@("`@("`@
+M("`J#0HC*B`@=&AE($QI8V5N<V4L(&]R("AA="!Y;W5R(&]P=&EO;BD@86YY
+M(&QA=&5R('9E<G-I;VXN("`@("`@("`@("`@("`@("`@("`@("H-"B,J("`@
+M("`@("`@("`@("`@("`@("`@("`@("`@("`@("`@("`@("`@("`@("`@("`@
+M("`@("`@("`@("`@("`@("`@("`@("`@("`@*@T*(RH@(%1H:7,@<')O9W)A
+M;2!I<R!D:7-T<FEB=71E9"!I;B!T:&4@:&]P92!T:&%T(&ET('=I;&P@8F4@
+M=7-E9G5L+"`@("`@("`@("`J#0HC*B`@8G5T(%=)5$A/550@04Y9(%=!4E)!
+M3E19.R!W:71H;W5T(&5V96X@=&AE(&EM<&QI960@=V%R<F%N='D@;V8@("`@
+M("`@("`@("H-"B,J("!-15)#2$%.5$%"24Q)5%D@;W(@1DE43D534R!&3U(@
+M02!005)424-53$%2(%!54E!/4T4N("!3964@=&AE("`@("`@("`@("`@*@T*
+M(RH@($=.52!'96YE<F%L(%!U8FQI8R!,:6-E;G-E(&9O<B!M;W)E(&1E=&%I
+M;',N("`@("`@("`@("`@("`@("`@("`@("`@("`@("`J#0HC*B`@("`@("`@
+M("`@("`@("`@("`@("`@("`@("`@("`@("`@("`@("`@("`@("`@("`@("`@
+M("`@("`@("`@("`@("`@("`@("`@("H-"B,J("!9;W4@<VAO=6QD(&AA=F4@
+M<F5C96EV960@82!C;W!Y(&]F('1H92!'3E4@1V5N97)A;"!0=6)L:6,@("`@
+M("`@("`@("`@("`@*@T*(RH@($QI8V5N<V4@86QO;F<@=VET:"!T:&ES('!R
+M;V=R86T@:6X@=&AE(&9I;&4@)VQI8V5N<V4N9W!L)SL@:68@("`@("`@("`@
+M("`J#0HC*B`@;F]T+"!S964@/&AT='`Z+R]W=W<N9VYU+F]R9R]L:6-E;G-E
+M<R\^+B`@("`@("`@("`@("`@("`@("`@("`@("`@("`@("`@("H-"B,J("`M
+M+2TM+2TM+2TM+2TM+2TM+2TM+2TM+2TM+2TM+2TM+2TM+2TM+2TM+2TM+2TM
+M+2TM+2TM+2TM+2TM+2TM+2`@("`@("`@("`@*@T*(RH]/3T]/3T]/3T]/3T]
+M/3T]/3T]/3T]/3T]/3T]/3T]/3T]/3T]/3T]/3T]/3T]/3T]/3T]/3T]/3T]
+M/3T]/3T]/3T]/3T]/3T]/3TJ#0H-"G5S92!S=')I8W0[#0IU<V4@=V%R;FEN
+M9W,@)V%L;"<[#0IU<V4@1&%T83HZ1'5M<&5R.PT*=7-E($-A<G`[#0IU<V4@
+M1V5T;W!T.CI,;VYG('%W*$=E=$]P=&EO;G-&<F]M07)R87D@.F-O;F9I9R!N
+M;U]I9VYO<F5?8V%S92!P87-S7W1H<F]U9V@I.PT*=7-E($QI<W0Z.E5T:6P@
+M<7<H;6%X('-U;2D[#0IU<V4@4&]D.CI5<V%G93L-"@T*<W5B('5S86=E('L-
+M"B`@("!M>2`D97AI='9A;"`]('-C86QA<B!`7SL-"B`@("!M87`@>R!P<FEN
+M="!35$1%4E(@(D524D]2.B`B+B1?+B)<;B(@?2!`7SL-"B`@("!P;V0R=7-A
+M9V4H+65X:71V86P@/3X@)&5X:71V86PI.PT*?0T*#0HC($-,22!A<F=U;65N
+M=',@<')O8V5S<VEN9PT*;7D@*"1O<'1?:&5L<"P-"B`@("`D;W!T7V%P<&5N
+M9"P-"B`@("`D;W!T7V-O<'DL#0H@("`@)&]P=%]E;F1?<W1R:6YG+`T*("`@
+M("1O<'1?97AT<F%C="P-"B`@("`D;W!T7V]V97)W<FET92P-"B`@("`D;W!T
+M7W-T87)T7W-T<FEN9RP-"BD[#0H-"D=E=$]P=&EO;G-&<F]M07)R87DH7$!!
+M4D=6+`T*("`@("=H?&AE;'`G("`@("`@("`@/3X@7"1O<'1?:&5L<"P-"B`@
+M("`G87QA<'!E;F0]<R<@("`@(#T^(%PD;W!T7V%P<&5N9"P-"B`@("`G8WQC
+M;W!Y)R`@("`@("`@(#T^(%PD;W!T7V-O<'DL#0H@("`@)V5\96YD/7,G("`@
+M("`@("`]/B!<)&]P=%]E;F1?<W1R:6YG+`T*("`@("=O?&]V97)W<FET93US
+M)R`@/3X@7"1O<'1?;W9E<G=R:71E+`T*("`@("=S?'-T87)T/7,G("`@("`@
+M/3X@7"1O<'1?<W1A<G1?<W1R:6YG+`T*("`@("=X?&5X=')A8W0G("`@("`@
+M/3X@7"1O<'1?97AT<F%C="P-"BD@;W(@8W)O86L@(D5R<F]R('=H:6QE('!A
+M<G-I;F<@8V]M;6%N9"UL:6YE(&%R9W5M96YT<R([#0H-"B,@2&%N9&QE(&AE
+M;'`@;W!T:6]N#0IU<V%G92!I9B`H)&]P=%]H96QP*3L-"G5S86=E*")/<'1I
+M;VYS.B`G+6$G(&%N9"`G+6\G(&%R92!M=71U86QL>2!E>&-L=7-I=F4B*2!I
+M9B`H9&5F:6YE9"@D;W!T7V%P<&5N9"D@86YD(&1E9FEN960H)&]P=%]O=F5R
+M=W)I=&4I*3L-"G5S86=E*")/<'1I;VYS.B`G+6,G(&%N9"`G+7@G(&%R92!M
+M=71U86QL>2!E>&-L=7-I=F4B*2!I9B`H9&5F:6YE9"@D;W!T7V-O<'DI(&%N
+M9"!D969I;F5D*"1O<'1?97AT<F%C="DI.PT*#0IM>2`H)&]P96Y?;6]D92P@
+M)&9I;&5N86UE*3L-"B1O<&5N7VUO9&4@/2`G/CXG(&EF*&1E9FEN960H)&]P
+M=%]A<'!E;F0I*3L-"B1O<&5N7VUO9&4@/2`G/B<@(&EF*&1E9FEN960H)&]P
+M=%]O=F5R=W)I=&4I*3L-"B1F:6QE;F%M92`O+ST@)&]P=%]A<'!E;F0[#0HD
+M9FEL96YA;64@+R\]("1O<'1?;W9E<G=R:71E.PT*=7-A9V4H(D]N92!O<'1I
+M;VX@;W5T(&]F("<M82<@;W(@)RUO)R!I<R!R97%U:7)E9"(I(&EF*"%D969I
+M;F5D*"1O<&5N7VUO9&4I*3L-"@T*#0IO<&5N*$9)3$4L("1O<&5N7VUO9&4L
+M("1F:6QE;F%M92D@;W(@9&EE*")5;F%B;&4@=&\@;W!E;CH@)R(N)&9I;&5N
+M86UE+B(G(BD[#0IW:&EL92AM>2`D;&EN92`](#Q35$1)3CXI('L-"B`@("!P
+M<FEN="!35$1/550@)&QI;F4@:68H9&5F:6YE9"@D;W!T7V-O<'DI*3L-"B`@
+M("!P<FEN="!&24Q%("1L:6YE.PT*?0T*8VQO<V4H1DE,12D[#0H-"@T*97AI
+M="`P.PT*#0I?7T5.1%]?#0H]:&5A9#$@3D%-10T*#0IC;V1E;78@+2!#;V1E
+M($UO=F5R(%1O;VP-"@T*/6AE860Q(%-93D]04TE3#0H-"D(\8V]D96UV/B!"
+M/"UH/GQ"/"TM:&5L<#X-"@T*0CQC;V1E;78^(%M"/$]05$E/3E,^72XN+@T*
+M#0H]:&5A9#$@1$530U))4%1)3TX-"@T*5&AI<R!T;V]L(&1I=F5R="!P87)T
+M(&]F(&ET<R!I;G!U="!T;R!A('-P96-I9FEE9"!F:6QE+@T*#0H]:&5A9#$@
+M3U!424].4PT*#0H];W9E<@T*#0H]:71E;2!"/"UH/GQ"/"TM:&5L<#X-"@T*
+M4')I;G0@=&AE('5S86=E+"!H96QP(&%N9"!V97)S:6]N(&EN9F]R;6%T:6]N
+M(&9O<B!T:&ES('!R;V=R86T@86YD(&5X:70N#0H-"CUI=&5M($(\+6$^($D\
+M1DE,13Y\0CPM+6%P<&5N9#X]23Q&24Q%/@T*#0I3971S('1H92!F:6QE('=H
+M97)E(&1I=F5R=&5D(&EN<'5T(&ES(&%P<&5N9&5D+B!4:&ES(&]P=&EO;B!I
+M<R!M=71U86QL>0T*97AC;'5S:79E('=I=&@@=&AE($(\+6\^(&]P=&EO;BX-
+M"@T*/6ET96T@0CPM8SY\0CPM+6-O<'D^#0H-"D-O<'D@=&\@<W1D;W5T('1H
+M92!W:&]L92!I;G!U="X-"@T*/6ET96T@0CPM;SX@23Q&24Q%/GQ"/"TM;W9E
+M<G=R:71E/CU)/$9)3$4^#0H-"E-E=',@=&AE(&9I;&4@;W9E<G=R:71T96X@
+M8GD@=&AE(&1I=F5R=&5D(&EN<'5T+B!4:&ES(&]P=&EO;B!I<R!M=71U86QL
+M>0T*97AC;'5S:79E('=I=&@@=&AE($(\+6\^(&]P=&EO;BX-"@T*/6)A8VL-
+M"@T*/6AE860Q(%-%12!!3%-/#0H-"F9M="@Q*2P@8V]L=6UN*#$I+"!C;V1E
+M9FUT*#$I#0H-"CUH96%D,2!!551(3U(-"@T*1G)E9&5R:6,@2D%21$].(#QF
+M<F5D97)I8RYJ87)D;VY`9VUA:6PN8V]M/@T*#0H]:&5A9#$@0T]065))1TA4
+M($%.1"!,24-%3E-%#0H-"D-O<'ER:6=H="`H0RD@,C`Q.2!B>2!&<F5D97)I
+M8R!*05)$3TX@/&9R961E<FEC+FIA<F1O;D!G;6%I;"YC;VT^#0H-"E1H:7,@
+M<')O9W)A;2!I<R!F<F5E('-O9G1W87)E.R!Y;W4@8V%N(')E9&ES=')I8G5T
+M92!I="!A;F0O;W(@;6]D:69Y#0II="!U;F1E<B!T:&4@1U!,(&QI8V5N<V4N
+,#0H-"CUC=70-"@T*
+`
+end
+SHAR_EOF
+  (set 20 25 12 23 17 07 12 'scripts/codemv'
+   eval "${shar_touch}") && \
+  chmod 0755 'scripts/codemv'
+if test $? -ne 0
+then ${echo} "restore of scripts/codemv failed"
+fi
+  if ${md5check}
+  then (
+       ${MD5SUM} -c >/dev/null 2>&1 || ${echo} 'scripts/codemv': 'MD5 check failed'
+       ) << \SHAR_EOF
+dfa99a0c8472efb1e071ff25613dbaac  scripts/codemv
+SHAR_EOF
+
+else
+test `LC_ALL=C wc -c < 'scripts/codemv'` -ne 4827 && \
+  ${echo} "restoration warning:  size of 'scripts/codemv' is not 4827"
+  fi
+fi
+# ============= scripts/plgen ==============
+if test -n "${keep_file}" && test -f 'scripts/plgen'
+then
+${echo} "x - SKIPPING scripts/plgen (file already exists)"
+
+else
+${echo} "x - extracting scripts/plgen (text)"
+  sed 's/^X//' << 'SHAR_EOF' | uudecode &&
+begin 600 scripts/plgen
+M(R$O=7-R+V)I;B]E;G8@<&5R;`T*(RH]/3T]/3T]/3T]/3T]/3T]/3T]/3T]
+M/3T]/3T]/3T]/3T]/3T]/3T]/3T]/3T]/3T]/3T]/3T]/3T]/3T]/3T]/3T]
+M/3T]/3T]/3TJ#0HC*B`@("`@("`@("`@("`@("`@("`@("`@("`@("`@("`@
+M("`@("`@("`@("`@("`@("`@("`@("`@("`@("`@("`@("`@("`@("`@("H-
+M"B,J("!P;&=E;B`M($=E;F5R871E('!E<FP@<&QA:6XM;VQD+61A=&$@<F5C
+M;W)D(&UO9'5L97,-"B,J("`@("`@("`@("`@("`@("`@("`@("`@("`@("`@
+M("`@("`@("`@("`@("`@("`@("`@("`@("`@("`@("`@("`@("`@("`@("`@
+M*@T*(RH@($-O<'ER:6=H="`H8RD@,C`Q.2!&<F5D97)I8R!*87)D;VX@(#QF
+M<F5D97)I8RYJ87)D;VY`9VUA:6PN8V]M/B`@("`@("`@("`J#0HC*B`@("`@
+M("`@("`@("`@("`@("`@("`@("`@("`@("`@("`@("`@("`@("`@("`@("`@
+M("`@("`@("`@("`@("`@("`@("`@("`@("H-"B,J("`M+2TM+2TM+2TM+2TM
+M+2TM+2T@1U!,($QI8V5N<V5D(%-O=7)C92!#;V1E("TM+2TM+2TM+2TM+2TM
+M+2TM+2`@("`@("`@("`@*@T*(RH@($9R961E<FEC($IA<F1O;B!M86ME<R!T
+M:&ES('-O9G1W87)E(&%V86EL86)L92!U;F1E<B!T:&4@1TY5("`@("`@("`@
+M("`@("`J#0HC*B`@1V5N97)A;"!0=6)L:6,@3&EC96YS92`H1U!,*2!L:6-E
+M;G-E(&9O<B!O<&5N('-O=7)C92!P<F]J96-T<RX@("`@("`@("`@("H-"B,J
+M("!&;W(@9&5T86EL<R!O9B!T:&4@1U!,(&QI8V5N<V4@<&QE87-E('-E92!W
+M=W<N9VYU+F]R9R!O<B!R96%D("`@("`@("`@("`@*@T*(RH@('1H92!F:6QE
+M(&QI8V5N<V4N9W!L('!R;W9I9&5D(&EN('1H:7,@<&%C:V%G92X@("`@("`@
+M("`@("`@("`@("`@("`@("`@("`J#0HC*B`@("`@("`@("`@("`@("`@("`@
+M("`@("`@("`@("`@("`@("`@("`@("`@("`@("`@("`@("`@("`@("`@("`@
+M("`@("`@("`@("H-"B,J("!4:&ES('!R;V=R86T@:7,@9G)E92!S;V9T=V%R
+M93L@>6]U(&-A;B!R961I<W1R:6)U=&4@:70@86YD+V]R("`@("`@("`@("`@
+M*@T*(RH@(&UO9&EF>2!I="!U;F1E<B!T:&4@=&5R;7,@;V8@=&AE($=.52!'
+M96YE<F%L(%!U8FQI8R!,:6-E;G-E(&%S("`@("`@("`@("`J#0HC*B`@<'5B
+M;&ES:&5D(&)Y('1H92!&<F5E(%-O9G1W87)E($9O=6YD871I;VX[(&5I=&AE
+M<B!V97)S:6]N(#,@;V8@("`@("`@("`@("H-"B,J("!T:&4@3&EC96YS92P@
+M;W(@*&%T('EO=7(@;W!T:6]N*2!A;GD@;&%T97(@=F5R<VEO;BX@("`@("`@
+M("`@("`@("`@("`@("`@*@T*(RH@("`@("`@("`@("`@("`@("`@("`@("`@
+M("`@("`@("`@("`@("`@("`@("`@("`@("`@("`@("`@("`@("`@("`@("`@
+M("`@("`J#0HC*B`@5&AI<R!P<F]G<F%M(&ES(&1I<W1R:6)U=&5D(&EN('1H
+M92!H;W!E('1H870@:70@=VEL;"!B92!U<V5F=6PL("`@("`@("`@("H-"B,J
+M("!B=70@5TE42$]55"!!3ED@5T%24D%.5%D[('=I=&AO=70@979E;B!T:&4@
+M:6UP;&EE9"!W87)R86YT>2!O9B`@("`@("`@("`@*@T*(RH@($U%4D-(04Y4
+M04))3$E462!O<B!&251.15-3($9/4B!!(%!!4E1)0U5,05(@4%524$]312X@
+M(%-E92!T:&4@("`@("`@("`@("`J#0HC*B`@1TY5($=E;F5R86P@4'5B;&EC
+M($QI8V5N<V4@9F]R(&UO<F4@9&5T86EL<RX@("`@("`@("`@("`@("`@("`@
+M("`@("`@("`@("H-"B,J("`@("`@("`@("`@("`@("`@("`@("`@("`@("`@
+M("`@("`@("`@("`@("`@("`@("`@("`@("`@("`@("`@("`@("`@("`@("`@
+M*@T*(RH@(%EO=2!S:&]U;&0@:&%V92!R96-E:79E9"!A(&-O<'D@;V8@=&AE
+M($=.52!'96YE<F%L(%!U8FQI8R`@("`@("`@("`@("`@("`J#0HC*B`@3&EC
+M96YS92!A;&]N9R!W:71H('1H:7,@<')O9W)A;2!I;B!T:&4@9FEL92`G;&EC
+M96YS92YG<&PG.R!I9B`@("`@("`@("`@("H-"B,J("!N;W0L('-E92`\:'1T
+M<#HO+W=W=RYG;G4N;W)G+VQI8V5N<V5S+SXN("`@("`@("`@("`@("`@("`@
+M("`@("`@("`@("`@("`@*@T*(RH@("TM+2TM+2TM+2TM+2TM+2TM+2TM+2TM
+M+2TM+2TM+2TM+2TM+2TM+2TM+2TM+2TM+2TM+2TM+2TM+2TM+2TM("`@("`@
+M("`@("`J#0HC*CT]/3T]/3T]/3T]/3T]/3T]/3T]/3T]/3T]/3T]/3T]/3T]
+M/3T]/3T]/3T]/3T]/3T]/3T]/3T]/3T]/3T]/3T]/3T]/3T]/3T]/2H-"@T*
+M=7-E('-T<FEC=#L-"G5S92!W87)N:6YG<R`G86QL)SL-"@T*=7-E($-A<G`[
+M#0IU<V4@1&%T83HZ1'5M<&5R.PT*=7-E($9I;&4Z.D)A<V5N86UE.PT*=7-E
+M($=E=&]P=#HZ3&]N9R!Q=RA'971/<'1I;VYS1G)O;4%R<F%Y(#IC;VYF:6<@
+M;F]?:6=N;W)E7V-A<V4@<&%S<U]T:')O=6=H*3L-"G5S92!0;V0Z.E5S86=E
+M.PT*=7-E(%-E;&5C=%-A=F5R.PT*#0IM86EN*"D@=6YL97-S(&-A;&QE<CL-
+M"@T*<W5B(&=E;F5R871E7V9I96QD7V-T;W)?9F]R7V%R<F%Y('L-"B`@("!M
+M>2`H)&9I96QD*2`]($!?.PT*("`@(&UY("1P;%]N86UE(#T@)&9I96QD+3Y[
+M)W!L7VYA;64G?3L-"B`@("!M>2`D=F%L=64@("`]("1F:65L9"T^>R=V86QU
+M92=]("\O("=U;F1E9B<[#0H-"B`@("!M>2`D8V]D96=E;B`]/#PB0T]$14=%
+M3B([#0H@("`@("`@("<D>W!L7VYA;65])R`]/B`D=F%L=64L#0I#3T1%1T5.
+M#0H@("`@<F5T=7)N("1C;V1E9V5N.PT*?0T*#0IS=6(@9V5N97)A=&5?9FEE
+M;&1?;65T:&]D<U]F;W)?87)R87D@>PT*("`@(&UY("@D9FEE;&0I(#T@0%\[
+M#0H@("`@;7D@)&YA;64@("`@("`]("1F:65L9"T^>R=N86UE)WT[#0H@("`@
+M;7D@)'!L7VYA;64@("`]("1F:65L9"T^>R=P;%]N86UE)WT[#0H@("`@;7D@
+M)&ET96U?='EP92`]("1F:65L9"T^>R=I=&5M7W1Y<&4G?2`O+R`B)W5N9&5F
+M:6YE9"<B.PT*#0H@("`@;7D@)&-O9&5G96X@/3P\(D-/1$5'14XB.PT*#0HC
+M($9I96QD.B`D>VYA;65](&UE=&AO9',-"B,@+2TM+2TM#0IS=6(@8V]U;G1?
+M)'MP;%]N86UE?2![#0H@("`@;7D@*%PD<V5L9BD@/2!<0%\[#0H@("`@<F5T
+M=7)N('-C86QA<B!<0'L@7"1S96QF+3Y[)U\D>W!L7VYA;65])WT@?3L-"GT-
+M"@T*<W5B(&=E=%\D>W!L7VYA;65]('L-"B`@("!M>2`H7"1S96QF*2`](%Q`
+M7SL-"B`@("!R971U<FX@7$![(%PD<V5L9BT^>R=?)'MP;%]N86UE?2=]('T[
+M#0I]#0H-"G-U8B!S971?)'MP;%]N86UE?2![#0H@("`@;7D@*%PD<V5L9BP@
+M7$!N97=?=F%L=65S*2`](%Q`7SL-"B`@("!<0'L@7"1S96QF+3Y[)U\D>W!L
+M7VYA;65])WT@?2`]("A<0&YE=U]V86QU97,I.PT*?0T*#0IS=6(@<'5S:%\D
+M>W!L7VYA;65]('L-"B`@("!M>2`H7"1S96QF+"!<0&YE=U]V86QU97,I(#T@
+M7$!?.PT*("`@('!U<V@H7$![(%PD<V5L9BT^>R=?)'MP;%]N86UE?2=]('TL
+M(%Q`;F5W7W9A;'5E<RD[#0I]#0H-"G-U8B!C;&5A<E\D>W!L7VYA;65]('L-
+M"B`@("!M>2`H7"1S96QF*2`](%Q`7SL-"B`@("!<0'L@7"1S96QF+3Y[)U\D
+M>W!L7VYA;65])WT@?2`]("@I.PT*?0T*#0IS=6(@87!P;'E?)'MP;%]N86UE
+M?2![#0H@("`@;7D@*%PD<V5L9BP@7"1S=6(I(#T@7$!?.PT*("`@(&UA<"![
+M(%PD<W5B+3XH7"1?*2!](%Q`>R!<)'-E;&8M/GLG7R1[<&Q?;F%M97TG?2!]
+M.PT*?0T*0T]$14=%3@T*("`@(')E='5R;B`D8V]D96=E;CL-"GT-"@T*<W5B
+M(&=E;F5R871E7V9I96QD7VUE=&AO9'-?9F]R7W-C86QA<B![#0H@("`@;7D@
+M*"1F:65L9"D@/2!`7SL-"B`@("!M>2`D;F%M92`@("`@(#T@)&9I96QD+3Y[
+M)VYA;64G?3L-"B`@("!M>2`D:71E;5]T>7!E(#T@)&9I96QD+3Y[)VET96U?
+M='EP92=]("\O("(G=6YD969I;F5D)R([#0H@("`@;7D@)'!L7VYA;64@("`]
+M("1F:65L9"T^>R=P;%]N86UE)WT[#0H-"B`@("!M>2`D8V]D96=E;B`]/#PB
+M0T]$14=%3B([#0H-"B,@1FEE;&0Z("1[;F%M97T@;65T:&]D<PT*(R`M+2TM
+M+2T-"G-U8B!G971?)'MP;%]N86UE?2![#0H@("`@;7D@*%PD<V5L9BD@/2!<
+M0%\[#0H@("`@<F5T=7)N(%PD<V5L9BT^>R=?)'MP;%]N86UE?2=].PT*?0T*
+M#0IS=6(@<V5T7R1[<&Q?;F%M97T@>PT*("`@(&UY("A<)'-E;&8L(%PD;F5W
+M7W9A;'5E*2`](%Q`7SL-"B`@("!<)'-E;&8M/GLG7R1[<&Q?;F%M97TG?2`]
+M(%PD;F5W7W9A;'5E.PT*?0T*0T]$14=%3@T*("`@(')E='5R;B`D8V]D96=E
+M;CL-"GT-"@T*<W5B(&=E;F5R871E7V9I96QD7W!O9%]F;W)?87)R87D@>PT*
+M("`@(&UY("@D9FEE;&0I(#T@0%\[#0H@("`@;7D@)&YA;64@("`@("`]("1F
+M:65L9"T^>R=N86UE)WT[#0H@("`@;7D@)'!L7VYA;64@("`]("1F:65L9"T^
+M>R=P;%]N86UE)WT[#0H@("`@;7D@)&ET96U?='EP92`]("1F:65L9"T^>R=I
+M=&5M7W1Y<&4G?2`O+R`B)W5N9&5F:6YE9"<B.PT*#0H@("`@;7D@)&-O9&5G
+M96X@/3P\(D-/1$5'14XB.PT*#0HC/6ET96T@8V]U;G1?9FEE;&1?;F%M92@I
+M#0H-"E)E='5R;G,@=&AE(&-O=6YT(&]F(&5L96UE;G1S(&EN('1H92!A<G)A
+M>0T*#0HC/6ET96T@9V5T7V9I96QD7VYA;64H*0T*#0I7:&EC:"!R971U<FYS
+M(&$@;&ES=`T*#0HC/6ET96T@<V5T7V9I96QD7VYA;64H23Q<0&YE=U]V86QU
+M97,^*0T*#0I7:&EC:"!C;W!I97,@=&AE(&ET96US(&EN('1H92!I;G1E<FYA
+M;"!A<G)A>0T*#0HC/6ET96T@<'5S:%]F:65L9%]N86UE*$D\7$!N97=?=F%L
+M=65S/BD-"@T*5VAI8V@@87!P96YD(&ET96US('1O('1H92!I;G1E<FYA;"!A
+M<G)A>0T*#0HC/6ET96T@8VQE87)?9FEE;&1?;F%M92@I#0H-"E=H:6-H(&-L
+M96%R<R!T:&4@:6YT97)N86P@87)R87D-"@T*(SUI=&5M(&%P<&QY7V9I96QD
+M7VYA;64H23QS=6(@>RXN+GT^*0T*#0I7:&EC:"!A<'!L:65S('1H92!S=6(@
+M;VX@=&AE(&%R<F%Y)W,@:71E;7,-"D-/1$5'14X-"B`@("!R971U<FX@)&-O
+M9&5G96X[#0I]#0H-"G-U8B!G96YE<F%T95]F:65L9%]P;V1?9F]R7W-C86QA
+M<B![#0H@("`@;7D@*"1F:65L9"D@/2!`7SL-"B`@("!M>2`D;F%M92`@("`@
+M(#T@)&9I96QD+3Y[)VYA;64G?3L-"B`@("!M>2`D:71E;5]T>7!E(#T@)&9I
+M96QD+3Y[)VET96U?='EP92=]("\O("(G=6YD969I;F5D)R([#0H@("`@;7D@
+M)'!L7VYA;64@("`]("1F:65L9"T^>R=P;%]N86UE)WT[#0H-"B`@("!M>2`D
+M8V]D96=E;B`]/#PB0T]$14=%3B([#0H-"B,]:71E;2!G971?)'MP;%]N86UE
+M?2@I#0H-"D=E=',@=&AE('-C86QA<B!V86QU92!O9B!T:&4@9FEE;&0N#0H-
+M"B,]:71E;2!S971?)'MP;%]N86UE?2A)/%PD;F5W7W9A;'5E/BD-"@T*4V5T
+M<R!T:&4@<V-A;&%R('9A;'5E(&]F('1H92!N97<@9FEE;&0N#0I#3T1%1T5.
+M#0H@("`@<F5T=7)N("1C;V1E9V5N.PT*?0T*#0IS=6(@9V5N97)A=&5?:&5A
+M9&5R('L-"B`@("!M>2`H)'!A<F%M971E<G-?<F5F*2`]($!?.PT*("`@(&UY
+M("1F:6QE;F%M92`@(#T@8F%S96YA;64@)'!A<F%M971E<G-?<F5F+3Y[)V9I
+M;&5N86UE)WT[#0H@("`@;7D@)'9E<G-I;VX@("`@/2`D<&%R86UE=&5R<U]R
+M968M/GLG=F5R<VEO;B=].PT*("`@(&UY("1C;&%S<U]N86UE(#T@)'!A<F%M
+M971E<G-?<F5F+3Y[)V-L87-S7VYA;64G?3L-"B`@("!M>2!`9FEE;&1S("`@
+M("`]($![("1P87)A;65T97)S7W)E9BT^>R=F:65L9',G?2!].PT*("`@(&UY
+M("1C;V1E9V5N(#T\/")#3T1%1T5.(CL-"B,A+W5S<B]B:6XO96YV('!E<FP-
+M"B,J/3T]/3T]/3T]/3T]/3T]/3T]/3T]/3T]/3T]/3T]/3T]/3T]/3T]/3T]
+M/3T]/3T]/3T]/3T]/3T]/3T]/3T]/3T]/3T]/3T]/3T]*@T*(RH@("`@("`@
+M("`@("`@("`@("`@("`@("`@("`@("`@("`@("`@("`@("`@("`@("`@("`@
+M("`@("`@("`@("`@("`@("`@("`@("`J#0HC*B`@)'MF:6QE;F%M97T@+2!!
+M('!E<FP@<&QA:6XM;VQD+61A=&$@<F5C;W)D(&UO9'5L97,-"B,J("`@("`@
+M("`@("`@("`@("`@("`@("`@("`@("`@("`@("`@("`@("`@("`@("`@("`@
+M("`@("`@("`@("`@("`@("`@("`@("`@*@T*(RH@($-O<'ER:6=H="`H8RD@
+M,C`Q.2!&<F5D97)I8R!*87)D;VX@(#QF<F5D97)I8RYJ87)D;VY<0&=M86EL
+M+F-O;3X@("`@("`@("`@*@T*(RH@("`@("`@("`@("`@("`@("`@("`@("`@
+M("`@("`@("`@("`@("`@("`@("`@("`@("`@("`@("`@("`@("`@("`@("`@
+M("`@("`J#0HC*B`@+2TM+2TM+2TM+2TM+2TM+2TM($=03"!,:6-E;G-E9"!3
+M;W5R8V4@0V]D92`M+2TM+2TM+2TM+2TM+2TM+2T@("`@("`@("`@("H-"B,J
+M("!&<F5D97)I8R!*87)D;VX@;6%K97,@=&AI<R!S;V9T=V%R92!A=F%I;&%B
+M;&4@=6YD97(@=&AE($=.52`@("`@("`@("`@("`@*@T*(RH@($=E;F5R86P@
+M4'5B;&EC($QI8V5N<V4@*$=03"D@;&EC96YS92!F;W(@;W!E;B!S;W5R8V4@
+M<')O:F5C=',N("`@("`@("`@("`J#0HC*B`@1F]R(&1E=&%I;',@;V8@=&AE
+M($=03"!L:6-E;G-E('!L96%S92!S964@=W=W+F=N=2YO<F<@;W(@<F5A9"`@
+M("`@("`@("`@("H-"B,J("!T:&4@9FEL92!L:6-E;G-E+F=P;"!P<F]V:61E
+M9"!I;B!T:&ES('!A8VMA9V4N("`@("`@("`@("`@("`@("`@("`@("`@("`@
+M*@T*(RH@("`@("`@("`@("`@("`@("`@("`@("`@("`@("`@("`@("`@("`@
+M("`@("`@("`@("`@("`@("`@("`@("`@("`@("`@("`@("`J#0HC*B`@5&AI
+M<R!P<F]G<F%M(&ES(&9R964@<V]F='=A<F4[('EO=2!C86X@<F5D:7-T<FEB
+M=71E(&ET(&%N9"]O<B`@("`@("`@("`@("H-"B,J("!M;V1I9GD@:70@=6YD
+M97(@=&AE('1E<FUS(&]F('1H92!'3E4@1V5N97)A;"!0=6)L:6,@3&EC96YS
+M92!A<R`@("`@("`@("`@*@T*(RH@('!U8FQI<VAE9"!B>2!T:&4@1G)E92!3
+M;V9T=V%R92!&;W5N9&%T:6]N.R!E:71H97(@=F5R<VEO;B`S(&]F("`@("`@
+M("`@("`J#0HC*B`@=&AE($QI8V5N<V4L(&]R("AA="!Y;W5R(&]P=&EO;BD@
+M86YY(&QA=&5R('9E<G-I;VXN("`@("`@("`@("`@("`@("`@("`@("H-"B,J
+M("`@("`@("`@("`@("`@("`@("`@("`@("`@("`@("`@("`@("`@("`@("`@
+M("`@("`@("`@("`@("`@("`@("`@("`@("`@("`@*@T*(RH@(%1H:7,@<')O
+M9W)A;2!I<R!D:7-T<FEB=71E9"!I;B!T:&4@:&]P92!T:&%T(&ET('=I;&P@
+M8F4@=7-E9G5L+"`@("`@("`@("`J#0HC*B`@8G5T(%=)5$A/550@04Y9(%=!
+M4E)!3E19.R!W:71H;W5T(&5V96X@=&AE(&EM<&QI960@=V%R<F%N='D@;V8@
+M("`@("`@("`@("H-"B,J("!-15)#2$%.5$%"24Q)5%D@;W(@1DE43D534R!&
+M3U(@02!005)424-53$%2(%!54E!/4T4N("!3964@=&AE("`@("`@("`@("`@
+M*@T*(RH@($=.52!'96YE<F%L(%!U8FQI8R!,:6-E;G-E(&9O<B!M;W)E(&1E
+M=&%I;',N("`@("`@("`@("`@("`@("`@("`@("`@("`@("`J#0HC*B`@("`@
+M("`@("`@("`@("`@("`@("`@("`@("`@("`@("`@("`@("`@("`@("`@("`@
+M("`@("`@("`@("`@("`@("`@("`@("`@("H-"B,J("!9;W4@<VAO=6QD(&AA
+M=F4@<F5C96EV960@82!C;W!Y(&]F('1H92!'3E4@1V5N97)A;"!0=6)L:6,@
+M("`@("`@("`@("`@("`@*@T*(RH@($QI8V5N<V4@86QO;F<@=VET:"!T:&ES
+M('!R;V=R86T@:6X@=&AE(&9I;&4@)VQI8V5N<V4N9W!L)SL@:68@("`@("`@
+M("`@("`J#0HC*B`@;F]T+"!S964@/&AT='`Z+R]W=W<N9VYU+F]R9R]L:6-E
+M;G-E<R\^+B`@("`@("`@("`@("`@("`@("`@("`@("`@("`@("`@("H-"B,J
+M("`M+2TM+2TM+2TM+2TM+2TM+2TM+2TM+2TM+2TM+2TM+2TM+2TM+2TM+2TM
+M+2TM+2TM+2TM+2TM+2TM+2TM+2`@("`@("`@("`@*@T*(RH]/3T]/3T]/3T]
+M/3T]/3T]/3T]/3T]/3T]/3T]/3T]/3T]/3T]/3T]/3T]/3T]/3T]/3T]/3T]
+M/3T]/3T]/3T]/3T]/3T]/3T]/3TJ#0IP86-K86=E("1[8VQA<W-?;F%M97T[
+M#0H-"G5S92!S=')I8W0[#0IU<V4@=V%R;FEN9W,@)V%L;"<[#0H-"G)E<75I
+M<F4@17AP;W)T97([#0H-"F]U<B!<0$E302`]('%W*$5X<&]R=&5R*3L-"@T*
+M(R!)=&5M<R!T;R!E>'!O<G0@:6YT;R!C86QL97)S(&YA;65S<&%C92!B>2!D
+M969A=6QT+B!.;W1E.B!D;R!N;W0@97AP;W)T#0HC(&YA;65S(&)Y(&1E9F%U
+M;'0@=VET:&]U="!A('9E<GD@9V]O9"!R96%S;VXN(%5S92!%6%!/4E1?3TL@
+M:6YS=&5A9"X-"B,@1&\@;F]T('-I;7!L>2!E>'!O<G0@86QL('EO=7(@<'5B
+M;&EC(&9U;F-T:6]N<R]M971H;V1S+V-O;G-T86YT<RX-"@T*(R!4:&ES(&%L
+M;&]W<R!D96-L87)A=&EO;@EU<V4@)'MC;&%S<U]N86UE?2`G.F%L;"<[#0HC
+M($EF('EO=2!D;R!N;W0@;F5E9"!T:&ES+"!M;W9I;F<@=&AI;F=S(&1I<F5C
+M=&QY(&EN=&\@7$!%6%!/4E0@;W(@7$!%6%!/4E1?3TL-"B,@=VEL;"!S879E
+M(&UE;6]R>2X-"F]U<B!<)4584$]25%]404=3(#T@*"`G86QL)R`]/B!;('%W
+M*`T*#0HI(%T@*3L-"@T*;W5R(%Q`15A03U)47T]+(#T@*"!<0'L@7"1%6%!/
+M4E1?5$%'4WLG86QL)WT@?2`I.PT*#0IO=7(@7$!%6%!/4E0@/2!Q=R@-"@T*
+M*3L-"@T*;W5R(%PD5D524TE/3B`]("<D>W9E<G-I;VY])SL-"@T*(R!0<F5L
+M;V%D960@;65T:&]D<R!G;R!H97)E+@T*(PT*<W5B(&YE=R![#0H@("`@;7D@
+M*%PD8VQA<W,L(%PD<&%R86UE=&5R<U]R968I(#T@7$!?.PT*("`@(&UY(%PD
+M<V5L9B`]('L-"B!`>UL@;6%P('L@9V5N97)A=&5?9FEE;&1?8W1O<E]F;W)?
+M87)R87DH)%\I('T@0&9I96QD<R!=?0T*("`@('T[#0H@("`@<F5T=7)N(&)L
+M97-S(%PD<V5L9BP@7"1C;&%S<SL-"GT-"D-/1$5'14X-"B`@("!R971U<FX@
+M)&-O9&5G96X[#0I]#0H-"G-U8B!G96YE<F%T95]F;V]T97(@>PT*("`@(&UY
+M("@D<&%R86UE=&5R<U]R968I(#T@0%\[#0H@("`@;7D@)&9I;&5N86UE("`@
+M/2!B87-E;F%M92`D<&%R86UE=&5R<U]R968M/GLG9FEL96YA;64G?3L-"B`@
+M("!M>2`D=F5R<VEO;B`@("`]("1P87)A;65T97)S7W)E9BT^>R=V97)S:6]N
+M)WT[#0H@("`@;7D@)&-L87-S7VYA;64@/2`D<&%R86UE=&5R<U]R968M/GLG
+M8VQA<W-?;F%M92=].PT*("`@(&UY($!F:65L9',@("`@(#T@0'L@)'!A<F%M
+M971E<G-?<F5F+3Y[)V9I96QD<R=]('T[#0H-"B`@("!M>2`D<&]D7V=E;F5R
+M871O<E]F;W)?9FEE;&1?='EP95]R968@/2![#0H@("`@("`@("=A<G)A>2<@
+M(#T^(%PF9V5N97)A=&5?9FEE;&1?<&]D7V9O<E]A<G)A>2P-"B`@("`@("`@
+M)W-C86QA<B<@/3X@7"9G96YE<F%T95]F:65L9%]P;V1?9F]R7W-C86QA<BP-
+M"B`@("!].PT*#0H@("`@;7D@)&-O9&5G96X@/3P\(D-/1$5'14XB.PT*#0II
+M9B@A8V%L;&5R*2![#0H@("`@=7-E(%1E<W0Z.DUO<F4[#0H@("`@;VLH,2D[
+M#0H@("`@9&]N95]T97-T:6YG.PT*?0T*#0HQ.PT*#0HC7U]%3D1?7PT*#0HC
+M/6AE860Q($Y!344-"@T*)'MC;&%S<U]N86UE?2`M(%!L86EN($]L9"!097)L
+M($1A=&$@4F5C;W)D#0H-"B,]:&5A9#$@5D524TE/3@T*#0I4:&ES(&1O8W5M
+M96YT871I;VX@<F5F97)S('1O("1[8VQA<W-?;F%M97T@=F5R<VEO;B`D>W9E
+M<G-I;VY]+@T*#0HC/6AE860Q(%-93D]04TE3#0H-"B`@("!U<V4@)'MC;&%S
+M<U]N86UE?3L-"@T*("`@(&UY(%PD<F5C;W)D(#T@)'MC;&%S<U]N86UE?2T^
+M;F5W*"D[#0H-"B,]:&5A9#$@1$530U))4%1)3TX-"@T*5&AI<R!M;V1U;&4@
+M:6UP;&5M96YT<R!A('!L86EN(&]L9"!D871A(')E8V]R9"X-"@T*(SUH96%D
+M,2!354)23U5424Y%4R]-151(3T13#0H-"B,];W9E<B`U#0H-"D![6R!M87`@
+M>R`D<&]D7V=E;F5R871O<E]F;W)?9FEE;&1?='EP95]R968M/GLD7RT^>R=T
+M>7!E)WU]+3XH)%\I('T@0&9I96QD<R!=?0T*#0HC/6)A8VL-"@T*(SUH96%D
+M,2!$24%'3D]35$E#4PT*#0IN;VYE#0H-"B,]:&5A9#$@0T].1DE'55)!5$E/
+M3B!!3D0@14Y625)/3DU%3E0-"@T*;F]N90T*#0HC/6AE860Q($1%4$5.1$5.
+M0T53#0H-"FYO;F4-"@T*(SUH96%D,2!)3D-/35!!5$E"24Q)5$E%4PT*#0IN
+M;VYE#0H-"B,]:&5A9#$@0E5'4R!!3D0@3$E-251!5$E/3E,-"@T*;F]N90T*
+M#0HC/6AE860Q(%-%12!!3%-/#0H-"@T*(SUH96%D,2!!551(3U(-"@T*1G)E
+M9&5R:6,@2D%21$].(#QF<F5D97)I8RYJ87)D;VY<0&=M86EL+F-O;3X-"@T*
+M(SUH96%D,2!#3U!94DE'2%0@04Y$($Q)0T5.4T4-"@T*0V]P>7)I9VAT("A#
+M*2`R,#(P(&)Y($9R961E<FEC($I!4D1/3B`\9G)E9&5R:6,N:F%R9&]N7$!G
+M;6%I;"YC;VT^#0H-"E1H:7,@<')O9W)A;2!I<R!F<F5E('-O9G1W87)E.R!Y
+M;W4@8V%N(')E9&ES=')I8G5T92!I="!A;F0O;W(@;6]D:69Y#0II="!U;F1E
+M<B!T:&4@1U!,(&QI8V5N<V4N#0H-"B,]8W5T#0H-"D-/1$5'14X-"B`@("!R
+M971U<FX@)&-O9&5G96X[#0I]#0H-"@T*(SUI=&5M(&=E=%]O<'1I;VYS*'L@
+M87)G=B`]/B!<0$%21U8L(&5N=B`]/B!<)65N=B!]*0T*(PT*(U)E='5R;G,@
+M82!(05-((')E9F5R96YC92!W:&]S92!K97ES(&%R92!T:&4@<&%R<V5D(&]P
+M=&EO;G,N#0HC#0HC+2!I;G!U="P@=&AE(&EN<'5T(&9I;&5N86UE#0HC+2!O
+M=71P=70L('1H92!O=71P=70@9FEL96YA;64-"B,-"B,]8W5T#0IS=6(@9V5T
+M7V]P=&EO;G,@>PT*("`@(&UY("@D<&%R86UE=&5R<U]R968I(#T@0%\[#0H@
+M("`@;7D@)&%R9W8@/2`D<&%R86UE=&5R<U]R968M/GLG87)G=B=].PT*("`@
+M(&UY("@D;W!T7VAE;'`L("1O<'1?8RP@)&]P=%]O+"D[#0H-"B`@("!'971/
+M<'1I;VYS1G)O;4%R<F%Y*"1A<F=V+`T*("`@("`@("`G:'QH96QP)R`]/B!<
+M)&]P=%]H96QP+`T*("`@("`@("`G8SUS)R`@("`]/B!<)&]P=%]C+`T*("`@
+M("`@("`G;SUS)R`@("`]/B!<)&]P=%]O+`T*("`@("D@;W(@8W)O86L@(D5R
+M<F]R('=H:6QE('!A<G-I;F<@8V]M;6%N9"UL:6YE(&%R9W5M96YT<R([#0H-
+M"B`@("`C($AA;F1L92!H96QP(&]P=&EO;@T*("`@('!O9#)U<V%G92@M97AI
+M='9A;"`]/B`P*2!I9B`H)&]P=%]H96QP*3L-"@T*("`@("1O<'1?8R`O+ST@
+M)RTG.PT*("`@("1O<'1?;R`O+ST@)RTG.PT*#0H@("`@:68H0'LD87)G=GTI
+M('L-"B`@("`@("`@<')I;G0@4U1$15)2(")%>'1R82!A<F=U;65N=',@;VX@
+M8V]M;6%N9"!L:6YE7&XB.PT*("`@("`@("!P;V0R=7-A9V4H+65X:71V86P@
+M/3X@,2D[#0H@("`@?0T*#0H@("`@;7D@)&]P=',@/2![#0H@("`@("`@("=I
+M;G!U="<@(#T^("1O<'1?8RP-"B`@("`@("`@)V]U='!U="<@/3X@)&]P=%]O
+M+`T*("`@('T[#0H@("`@<F5T=7)N("1O<'1S.PT*?0T*#0HC/6ET96T@<F5A
+M9%]I;G!U=%]F:6QE*'MF:6QE;F%M92`]/B`D9FEL96YA;65]*0T*(PT*(U)E
+M='5R;G,@82!(05-((')E9F5R96YC92!W:&]S92!K97ES(&%R93H-"B,-"B,M
+M(&-L87-S7VYA;64Z('1H92!C;&%S<R!N86UE(&1E9FEN960@:6X@=&AE(&EN
+M<'5T(&9I;&4-"B,M('9E<G-I;VXZ("`@('1H92!V97)S:6]N(&1E9FEN960@
+M:6X@=&AE(&EN<'5T(&9I;&4-"B,M(&9I96QD<SH@("`@(&%N($%24D%9(')E
+M9F5R96YC92!C;VYT86EN:6YG(&9I96QD(&1E<V-R:7!T:6]N<PT*(PT*(T5A
+M8V@@9FEE;&0@9&5S8W)I<'1I;VX@:7,@82!(05-((')E9F5R96YC92!W:&]S
+M92!K97ES(&%R93H-"B,-"B,M(&YA;64Z("`@("`@=&AE(&YA;64@;V8@=&AE
+M(&9I96QD(&%S(&1E9FEN960@:6X@=&AE(&EN<'5T(&9I;&4-"B,M('!L7VYA
+M;64Z("`@=&AE(&YA;64@;V8@=&AE(&9I96QD(&-O;G9E<G1E9"!T;R!A('-U
+M:71A8FQE('!E<FP@:61E;G1I9FEE<@T*(RT@='EP93H@("`@("!O;F4@;V8Z
+M(&%R<F%Y+"!H87-H+"!S8V%L87(-"B,M(&ET96U?='EP93H@=&AE('1Y<&4@
+M;V8@:71E;7,@<W1O<F5D(&EN('1H92!A<G)A>2!I9B!T:&4@9FEE;&0@:7,@
+M86X@87)R87D-"B,M('9A;'5E.B`@("`@=&AE(&EN:71I86P@=F%L=64@;V8@
+M=&AE(&9I96QD#0HC#0HC/6-U=`T*<W5B(')E861?:6YP=71?9FEL92![#0H@
+M("`@;7D@*"1P87)A;65T97)S7W)E9BD@/2!`7SL-"@T*("`@(&UY("1F:6QE
+M;F%M92`]("1P87)A;65T97)S7W)E9BT^>R=F:6QE;F%M92=].PT*("`@(&-R
+M;V%K(")-:7-S:6YG('!A<F%M971E<B`G9FEL96YA;64G(B!I9B@A9&5F:6YE
+M9"@D9FEL96YA;64I*3L-"@T*("`@(&UY("@D8VQA<W-?;F%M92P@)'9E<G-I
+M;VXI.PT*("`@(&UY($!F:65L9',@/2`H*3L-"@T*("`@(&UY("1I;E]F:"`]
+M(%PJ4U1$24X[#0H@("`@:68H)&9I;&5N86UE(&YE("<M)RD@>PT*("`@("`@
+M("!O<&5N*&UY("1I;BP@)SPG+"`D9FEL96YA;64I#0H@("`@("`@("`@("!O
+M<B!C<F]A:R@B56YA8FQE('1O(&]P96XZ("<D9FEL96YA;64G(&9O<B!R96%D
+M:6YG(BD[#0H@("`@("`@("1I;E]F:"`]("1I;CL-"B`@("!]#0H@("`@=VAI
+M;&4H;7D@)&QI;F4@/2`\)&EN7V9H/BD@>PT*("`@("`@("`C(%)E;6]V92!L
+M96%D:6YG(&%N9"!T<F%I;&EN9R!S<&%C97,-"B`@("`@("`@8VAO;7`@)&QI
+M;F4[#0H@("`@("`@("1L:6YE(#U^(',O7EQS*R\O9SL-"@T*("`@("`@("`C
+M(%)E;6]V92!C;VUM96YT<R!A;F0@8FQA;FL@;&EN97,-"B`@("`@("`@;F5X
+M="!I9B@G)R!E<2`D;&EN92!O<B`D;&EN92`]?B!M+UXC+RD[#0H-"B`@("`@
+M("`@(R!(86YD;&4@=&AE("<Z8VQA<W,M;F%M93HG(&%T=')I8G5T90T*("`@
+M("`@("!I9B@D;&EN92`]?B!M+UXZ8VQA<W,M;F%M93I<<RHH6V$M>D$M6C`M
+M.5\Z72LI)"\I('L-"B`@("`@("`@("`@("1C;&%S<U]N86UE(#T@)#$[#0H@
+M("`@("`@("`@("!N97AT.PT*("`@("`@("!]#0H-"B`@("`@("`@(R!(86YD
+M;&4@=&AE("<Z=F5R<VEO;CHG(&%T=')I8G5T90T*("`@("`@("!I9B@D;&EN
+M92`]?B!M+UXZ=F5R<VEO;CI<<RHH6V$M>D$M6C`M.5\N+5TK*20O*2![#0H@
+M("`@("`@("`@("`D=F5R<VEO;B`]("0Q.PT*("`@("`@("`@("`@;F5X=#L-
+M"B`@("`@("`@?0T*#0H@("`@("`@(",@2&%N9&QE(&9I96QD#0H@("`@("`@
+M(&UY("1F:65L9%]L:6YE(#T@)&QI;F4[#0H@("`@("`@(&EF*"1F:65L9%]L
+M:6YE(#U^(',O7BA<4RLI7',K+R]G*2![#0H@("`@("`@("`@("!M>2`D9FEE
+M;&0@/2![("=N86UE)R`]/B`D,2!].PT*("`@("`@("`@("`@:68H)&9I96QD
+M7VQI;F4@/7X@<R]<<RLH6V$M>D$M6C`M.5\Z72LI)"\O9RD@>PT*("`@("`@
+M("`@("`@("`@("1F:65L9"T^>R`G:71E;5]T>7!E)R!](#T@)#$[#0H@("`@
+M("`@("`@("!]#0H-"B`@("`@("`@("`@("1F:65L9"T^>R`G=F%L=64G('T@
+M/2`D9FEE;&1?;&EN93L-"B`@("`@("`@("`@(&EF*"1F:65L9"T^>R`G=F%L
+M=64G('T@;F4@)R<I('L-"B`@("`@("`@("`@("`@("`D9FEE;&0M/GL@)W1Y
+M<&4G('T@("`]("=A<G)A>2<@:68H)&9I96QD+3Y[)W9A;'5E)WT@/7X@;2]>
+M7%LO*3L-"B`@("`@("`@("`@("`@("`D9FEE;&0M/GL@)W1Y<&4G('T@+R\]
+M("=S8V%L87(G.PT*("`@("`@("`@("`@("`@('!U<V@H0&9I96QD<RP@)&9I
+M96QD*3L-"B`@("`@("`@("`@("`@("!N97AT.PT*("`@("`@("`@("`@?0T*
+M#0H@("`@("`@("`@("!P<FEN="!35$1%4E(@(E5N:VYO=VX@9FEE;&0@9&5F
+M:6YI=&EO;CH@)R1L:6YE)UQN(CL-"B`@("`@("`@?0T*#0H@("`@("`@(",@
+M17)R;VYE;W5S(&QI;F4-"B`@("`@("`@<')I;G0@4U1$15)2(")5;FMN;W=N
+M(&QI;F4@9F]R;6%T.B`G)&QI;F4G7&XB.PT*("`@('T-"B`@("!C;&]S92@D
+M:6Y?9F@I#0H@("`@("`@(&EF*"1F:6QE;F%M92!N92`G+2<I.PT*#0H@("`@
+M9F]R96%C:"!M>2`D9FEE;&0@*$!F:65L9',I('L-"B`@("`@("`@;7D@)'!L
+M7VYA;64@/2`D9FEE;&0M/GLG;F%M92=].PT*("`@("`@("`D<&Q?;F%M92`]
+M?B!S+UM>7'=<9%TO7R]G.PT*("`@("`@("`D9FEE;&0M/GLG<&Q?;F%M92=]
+M(#T@)'!L7VYA;64[#0H@("`@?0T*#0H@("`@;7D@)'-P96-?<F5F(#T@>PT*
+M("`@("`@("`G8VQA<W-?;F%M92<@/3X@)&-L87-S7VYA;64@+R\@)U!L86EN
+M.CI/;&0Z.D1A=&$G+`T*("`@("`@("`G=F5R<VEO;B<@("`@/3X@)'9E<G-I
+M;VX@("`@+R\@)S`N,#$G+`T*("`@("`@("`G9FEE;&1S)R`@("`@/3X@7$!F
+M:65L9',L#0H@("`@?3L-"B`@("!R971U<FX@)'-P96-?<F5F.PT*?0T*#0HC
+M/6ET96T@9V5N97)A=&5?;W5T<'5T*'MF:6QE;F%M92`]/B`D9FEL96YA;64L
+M(&-L87-S7VYA;64@/3X@)RXN+B<L(&9I96QD<R`]/B!;+BXN77TI#0HC#0HC
+M1V5N97)A=&4@=&AE(&]U='!U="!F:6QE('=H;W-E(&9I96QD<R!A<F4@9&5S
+M8W)I8F5D(&)Y($D\9FEE;&1S/BX-"B,-"B,]8W5T#0IS=6(@9V5N97)A=&5?
+M;W5T<'5T('L-"B`@("!M>2`H)'!A<F%M971E<G-?<F5F*2`]($!?.PT*("`@
+M(&UY("1C;&%S<U]N86UE(#T@)'!A<F%M971E<G-?<F5F+3Y[)V-L87-S7VYA
+M;64G?3L-"B`@("!M>2`D9FEE;&1S7W)E9B`]("1P87)A;65T97)S7W)E9BT^
+M>R=F:65L9',G?3L-"B`@("!M>2`D9FEL96YA;64@("`]("1P87)A;65T97)S
+M7W)E9BT^>R=F:6QE;F%M92=].PT*("`@(&-R;V%K(")-:7-S:6YG('!A<F%M
+M971E<B`G8VQA<W-?;F%M92<B(&EF*"%D969I;F5D*"1C;&%S<U]N86UE*2D[
+M#0H@("`@8W)O86L@(DUI<W-I;F<@<&%R86UE=&5R("=F:65L9',G(B`@("`@
+M:68H(61E9FEN960H)&9I96QD<U]R968I*3L-"B`@("!C<F]A:R`B36ES<VEN
+M9R!P87)A;65T97(@)V9I;&5N86UE)R(@("!I9B@A9&5F:6YE9"@D9FEL96YA
+M;64I*3L-"B`@("!M>2!`9FEE;&1S(#T@0'L@)&9I96QD<U]R968@?3L-"@T*
+M("`@(&UY("1M971H;V1?9V5N97)A=&]R<R`]('L-"B`@("`@("`@)V%R<F%Y
+M)R`@/3X@7"9G96YE<F%T95]F:65L9%]M971H;V1S7V9O<E]A<G)A>2P-"B`@
+M("`@("`@)W-C86QA<B<@/3X@7"9G96YE<F%T95]F:65L9%]M971H;V1S7V9O
+M<E]S8V%L87(L#0H@("`@?3L-"@T*("`@(&UY("1C;V1E9V5N(#T\/")#3T1%
+M1T5.(CL-"B1[7"@@9V5N97)A=&5?:&5A9&5R*"1P87)A;65T97)S7W)E9BD@
+M*7T-"D![6R!M87`@>R`D;65T:&]D7V=E;F5R871O<G,M/GLD7RT^>R=T>7!E
+M)WU]+3XH)%\I('T@0&9I96QD<R!=?0T*)'M<*"!G96YE<F%T95]F;V]T97(H
+M)'!A<F%M971E<G-?<F5F*2`I?0T*0T]$14=%3@T*#0H@("`@(R!4<F%N<V9O
+M<FT@=&AE(&5S8V%P960@<&]D(&%N9"!?7T5.1%]?(&UA8W)O<PT*("`@("1C
+M;V1E9V5N(#U^(',O7B,]+STO;6<[#0H@("`@)&-O9&5G96X@/7X@<R]>(U]?
+M14Y$7U\O7U]%3D1?7R]M9SL-"B`@("`C(%1R:6T@=VAI=&5S<&%C97,@870@
+M96YD(&]F(&QI;F4-"B`@("`D8V]D96=E;B`]?B!S+UQS*R0O7&XO;6<[#0H-
+M"B`@("!M>2`D;W5T7V9H(#T@7"I35$1/550[#0H@("`@:68H)&9I;&5N86UE
+M(&YE("<M)RD@>PT*("`@("`@("!O<&5N*&UY("1O=70L("<^)RP@)&9I;&5N
+M86UE*0T*("`@("`@("`@("`@;W(@8W)O86LH(E5N86)L92!T;R!O<&5N.B`G
+M)&9I;&5N86UE)R!F;W(@=W)I=&EN9R(I.PT*("`@("`@("`D;W5T7V9H(#T@
+M)&]U=#L-"B`@("!]#0H@("`@>PT*("`@("`@("!M>2`D<V%V97(@/2!396QE
+M8W13879E<BT^;F5W*"1O=71?9F@I.PT*("`@("`@("!P<FEN="`D8V]D96=E
+M;CL-"B`@("!]#0H@("`@8VQO<V4H)&]U=%]F:"D-"B`@("`@("`@:68H)&9I
+M;&5N86UE(&YE("<M)RD[#0H-"B`@("!R971U<FX[#0I]#0H-"G-U8B!M86EN
+M('L-"B`@("!M>2`D;W!T<R`](&=E=%]O<'1I;VYS*'MA<F=V(#T^(%Q`05)'
+M5BP@96YV(#T^(%PE14Y6?2D[#0H@("`@;7D@)'-P96,@/2!R96%D7VEN<'5T
+M7V9I;&4H>V9I;&5N86UE(#T^("1O<'1S+3Y[)VEN<'5T)WU]*3L-"B`@("!G
+M96YE<F%T95]O=71P=70H>R=F:6QE;F%M92<@/3X@)&]P=',M/GLG;W5T<'5T
+M)WTL("5[)'-P96-]?2D[#0I]#0H-"E]?14Y$7U\-"CUH96%D,2!.04U%#0H-
+M"G!L9V5N("T@0V]D92!&;W)M871T97(@=&]O;`T*#0H]:&5A9#$@4UE.3U!3
+M25,-"@T*0CQP;&=E;CX@0CPM:#Y\0CPM+6AE;'`^#0H-"D(\<&QG96X^(%M"
+M/$]05$E/3E,^72`M8R!"/$9)3$4^#0H-"CUH96%D,2!$15-#4DE05$E/3@T*
+M#0I4:&ES('1O;VP@9F]R;6%T('1A8G5L87(@9&%T82!I;G1O(&9I>&5D('-I
+M>F4@8V]L=6UN<RX-"@T*/6AE860Q($]05$E/3E,-"@T*/6]V97(-"@T*/6ET
+M96T@0CPM:#Y\0CPM+6AE;'`^#0H-"E!R:6YT('1H92!U<V%G92P@:&5L<"!A
+M;F0@=F5R<VEO;B!I;F9O<FUA=&EO;B!F;W(@=&AI<R!P<F]G<F%M(&%N9"!E
+M>&ET+@T*#0H]:71E;2!"/"UC/B!)/$9)3$4^#0H-"E-E=',@=&AE(&EN<'5T
+M(&9I;&4@=&\@8V]M<&EL92X-"@T*/6ET96T@0CPM;SX@23Q/5510550^#0H-
+M"E-E=',@=&AE(&]U='!U="!F:6QE('1O(&=E;F5R871E+@T*#0H]8F%C:PT*
+M#0H]:&5A9#$@24Y0550@1DE,12!&3U)-050-"@T*5&AE(&EN<'5T(&9I;&4@
+M9&5S8W)I8F4@82!S:6UP;&4@9&%T82!R96-O<F0N(%1H92!F:6QE(&9O<FUA
+M="!I<R!L:6YE(&]R:65N=&5D#0IA;F0@<VAO=6QD('-T87)T('=I=&@@82!H
+M96%D97(Z#0H-"B`@("`Z8VQA<W,M;F%M93H@5&AE.CI#;&%S<SHZ3F%M90T*
+M("`@(#IV97)S:6]N.B`P+C`N,F$-"B`@("`C(%-O;64@8V]M;65N=`T*("`@
+M(",-"B`@("`C($9I96QD("`@("`@($1E9F%U;'0M5F%L=64@("!)=&5M+51Y
+M<&5?;W!T#0H@("`@9FEE;&0M;F%M92TQ("`G)PT*("`@(&9I96QD+6YA;64M
+M,B`@6UT@("`@("`@("`@("`@($ET96TZ.E1Y<&4-"B`@("!F:65L9"UN86UE
+M+3,@(#`-"@T*5&AE(&9O;&QO=VEN9R!M971H;V1S(&%R92!C<F5A=&5D(&9O
+M<B!S8V%L87(@9FEE;&1S.@T*#0H];W9E<B`U#0H-"CUI=&5M(&=E=%]F:65L
+M9%]N86UE*"D-"@T*1V5T<R!T:&4@<V-A;&%R('9A;'5E(&]F('1H92!F:65L
+M9"X-"@T*/6ET96T@<V5T7V9I96QD7VYA;64H23PD;F5W7W9A;'5E/BD-"@T*
+M4V5T<R!T:&4@<V-A;&%R('9A;'5E(&]F('1H92!N97<@9FEE;&0N#0H-"CUB
+M86-K#0H-"D9O<B!A<G)A>2!F:65L9',L('1H92!F;VQL;W=I;F<@;65T:&]D
+M<R!A<F4@8W)E871E9#H-"@T*/6]V97(@-0T*#0H]:71E;2!C;W5N=%]F:65L
+M9%]N86UE*"D-"@T*4F5T=7)N<R!T:&4@8V]U;G0@;V8@96QE;65N=',@:6X@
+M=&AE(&%R<F%Y+@T*#0H]:71E;2!G971?9FEE;&1?;F%M92@I#0H-"E=H:6-H
+M(')E='5R;G,@82!L:7-T+@T*#0H]:71E;2!S971?9FEE;&1?;F%M92A)/$!N
+M97=?=F%L=65S/BD-"@T*5VAI8V@@8V]P:65S('1H92!I=&5M<R!I;B!T:&4@
+M:6YT97)N86P@87)R87DN#0H-"CUI=&5M('!U<VA?9FEE;&1?;F%M92A)/$!N
+M97=?=F%L=65S/BD-"@T*5VAI8V@@87!P96YD(&ET96US('1O('1H92!I;G1E
+M<FYA;"!A<G)A>2X-"@T*/6ET96T@8VQE87)?9FEE;&1?;F%M92@I#0H-"E=H
+M:6-H(&-L96%R<R!T:&4@:6YT97)N86P@87)R87DN#0H-"CUI=&5M(&%P<&QY
+M7V9I96QD7VYA;64H23QS=6(@>RXN+GT^*0T*#0I7:&EC:"!A<'!L:65S('1H
+M92!S=6(@;VX@=&AE(&%R<F%Y)W,@:71E;7,N#0H-"CUB86-K#0H-"@T*/6AE
+M860Q($1)04=.3U-424-3#0H-"CUH96%D,2!#3TY&24=54D%424].($%.1"!%
+M3E9)4D].345.5`T*#0H]:&5A9#$@1$5014Y$14Y#2453#0H-"CUH96%D,2!)
+M3D-/35!!5$E"24Q)5$E%4PT*#0H]:&5A9#$@0E5'4R!!3D0@3$E-251!5$E/
+M3E,-"@T*/6AE860Q(%-%12!!3%-/#0H-"CUH96%D,2!!551(3U(-"@T*1G)E
+M9&5R:6,@2D%21$].(#QF<F5D97)I8RYJ87)D;VY`9VUA:6PN8V]M/@T*#0H]
+M:&5A9#$@0T]065))1TA4($%.1"!,24-%3E-%#0H-"D-O<'ER:6=H="`H0RD@
+M,C`Q.2!B>2!&<F5D97)I8R!*05)$3TX@/&9R961E<FEC+FIA<F1O;D!G;6%I
+M;"YC;VT^#0H-"E1H:7,@<')O9W)A;2!I<R!F<F5E('-O9G1W87)E.R!Y;W4@
+M8V%N(')E9&ES=')I8G5T92!I="!A;F0O;W(@;6]D:69Y#0II="!U;F1E<B!T
+;:&4@1U!,(&QI8V5N<V4N#0H-"CUC=70-"@T*
+`
+end
+SHAR_EOF
+  (set 20 25 12 23 17 07 12 'scripts/plgen'
+   eval "${shar_touch}") && \
+  chmod 0755 'scripts/plgen'
+if test $? -ne 0
+then ${echo} "restore of scripts/plgen failed"
+fi
+  if ${md5check}
+  then (
+       ${MD5SUM} -c >/dev/null 2>&1 || ${echo} 'scripts/plgen': 'MD5 check failed'
+       ) << \SHAR_EOF
+6df5125bfd647a16d2df221ba3ec6f7e  scripts/plgen
+SHAR_EOF
+
+else
+test `LC_ALL=C wc -c < 'scripts/plgen'` -ne 17577 && \
+  ${echo} "restoration warning:  size of 'scripts/plgen' is not 17577"
+  fi
+fi
+# ============= scripts/ffmpeg-helper ==============
+if test -n "${keep_file}" && test -f 'scripts/ffmpeg-helper'
+then
+${echo} "x - SKIPPING scripts/ffmpeg-helper (file already exists)"
+
+else
+${echo} "x - extracting scripts/ffmpeg-helper (text)"
+  sed 's/^X//' << 'SHAR_EOF' | uudecode &&
+begin 600 scripts/ffmpeg-helper
+M(R$O=7-R+V)I;B]E;G8@<&5R;`T*#0IU<V4@-2XP,#@P,#`[#0IU<V4@<W1R
+M:6-T.PT*=7-E('=A<FYI;F=S("=A;&PG.PT*#0IU<V4@0V%R<#L-"G5S92!#
+M=V0[#0IU<V4@1FEL93HZ0F%S96YA;64[#0IU<V4@1FEL93HZ5&5M<#L-"G5S
+M92!'971O<'0Z.DQO;F<@<7<H1V5T3W!T:6]N<T9R;VU!<G)A>2`Z8V]N9FEG
+M(&YO7VEG;F]R95]C87-E*3L-"G5S92!0;V0Z.E5S86=E.PT*=7-E(%!/4TE8
+M('%W*'5N86UE*3L-"@T*#0HC(%!A<G-E(&]P=&EO;G,-"FUY("@D;W!T7VAE
+M;'`L("1O<'1?="P@)&]P=%]O*3L-"D=E=$]P=&EO;G-&<F]M07)R87DH#0H@
+M("`@7$!!4D=6+`T*("`@("=H96QP?&@G("`@("`@(#T^(%PD;W!T7VAE;'`L
+M#0H@("`@)W1\9'5R871I;VX]<R<@/3X@7"1O<'1?="P-"B`@("`G;WQO=71P
+M=70]<R<@("`]/B!<)&]P=%]O+`T**2!O<B!C<F]A:R@G17)R;W(@<&%R<VEN
+M9R!C;VUM86YD(&QI;F4@87)G=6UE;G1S)RD[#0H-"B,@2&%N9&QE(&AE;'`@
+M;W!T:6]N#0IP;V0R=7-A9V4H+65X:71V86P@/3X@,"D@:68@*"1O<'1?:&5L
+M<"D[#0H-"FEF*"%D969I;F5D*"1O<'1?;RD@?'P@)&]P=%]O(&5Q("<G*2![
+M#0H@("`@<')I;G0@4U1$15)2(")/<'1I;VX@)RUO)R!O<B`G+2UO=71P=70G
+M(&ES(&UA;F1A=&]R>5QN(CL-"B`@("!P;V0R=7-A9V4H+65X:71V86P@/3X@
+M,2D[#0I]#0H-"B,@1&5F875L="!O<'1I;VX@=F%L=65S#0HD;W!T7W0@+R\]
+M(#,P.PT*#0HC($=E="!T:&4@<F5C;W)D960@=VEN9&]W('!A<F%M971E<G,-
+M"FUY("1X=VEN7VEN9F\@/2!@>'=I;FEN9F]@.PT*8W)O86LH)T5R<F]R(&=E
+M='1I;F<@6"U7:6YD;W<@:6YF;W)M871I;VXG*2!I9B@D/RD[#0H-"FUY("@D
+M=&ET;&4L("1X+"`D>2P@)'=I9'1H+"`D:&5I9VAT*3L-"B1X=VEN7VEN9F\@
+M/7X@;2]7:6YD;W<@:60Z7',K7'<K7',K(BA;7B)=*RDB+V<[#0HD=&ET;&4@
+M/2`D,3L-"B1X=VEN7VEN9F\@/7X@;2]!8G-O;'5T92!U<'!E<BUL969T(%@Z
+M7',J*%QD*RDO9SL-"B1X(#T@)#$[#0HD>'=I;E]I;F9O(#U^(&TO06)S;VQU
+M=&4@=7!P97(M;&5F="!9.EQS*BA<9"LI+V<[#0HD>2`]("0Q.PT*)'AW:6Y?
+M:6YF;R`]?B!M+U=I9'1H.EQS*BA<9"LI+V<[#0HD=VED=&@@/2`D,3L-"B1X
+M=VEN7VEN9F\@/7X@;2](96EG:'0Z7',J*%QD*RDO9SL-"B1H96EG:'0@/2`D
+M,3L-"@T*;7D@)'1M<"`]($9I;&4Z.E1E;7`M/FYE=RA3549&25@@/3X@)RYM
+M:W8G*3L-"F-L;W-E*"1T;7`I.PT*;7D@)&UK=B`]("(D=&UP(CL-"@T*;7D@
+M*"1S>7-N86UE*2`]('5N86UE.PT*:68H)'-Y<VYA;64@/7X@;2]#64=724XO
+M*2![#0H@("`@;7D@0&%R9W,@/2`H(F9F;7!E9R(I.PT*("`@('!U<V@H0&%R
+M9W,L("<M=FED96]?<VEZ92<L("1W:61T:"XG>"<N)&AE:6=H="D[#0H@("`@
+M<'5S:"A`87)G<RP@)RUF<F%M97)A=&4G+"`G,C4G*3L-"B`@("!P=7-H*$!A
+M<F=S+"`G+68G+"`G9V1I9W)A8B<I.PT*("`@('!U<V@H0&%R9W,L("<M:2<L
+M("=T:71L93TG+B1T:71L92D[#0H@("`@<'5S:"A`87)G<RP@)RUC.G8G+"`G
+M;&EB>#(V-"<L("<M8W)F)RP@)S`G+"`G+7!R97-E="<L("=U;'1R869A<W0G
+M*3L-"B`@("!P=7-H*$!A<F=S+"`D;6MV*3L-"B`@("!M>2`D8VUD7V-L:2`]
+M("(G(BYJ;VEN*"(G("<B+"!`87)G<RDN(B<B.PT*("`@('!R:6YT(")S>7-T
+M96T@)&-M9%]C;&E<;B([#0H@("`@<WES=&5M($!A<F=S(#T](#`-"B`@("`@
+M("`@;W(@9&EE*")5;F%B;&4@=&\@97AE8W5T92!C;VUM86YD.B`D8VUD7V-L
+M:2(I.PT*?2!E;'-E('L-"B`@("!M>2!`87)G<R`]("@B9F9M<&5G(BD[#0H@
+M("`@<'5S:"A`87)G<RP@)RUV:61E;U]S:7IE)RP@)'=I9'1H+B=X)RXD:&5I
+M9VAT*3L-"B`@("!P=7-H*$!A<F=S+"`G+69R86UE<F%T92<L("<R-2<I.PT*
+M("`@('!U<V@H0&%R9W,L("<M9B<L("=X,3%G<F%B)RD[#0H@("`@<'5S:"A`
+M87)G<RP@)RUI)RP@)SHP+C`K)RXD>"XG+"<N)'DI.PT*("`@('!U<V@H0&%R
+M9W,L("<M8SIV)RP@)VQI8G@R-C0G+"`G+6-R9B<L("<P)RP@)RUP<F5S970G
+M+"`G=6QT<F%F87-T)RD[#0H@("`@<'5S:"A`87)G<RP@)&UK=BD[#0H@("`@
+M;7D@)&-M9%]C;&D@/2`B)R(N:F]I;B@B)R`G(BP@0&%R9W,I+B(G(CL-"B`@
+M("!P<FEN="`B<WES=&5M("1C;61?8VQI7&XB.PT*("`@('-Y<W1E;2!`87)G
+M<R`]/2`P#0H@("`@("`@(&]R(&1I92@B56YA8FQE('1O(&5X96-U=&4@8V]M
+M;6%N9#H@)&-M9%]C;&DB*3L-"GT-"@T*;7D@0&%R9W,@/2`H*3L-"G!U<V@H
+M0&%R9W,L("=F9FUP96<G*3L-"G!U<V@H0&%R9W,L("<M:2<L("1M:W8I.PT*
+M<'5S:"A`87)G<RP@)RUC.G8G+"`G;&EB=G!X+79P.2<L("<M8W)F)RP@)S`G
+M+"`G+7!R97-E="<L("=V97)Y<VQO=R<I.PT*<'5S:"A`87)G<RP@)&]P=%]O
+M*3L-"FUY("1C;61?8VQI(#T@(B<B+FIO:6XH(B<@)R(L($!A<F=S*2XB)R([
+M#0IP<FEN="`B<WES=&5M("1C;61?8VQI7&XB.PT*<WES=&5M($!A<F=S(#T]
+M(#`-"B`@("!O<B!D:64H(E5N86)L92!T;R!E>&5C=71E(&-O;6UA;F0Z("1C
+M;61?8VQI(BD[#0H-"E]?14Y$7U\-"CUH96%D,2!.04U%#0H-"F9F;7!E9RUH
+M96QP97(@+2!(96QP97(@<V-R:7!T('1O(')E8V]R9"!A;B!8+5=I;F1O=R!W
+M:71H(&9F;7!E9RUR96-O<F0-"@T*/6AE860Q(%-93D]04TE3#0H-"D(\9F9M
+M<&5G+6AE;'!E<CX@0CPM:#Y\0CPM+6AE;'`^#0H-"D(\9F9M<&5G+6AE;'!E
+M<CX@6T(\3U!424].4SY=($(\+6\^($D\1DE,13X-"@T*/6AE860Q($1%4T-2
+M25!424].#0H-"E1H:7,@=&]O;"!H96QP<R!R96-O<F0@82!S<&5C:69I8R!"
+M/%@Q,3X@=VEN9&]W('5S:6YG($(\9F9M<&5G/BX@5VAE;@T*<G5N+"!T:&4@
+M<V-R:7!T('=I;&P@87-K('1H92!U<V5R('1O('!I8VL@=&AE(&1E<VER960@
+M6"U7:6YD;W<@=7-I;F<@=&AE(&UO=7-E+@T*5&AE(')E8V]R9&EN9R!W:6QL
+M('1H96X@<W1A<G0@9F]R('1H92!S<&5C:69I960@9'5R871I;VXN#0H-"DEN
+M=&5R;F%L;'D@=&AE('-C<FEP="!U<V5S($(\>'=I;FEN9F\^('1O(&]B=&%I
+M;B!T:&4@<&]S:71I;VX@86YD('-I>F4@;V8@=&AE#0IR96-O<F1E9"!V:61E
+M;RX@5&AE<V4@<&%R86UE=&5R<R!A<F4@;F]T('5P9&%T960@=VAI;&4@=&AE
+M('9I9&5O(&ES(')E8V]R9&5D+@T*270@=&AE(')E8V]R9&5D('=I;F1O=R!I
+M<R!M;W9E9"!I="!W:6QL(&QE879E('1H92!A<F5A(&]F(')E8V]R9&EN9R!A
+M;F0@8F4-"F]N;'D@<&%R=&EA;&QY('9I<VEB;&4@:6X@=&AE(')E<W5L=&EN
+M9R!V:61E;RX-"@T*/6AE860Q($]05$E/3E,-"@T*/6]V97(-"@T*/6ET96T@
+M0CPM:#Y\0CPM+6AE;'`^#0H-"E!R:6YT('1H92!U<V%G92P@:&5L<"!A;F0@
+M=F5R<VEO;B!I;F9O<FUA=&EO;B!F;W(@=&AI<R!P<F]G<F%M(&%N9"!E>&ET
+M+@T*#0H]:71E;2!"/"UO/B!)/$9)3$4^?$(\+2UO=71P=70^/4D\1DE,13X-
+M"@T*4V5T<R!T:&4@;W5T<'5T(&9I;&4@9F]R('1H92!R96-O<F1E9"!V:61E
+M;RX-"@T*/6ET96T@0CPM=#X@23Q$55)!5$E/3CY\0CPM+61U<F%T:6]N/CU)
+M/$154D%424]./@T*#0I3971S('1H92!R96-O<F1I;F<@9'5R871I;VX@:6X@
+M<V5C;VYD<RX@1&5F875L="!I<R`S,"!S96-O;F1S+@T*#0H]8F%C:PT*#0H]
+M:&5A9#$@4T5%($%,4T\-"@T*9F9M<&5G*#$I+"!X=VEN:6YF;R@Q*0T*#0H]
+M:&5A9#$@05542$]2#0H-"D9R961E<FEC($I!4D1/3B`\9G)E9&5R:6,N:F%R
+M9&]N0&=M86EL+F-O;3X-"@T*/6AE860Q($-/4%E224=(5"!!3D0@3$E#14Y3
+M10T*#0I#;W!Y<FEG:'0@*$,I(#(P,3@@8GD@1G)E9&5R:6,@2D%21$].(#QF
+M<F5D97)I8RYJ87)D;VY`9VUA:6PN8V]M/@T*#0I4:&ES('!R;V=R86T@:7,@
+M9G)E92!S;V9T=V%R93L@>6]U(&-A;B!R961I<W1R:6)U=&4@:70@86YD+V]R
+L(&UO9&EF>0T*:70@=6YD97(@=&AE($U)5"!L:6-E;G-E+@T*#0H]8W5T#0IR
+`
+end
+SHAR_EOF
+  (set 20 25 12 23 17 07 12 'scripts/ffmpeg-helper'
+   eval "${shar_touch}") && \
+  chmod 0755 'scripts/ffmpeg-helper'
+if test $? -ne 0
+then ${echo} "restore of scripts/ffmpeg-helper failed"
+fi
+  if ${md5check}
+  then (
+       ${MD5SUM} -c >/dev/null 2>&1 || ${echo} 'scripts/ffmpeg-helper': 'MD5 check failed'
+       ) << \SHAR_EOF
+7f8f8b21d41293fca7909017384f2c37  scripts/ffmpeg-helper
+SHAR_EOF
+
+else
+test `LC_ALL=C wc -c < 'scripts/ffmpeg-helper'` -ne 3914 && \
+  ${echo} "restoration warning:  size of 'scripts/ffmpeg-helper' is not 3914"
+  fi
+fi
+# ============= scripts/hyper-v ==============
+if test -n "${keep_file}" && test -f 'scripts/hyper-v'
+then
+${echo} "x - SKIPPING scripts/hyper-v (file already exists)"
+
+else
+${echo} "x - extracting scripts/hyper-v (text)"
+  sed 's/^X//' << 'SHAR_EOF' | uudecode &&
+begin 600 scripts/hyper-v
+M(R$O=7-R+V)I;B]E;G8@<&5R;`T*#0IU<V4@-2XP,#@P,#`[#0IU<V4@<W1R
+M:6-T.PT*=7-E('=A<FYI;F=S("=A;&PG.PT*#0IU<V4@0V%R<#L-"G5S92!#
+M=V0[#0IU<V4@1FEL93HZ0F%S96YA;64[#0IU<V4@1FEL93HZ5&5M<#L-"G5S
+M92!'971O<'0Z.DQO;F<@<7<H1V5T3W!T:6]N<T9R;VU!<G)A>2`Z8V]N9FEG
+M(&YO7VEG;F]R95]C87-E*3L-"G5S92!0;V0Z.E5S86=E.PT*#0HC(%!A<G-E
+M(&]P=&EO;G,-"FUY("@D;W!T7VAE;'`L("1O<'1?<W1A<G0L("1O<'1?<W1O
+M<"D[#0IM>2`D<F5T(#T@1V5T3W!T:6]N<T9R;VU!<G)A>2@-"B`@("!<0$%2
+M1U8L#0H@("`@)VAE;'!\:"<@/3X@7"1O<'1?:&5L<"P-"B`@("`G<W1A<G0G
+M("`]/B!<)&]P=%]S=&%R="P-"B`@("`G<W1O<"<@("`]/B!<)&]P=%]S=&]P
+M+`T**3L-"G!O9#)U<V%G92@M97AI='9A;"`]/B`Q+"`M;65S<V%G92`]/B`G
+M56YK;F]W;B!O<'1I;VYS.B`G+FIO:6XH)RP@)RP@0$%21U8I*2!I9BA`05)'
+M5BD[#0IP;V0R=7-A9V4H+65X:71V86P@/3X@,2D@:68H(21R970I.PT*#0HC
+M($AA;F1L92!H96QP(&]P=&EO;@T*<&]D,G5S86=E*"UE>&ET=F%L(#T^(#`I
+M(&EF("1O<'1?:&5L<#L-"@T*(R!(86YD;&4@8F%D(&%R9W5M96YT<PT*<&]D
+M,G5S86=E*"UE>&ET=F%L(#T^(#$I#0H@("`@:68H(21O<'1?<W1A<G0@)B8@
+M(21O<'1?<W1O<"D[#0IP;V0R=7-A9V4H+65X:71V86P@/3X@,2P@+6UE<W-A
+M9V4@/3X@)RTM<W1A<G0@86YD("TM<W1O<"!A<F4@97AC;'5S:79E)RD-"B`@
+M("!I9B@D;W!T7W-T87)T("8F("1O<'1?<W1O<"D[#0H-"FUY($!C;VUM86YD
+M(#T@*"=B8V1E9&ET)RP@)R]S970G+"`G:'EP97)V:7-O<FQA=6YC:'1Y<&4G
+M*3L-"G!U<V@H0&-O;6UA;F0L("=A=71O)RD@:68@*"1O<'1?<W1A<G0I.PT*
+M<'5S:"A`8V]M;6%N9"P@)V]F9B<I("!I9B`H)&]P=%]S=&]P*3L-"@T*<WES
+M=&5M("A`8V]M;6%N9"D[#0H-"E]?14Y$7U\-"CUH96%D,2!.04U%#0H-"FAY
+M<&5R+78@+2!3=&%R=',@86YD('-T;W`@=&AE(&AY<&5R+78@=VEN9&]W<R!H
+M>7!E<G9I<V]R#0H-"CUH96%D,2!364Y/4%-)4PT*#0I"/&AY<&5R+78^($(\
+M+6@^?$(\+2UH96QP/@T*#0I"/&AY<&5R+78^("TM<W1A<G0-"@T*0CQH>7!E
+M<BUV/B`M+7-T;W`-"@T*/6AE860Q($1%4T-225!424].#0H-"E1H:7,@=&]O
+M;',@96YA8FQE<R!O<B!D:7-A8FQE<R!T:&4@:'EP97(M=B!S97)V:6-E(&]N
+M(%=I;F1O=W,@,3`N($YO=&4@=&AA="!F;W(-"G1H92!C:&%N9V4@=&\@=&%K
+M92!E9F9E8W0@;VYE(&AA<R!T;R!R96)O;W0@=&AE(&-O;7!U=&5R+@T*#0H]
+M:&5A9#$@3U!424].4PT*#0H];W9E<@T*#0H]:71E;2!"/"UH/GQ"/"TM:&5L
+M<#X-"@T*4')I;G0@=&AE('5S86=E+"!H96QP(&%N9"!V97)S:6]N(&EN9F]R
+M;6%T:6]N(&9O<B!T:&ES('!R;V=R86T@86YD(&5X:70N#0H-"CUI=&5M($(\
+M<W1A<G0^#0H-"DUA<FL@=&AE(&AY<&5R+78@<V5R=FEC92!A<R!R=6YN:6YG
+M('1H92!N97AT('1I;64@=VEN9&]W<R!S=&%R=',N#0H-"CUI=&5M($(\<W1O
+M<#X-"@T*36%R:R!T:&4@:'EP97(M=B!S97)V:6-E(&%S(&YO="!R=6YN:6YG
+M('1H92!N97AT('1I;64@=VEN9&]W<R!S=&%R=',N#0H-"CUB86-K#0H-"CUH
+M96%D,2!3144@04Q33PT*#0H-"CUH96%D,2!!551(3U(-"@T*1G)E9&5R:6,@
+M2D%21$].(#QF<F5D97)I8RYJ87)D;VY`9VUA:6PN8V]M/@T*#0H]:&5A9#$@
+M0T]065))1TA4($%.1"!,24-%3E-%#0H-"D-O<'ER:6=H="`H0RD@,C`Q."!B
+M>2!&<F5D97)I8R!*05)$3TX@/&9R961E<FEC+FIA<F1O;D!G;6%I;"YC;VT^
+M#0H-"E1H:7,@<')O9W)A;2!I<R!F<F5E('-O9G1W87)E.R!Y;W4@8V%N(')E
+M9&ES=')I8G5T92!I="!A;F0O;W(@;6]D:69Y#0II="!U;F1E<B!T:&4@34E4
+5(&QI8V5N<V4N#0H-"CUC=70-"@T*
+`
+end
+SHAR_EOF
+  (set 20 25 12 23 17 07 12 'scripts/hyper-v'
+   eval "${shar_touch}") && \
+  chmod 0755 'scripts/hyper-v'
+if test $? -ne 0
+then ${echo} "restore of scripts/hyper-v failed"
+fi
+  if ${md5check}
+  then (
+       ${MD5SUM} -c >/dev/null 2>&1 || ${echo} 'scripts/hyper-v': 'MD5 check failed'
+       ) << \SHAR_EOF
+5389ab5a6ea84126d4dd1e050bd9a006  scripts/hyper-v
+SHAR_EOF
+
+else
+test `LC_ALL=C wc -c < 'scripts/hyper-v'` -ne 1911 && \
+  ${echo} "restoration warning:  size of 'scripts/hyper-v' is not 1911"
+  fi
+fi
+# ============= scripts/msvc-shell ==============
+if test -n "${keep_file}" && test -f 'scripts/msvc-shell'
+then
+${echo} "x - SKIPPING scripts/msvc-shell (file already exists)"
+
+else
+${echo} "x - extracting scripts/msvc-shell (text)"
+  sed 's/^X//' << 'SHAR_EOF' | uudecode &&
+begin 600 scripts/msvc-shell
+M(R$O=7-R+V)I;B]E;G8@<&5R;`T*#0IU<V4@<W1R:6-T.PT*=7-E('=A<FYI
+M;F=S("=A;&PG.PT*#0IR97%U:7)E($-A<G`[#0IR97%U:7)E($-W9#L-"G)E
+M<75I<F4@1FEL93HZ0F%S96YA;64[#0IR97%U:7)E($=E=&]P=#HZ3&]N9SL-
+M"G)E<75I<F4@4W1O<F%B;&4[#0H-"G5S92!&:6QE.CI496UP.PT*#0IS=6(@
+M8V%L;%]V8W9A<G-A;&P@>PT*("`@(&UY("@D;W!T<RD@/2!`7SL-"@T*("`@
+M(",@4V%V92!C=7)R96YT(&-O;G1E>'0@=&\@<F5S=&]R92!I="!L871E<@T*
+M("`@(&UY("5S879E9%]%3E8@/2`H)45.5BD[#0H@("`@;7D@)&-W9"`]($-W
+M9#HZ9V5T8W=D.PT*#0H@("`@(R!'970@96YV:7)O;FUE;G0-"B`@("!M>2`D
+M96YV(#T@)&]P=',M/GM%3E9].PT*("`@("1E;G8@+R\](%PE14Y6.PT*#0H@
+M("`@(R!'970@<&%T:"!T;R!C;VUS<&5C#0H@("`@;7D@)&-O;7-P96-?=VEN
+M/21E;G8M/GLG0T]-4U!%0R=].PT*("`@($-A<G`Z.F-R;V%K*")5;F%B;&4@
+M=&\@9FEN9"`G0T]-4U!%0R<@:6X@=&AE(&5N=FER;VYM96YT(2(I#0H@("`@
+M("`@(&EF*"%D969I;F5D*"1C;VUS<&5C7W=I;BDI.PT*("`@(&UY("1C;VUS
+M<&5C7W!A=&@@/2!#>6=W:6XZ.G=I;E]T;U]P;W-I>%]P871H*"1C;VUS<&5C
+M7W=I;BD[#0H-"B`@("`C($=E="!P871H('1O('9C=F%R<V%L;"YB870-"B`@
+M("!M>2`D=F-V87)S86QL7V)A=%]P871H(#T@)&]P=',M/GMV8W9A<G-A;&Q?
+M8F%T7W!A=&A].PT*("`@($-A<G`Z.F-R;V%K*"(G=F-V87)S86QL7V)A=%]P
+M871H)R!P87)A;65T97(@:7,@;6%N9&%T;W)Y(BD-"B`@("`@("`@:68H(61E
+M9FEN960H)'9C=F%R<V%L;%]B871?<&%T:"DI.PT*#0H@("`@(R!'970@=F-V
+M87)S86QL+F)A="!A<F=U;65N=',-"B`@("!M>2`D=F-V87)S86QL7V%R9W,@
+M/2`D;W!T<RT^>V%R9W-].PT*("`@("1V8W9A<G-A;&Q?87)G<R`@+R\](%M=
+M.PT*#0H@("`@(R!'970@<&%T:',@=&\@<V-R:7!T<R!A;F0@8F%S:`T*("`@
+M(&UY("1B871?9&ER("`@("`@/2!&:6QE.CI"87-E;F%M93HZ9&ER;F%M92@D
+M=F-V87)S86QL7V)A=%]P871H*3L-"B`@("!M>2`D8F%T7V1I<E]W:6X@(#T@
+M0WEG=VEN.CIP;W-I>%]T;U]W:6Y?<&%T:"@D8F%T7V1I<BD[#0H@("`@;7D@
+M)&)A<VA?9&ER("`@("`])R]U<W(O8FEN)SL-"B`@("!M>2`D8F%S:%]D:7)?
+M=VEN(#T@0WEG=VEN.CIP;W-I>%]T;U]W:6Y?<&%T:"@D8F%S:%]D:7(I.PT*
+M#0H@("`@(R!0<F5P87)E(&$@=&5M<&]R87)Y(&9I;&4@=&\@<W1O<F4@96YV
+M:7)O;FUE;G0-"B`@("!M>2`D=&UP7V5N=E]H86YD;&4@("`]($9I;&4Z.E1E
+M;7`M/FYE=R@I.PT*("`@(&UY("1T;7!?96YV7V9I;&5N86UE(#T@(B1T;7!?
+M96YV7VAA;F1L92([#0H@("`@(R!#;&]S92!T:&4@=&5M<&]R87)Y(&9I;&4@
+M:&%N9&QE('1O(&%V;VED("=T97AT(&9I;&4@:7,@8G5S>2<@97)R;W)S#0H@
+M("`@8VQO<V4H)'1M<%]E;G9?:&%N9&QE*3L-"@T*("`@(",@5W)I=&4@+F)A
+M="!T;R!A('1E;7!O<F%R>2!F:6QE#0H@("`@;7D@)'1M<%]B871?:&%N9&QE
+M(#T@1FEL93HZ5&5M<"T^;F5W*%-51D9)6"`]/B`G+F)A="<I.PT*("`@(&UY
+M("1T;7!?8F%T("`@("`@("`]("(D=&UP7V)A=%]H86YD;&4B.PT*("`@(&UY
+M("1T;7!?8F%T7W=I;B`@("`]($-Y9W=I;CHZ<&]S:7A?=&]?=VEN7W!A=&@H
+M)'1M<%]B870I.PT*("`@(&UY("1T;7!?8F%T7V1I<B`@("`]($9I;&4Z.D)A
+M<V5N86UE.CID:7)N86UE*"1T;7!?8F%T*3L-"B`@("`C($-L;W-E('1H92!T
+M96UP;W)A<GD@9FEL92!H86YD;&4@=&\@879O:60@)W1E>'0@9FEL92!I<R!B
+M=7-Y)R!E<G)O<G,-"B`@("!C;&]S92@D=&UP7V)A=%]H86YD;&4I.PT*#0H@
+M("`@(R!#;VUP=71E('!A<F%M971E<G,-"B`@("!M>2`D=F-V87)S86QL7W!A
+M<F%M<R`](&IO:6XH)R`G+"!`>R1V8W9A<G-A;&Q?87)G<WTI.PT*#0H@("`@
+M;W!E;BAM>2`D9F@L("<^)RP@)'1M<%]B870I(&]R#0H@("`@("`@($-A<G`Z
+M.F-R;V%K*")5;F%B;&4@=&\@8W)E871E(&)A=&-H(&9I;&4B*3L-"B`@("!P
+M<FEN="`D9F@@/#Q"051#2#L-"EQ`14-(3R!/1D8-"D-$("(D8F%T7V1I<E]W
+M:6XB#0I#04Q,('9C=F%R<V%L;"YB870@)'9C=F%R<V%L;%]P87)A;7,-"D-$
+M("(D8F%S:%]D:7)?=VEN(@T*8F%S:"`M8R`B<&5R;"`M35-T;W)A8FQE("UE
+M("=#>6=W:6XZ.G-Y;F-?=VEN96YV*"D[)R`M92`G4W1O<F%B;&4Z.G-T;W)E
+M(%Q<)25%3E8L(%Q<7"(D=&UP7V5N=E]F:6QE;F%M95Q<7"([)R(-"D)!5$-(
+M#0H@("`@8VAM;V0@,#<U-2P@)'1M<%]B870[#0H@("`@8VAD:7(@)'1M<%]B
+M871?9&ER.PT*("`@('-Y<W1E;2`D8V]M<W!E8U]P871H+"`G+T,G+"`D=&UP
+M7V)A=%]W:6X[#0H-"B`@("`C(%)E860@;6]D:69I960@96YV:7)O;FUE;G0-
+M"B`@("!M>2`E=F-?96YV(#T@)7M3=&]R86)L93HZ<F5T<FEE=F4H)'1M<%]E
+M;G9?9FEL96YA;64I?3L-"@T*("`@(",@0VAE8VL@9F]R(&5R<F]R<PT*("`@
+M($-A<G`Z.F-R;V%K*")%<G)O<B!W:&EL92!S971U<&EN9R!60RLK(&5N=FER
+M;VYM96YT(BD-"B`@("`@("`@:68H(2!E>&ES=',H)'9C7V5N=GM64T--1%]6
+M15)]*2!\?"`D=F-?96YV>U930TU$7U9%4GT@97$@)R<I.PT*#0H@("`@(R!3
+M=&%R="!S=6)S:&5L;"!W:71H(&UO9&EF:65D(&5N=FER;VYM96YT#0H@("`@
+M)45.5B`]("5V8U]E;G8[#0H@("`@)$5.5GM64U]+251]/6IO:6XH)RTG+"`G
+M;7-V8R<L("1V8U]E;G9[5E-#341?5D52?2P@0'LD=F-V87)S86QL7V%R9W-]
+M*3L-"B`@("!S>7-T96T@)V)A<V@G+"`G+6DG.PT*#0H@("`@(R!297-T;W)E
+M('-A=F5D(&5N=FER;VYM96YT#0H@("`@8VAD:7(@)&-W9#L-"B`@("`E14Y6
+M(#T@)7-A=F5D7T5.5CL-"GT-"@T*<W5B(&=E=%]D969A=6QT7W9S7W!A=&AS
+M('L-"B`@("!M>2!`9&5F875L=%]V<U]P871H<R`]("@I.PT*("`@('!U<V@H
+M0&1E9F%U;'1?=G-?<&%T:',L("1%3E9[)U!R;V=R86U7-C0S,B=]*0T*("`@
+M("`@("!I9BAE>&ES=',H)$5.5GLG4')O9W)A;5<V-#,R)WTI*3L-"B`@("!P
+M=7-H*$!D969A=6QT7W9S7W!A=&AS+"`D14Y6>R=0<F]G<F%M1FEL97,H>#@V
+M*2=]*0T*("`@("`@("!I9BAE>&ES=',H)$5.5GLG4')O9W)A;49I;&5S*'@X
+M-BDG?2DI.PT*("`@($!D969A=6QT7W9S7W!A=&AS(#T@;6%P('L@0WEG=VEN
+M.CIW:6Y?=&]?<&]S:7A?<&%T:"@D7RD@?2!`9&5F875L=%]V<U]P871H<SL-
+M"B`@("!`9&5F875L=%]V<U]P871H<R`](&UA<"![("1?+B<O36EC<F]S;V9T
+M(%9I<W5A;"!3='5D:6\G('T@0&1E9F%U;'1?=G-?<&%T:',[#0H@("`@0&1E
+M9F%U;'1?=G-?<&%T:',@/2!M87`@>R!M>2`D>65A<CTD7SL@;6%P('L@)%\N
+M)R\G+B1Y96%R('T@0&1E9F%U;'1?=G-?<&%T:',[('T@*#$X+"`R,#(R+"`R
+M,#$Y+"`R,#$W*3L-"B`@("!`9&5F875L=%]V<U]P871H<R`](&UA<"![("1?
+M+B<O0V]M;75N:71Y)RP@)%\N)R]0<F]F97-S:6]N86PG+"`D7RXG+T5N=&5R
+M<')I<V4G('T@0&1E9F%U;'1?=G-?<&%T:',[#0H@("`@0&1E9F%U;'1?=G-?
+M<&%T:',@/2!M87`@>R`D7RXG+U9#+T%U>&EL:6%R>2]"=6EL9"]V8W9A<G-A
+M;&PN8F%T)R!]($!D969A=6QT7W9S7W!A=&AS.PT*("`@(')E='5R;B!`9&5F
+M875L=%]V<U]P871H<SL-"GT-"@T*(R!,;V%D('1H92!F=6QL('=I;F1O=W,@
+M96YV:7)O;FUE;G0-"D-Y9W=I;CHZ<WEN8U]W:6YE;G8H*3L-"@T*(R!087)S
+M92!O<'1I;VYS#0IM>2`H)&]P=%]H96QP+"`D;W!T7W`I.PT*1V5T;W!T.CI,
+M;VYG.CI#;VYF:6=U<F4H(FYO7VEG;F]R95]C87-E(BD[#0I'971O<'0Z.DQO
+M;F<Z.D=E=$]P=&EO;G-&<F]M07)R87DH#0H@("`@7$!!4D=6+`T*("`@("=H
+M96QP?&@G("`@("`@("`@("`@(#T^(%PD;W!T7VAE;'`L#0H@("`@)W!\=F-V
+M87)S86QL+7!A=&@]<R<@/3X@7"1O<'1?<"P-"BD@;W(@0V%R<#HZ8W)O86LH
+M)T5R<F]R('!A<G-I;F<@8V]M;6%N9"!L:6YE(&%R9W5M96YT<R<I.PT*#0HC
+M($AA;F1L92!H96QP(&]P=&EO;@T*:68H)&]P=%]H96QP*2![#0H@("`@<F5Q
+M=6ER92!0;V0Z.E5S86=E.PT*("`@(%!O9#HZ57-A9V4Z.G!O9#)U<V%G92@M
+M97AI='9A;"`]/B`P*3L-"GT-"@T*(R!#;&5A;B`G+7`G(&]P=&EO;@T*)&]P
+M=%]P(#T@0WEG=VEN.CIW:6Y?=&]?<&]S:7A?<&%T:"@D;W!T7W`I#0H@("`@
+M:68H9&5F:6YE9"@D;W!T7W`I*3L-"FEF*"$@9&5F:6YE9"@D;W!T7W`I*2![
+M#0H@("`@;7D@0&1E9F%U;'1?=G-?<&%T:',@/2!G971?9&5F875L=%]V<U]P
+M871H<R@I.PT*("`@(&UY($!F;W5N9%]V8W9A<G,@/2!G<F5P('L@+68@)%\@
+M?2!`9&5F875L=%]V<U]P871H<SL-"B`@("!I9BA`9F]U;F1?=F-V87)S*2![
+M#0H@("`@("`@("1O<'1?<"`]("1F;W5N9%]V8W9A<G-;,%T[#0H@("`@("`@
+M('!R:6YT(")5<VEN9R`G=F-V87)S86QL+F)A="<@9F]U;F0@:6X@<&%T:#H@
+M(BY&:6QE.CI"87-E;F%M93HZ9&ER;F%M92@D;W!T7W`I+B)<;B([#0H@("`@
+M?0T*?0T*:68H(2!D969I;F5D*"1O<'1?<"DI('L-"B`@("!P<FEN="!35$1%
+M4E(@(E5N86)L92!T;R!F:6YD(&$@<W5I=&%B;&4@<&%T:"!T;R`G=F-V87)S
+M86QL+F)A="<N(%!L96%S92!U<V4@;W!T:6]N("<M<"=<;B([#0H@("`@<F5Q
+M=6ER92!0;V0Z.E5S86=E.PT*("`@(%!O9#HZ57-A9V4Z.G!O9#)U<V%G92@M
+M97AI='9A;"`]/B`Q*3L-"GT-"FEF*"$@+68@)&]P=%]P*2![#0H@("`@<')I
+M;G0@4U1$15)2(")4:&4@<&%T:"!S<&5C:69I960@8GD@;W!T:6]N("<M<"<@
+M:7,@;F]T('9A;&ED+EQN(CL-"B`@("!R97%U:7)E(%!O9#HZ57-A9V4[#0H@
+M("`@4&]D.CI5<V%G93HZ<&]D,G5S86=E*"UE>&ET=F%L(#T^(#$I.PT*?0T*
+M#0IC86QL7W9C=F%R<V%L;"A[#0H@("`@=F-V87)S86QL7V)A=%]P871H(#T^
+M("1O<'1?<"P-"B`@("!A<F=S(#T^(%Q`05)'5BP-"GTI.PT*#0H-"E]?14Y$
+M7U\-"CUH96%D,2!.04U%#0H-"FUS=F,M<VAE;&P@+2!-4RU60RLK(&)U:6QD
+M(&5N=FER;VYM96YT('-H96QL('-P87=N97(-"@T*/6AE860Q(%-93D]04TE3
+M#0H-"D(\;7-V8RUS:&5L;#X@0CPM:#Y\0CPM+6AE;'`^#0H-"D(\;7-V8RUS
+M:&5L;#X@6T(\3U!424].4SY=($(\5D-?3U!424].4SX-"@T*/6AE860Q($1%
+M4T-225!424].#0H-"E1H:7,@=&]O;"!W<F%P<R!T:&4@0CQV8W9A<G-A;&PN
+M8F%T/B!B871C:"!S8W)I<'0@<')O=FED960@=VET:"!V:7-U86P@<W1U9&EO
+M#0IT;R!S971U<"!T:&4@8G5I;&0@96YV:7)O;FUE;G0N($-A;&QI;F<@=&AI
+M<R!S8W)I<'0@86QL;W=S('1O('-P87=N(&$@<VAE;&P-"G=I=&@@=&AE('-A
+M;64@8V]N9FEG=7)A=&EO;B!T:&%T($(\=F-V87)S86QL+F)A=#X@<V5T=7`@
+M=VAE;B!C86QL960@:6X@80T*=VEN9&]W<R!C;VYS;VQE+@T*#0I4:&4@=&]O
+M;"!A;'-O('-E='5P(&$@0CQ64U]+250^(&5N=FER;VYM96YT('9A<FEA8FQE
+M(&EN('1H92!S<&%W;F5D('-H96QL('1O#0II;F1I8V%T92!T:&4@<&%R86UE
+M=&5R<R!T:&%T('=E<F4@<&%S<V5D('1O($(\=F-V87)S86QL+F)A=#XN#0H-
+M"CUH96%D,2!/4%1)3TY3#0H-"CUO=F5R#0H-"CUI=&5M($(\+6@^?$(\+2UH
+M96QP/@T*#0I0<FEN="!T:&4@=7-A9V4L(&AE;'`@86YD('9E<G-I;VX@:6YF
+M;W)M871I;VX@9F]R('1H:7,@<')O9W)A;2!A;F0@97AI="X-"@T*/6ET96T@
+M0CPM<#X@23QP871H+W1O+W9C=F%R<V%L;"YB870^?$(\+2UV8W9A<G-A;&PM
+M<&%T:#X]23QP871H+W1O+W9C=F%R<V%L;"YB870^#0H-"E-E=',@=&AE('!A
+M=&@@=&\@=&AE($(\=F-V87)S86QL+F)A=#X@8F%T8V@@<V-R:7!T+B!"969O
+M<F4@5FES=6%L(%-T=61I;R`R,#$W#0II="!W87,@<&]S<VEB;&4@=&\@9&5D
+M=6-E('1H92!P871H('1O('1H:7,@<V-R:7!T(&9R;VT@=&AE(&5N=FER;VYM
+M96YT('9A<FEA8FQE#0IS970@870@:6YS=&%L;"!T:6UE+"!B=70@=&AI<R!I
+M<R!N;R!L;VYG97(@=&AE(&-A<V4N#0H-"CUB86-K#0H-"CUH96%D,2!60U]/
+M4%1)3TY3#0H-"E1H92!"/'9C=F%R<V%L;"YB870^('-C<FEP="!A8V-E<'1S
+M('!A<F%M971E<G,@=&\@:6YD:6-A=&4@=VAI8V@@87)C:&ET96-T=7)E+`T*
+M<&QA=&9O<FTL(%-$2RP@971C+B!I<R!T87)G971E9"!B>2!T:&4@96YV:7)O
+M;FUE;G0@:70@<V5T<R!U<"X-"@T*4G5N('1H92!S8W)I<'0@=VET:&]U="!"
+M/%9#7T]05$E/3E,^('1O(&=E="!M;W)E(&EN9F]R;6%T:6]N(&EN('1H92!E
+M<G)O<@T*;65S<V%G92!P<FEN=&5D(&)Y($(\=F-V87)S86QL+F)A=#XN#0H-
+M"CUH96%D,2!3144@04Q33PT*#0H-"CUH96%D,2!!551(3U(-"@T*1G)E9&5R
+M:6,@2D%21$].(#QF<F5D97)I8RYJ87)D;VY`9VUA:6PN8V]M/@T*#0H]:&5A
+M9#$@0T]065))1TA4($%.1"!,24-%3E-%#0H-"D-O<'ER:6=H="`H0RD@,C`Q
+M-RTR,#(U(&)Y($9R961E<FEC($I!4D1/3B`\9G)E9&5R:6,N:F%R9&]N0&=M
+M86EL+F-O;3X-"@T*5&AI<R!P<F]G<F%M(&ES(&9R964@<V]F='=A<F4[('EO
+M=2!C86X@<F5D:7-T<FEB=71E(&ET(&%N9"]O<B!M;V1I9GD-"FET('5N9&5R
+=('1H92!-250@;&EC96YS92X-"@T*/6-U=`T*#0IM
+`
+end
+SHAR_EOF
+  (set 20 25 12 23 17 43 51 'scripts/msvc-shell'
+   eval "${shar_touch}") && \
+  chmod 0755 'scripts/msvc-shell'
+if test $? -ne 0
+then ${echo} "restore of scripts/msvc-shell failed"
+fi
+  if ${md5check}
+  then (
+       ${MD5SUM} -c >/dev/null 2>&1 || ${echo} 'scripts/msvc-shell': 'MD5 check failed'
+       ) << \SHAR_EOF
+489df6dbcdd8b6527dc4da0d898594f0  scripts/msvc-shell
+SHAR_EOF
+
+else
+test `LC_ALL=C wc -c < 'scripts/msvc-shell'` -ne 6509 && \
+  ${echo} "restoration warning:  size of 'scripts/msvc-shell' is not 6509"
+  fi
+fi
+# ============= scripts/sixel2tmux ==============
+if test -n "${keep_file}" && test -f 'scripts/sixel2tmux'
+then
+${echo} "x - SKIPPING scripts/sixel2tmux (file already exists)"
+
+else
+${echo} "x - extracting scripts/sixel2tmux (text)"
+  sed 's/^X//' << 'SHAR_EOF' | uudecode &&
+begin 600 scripts/sixel2tmux
+M(R$O=7-R+V)I;B]E;G8@<&5R;`T*#0IU<V4@<W1R:6-T.PT*=7-E('=A<FYI
+M;F=S("=A;&PG.PT*#0IU<V4@0V%R<#L-"G5S92!'971O<'0Z.DQO;F<@<7<H
+M1V5T3W!T:6]N<T9R;VU!<G)A>2`Z8V]N9FEG(&YO7VEG;F]R95]C87-E*3L-
+M"G5S92!0;V0Z.E5S86=E.PT*#0IS=6(@=&UU>%]D8W-?97-C87!E('L-"B`@
+M("!M>2`H)&EN8V5P=&EO;E]L979E;"P@)&US9RD@/2!`7SL-"@T*("`@(&9O
+M<BAM>2`D;#TP.R`D;#PD:6YC97!T:6]N7VQE=F5L.R`K*R1L*2![#0H@("`@
+M("`@(&UY("1D8W-?<&%Y;&]A9"`]("1M<V<[#0H@("`@("`@("1D8W-?<&%Y
+M;&]A9"`]?B!S+UPP,S,O7#`S,UPP,S,O9SL-"B`@("`@("`@)&US9R`](")<
+M,#,S4'1M=7@[)&1C<U]P87EL;V%D7#`S,UQ<(CL-"B`@("!]#0H@("`@<F5T
+M=7)N("1M<V<[#0I]#0H-"B,@4&%R<V4@;W!T:6]N<PT*;7D@*"1O<'1?:&5L
+M<"P@)&]P=%]T+"`D;W!T7W1M=7A?='1Y+"`D;W!T7VPI.PT*1V5T3W!T:6]N
+M<T9R;VU!<G)A>2@-"B`@("!<0$%21U8L#0H@("`@)VAE;'!\:"<@("`@("`@
+M("`@("`@(#T^(%PD;W!T7VAE;'`L#0H@("`@)VQ\:6YC97!T:6]N+6QE=F5L
+M/7,G(#T^(%PD;W!T7VPL#0H@("`@)W1\=&5R;6EN86P]<R<@("`@("`@(#T^
+M(%PD;W!T7W0L#0HI(&]R(&-R;V%K*"=%<G)O<B!P87)S:6YG(&-O;6UA;F0@
+M;&EN92!A<F=U;65N=',G*3L-"@T*(R!(86YD;&4@:&5L<"!O<'1I;VX-"G!O
+M9#)U<V%G92@M97AI='9A;"`]/B`P*2!I9B`D;W!T7VAE;'`[#0H-"B,@9V5T
+M('1E<FUI;F%L#0IM>2`H)'1E<FUI;F%L*3L-"B1T97)M:6YA;"`O+ST@)&]P
+M=%]T(&EF*&1E9FEN960H)&]P=%]T*2D[#0HD=&5R;6EN86P@+R\]("<O9&5V
+M+W1T>2<[#0H-"B,@:6YC97!T:6]N(&QE=F5L#0HD;W!T7VP@+R\](#$@:68H
+M97AI<W1S*"1%3E9[)U1-55@G?2DI.PT*)&]P=%]L("\O/2`P.PT*#0HC(&]U
+M='!U="!T;R!T='D-"FUY("1T='D[#0HD='1Y(#T@7"I35$1/550[#0IO<&5N
+M*"1T='DL("<^)RP@)'1E<FUI;F%L*2!O<B!C<F]A:R@B56YA8FQE('1O(&]P
+M96X@='1Y.B`D=&5R;6EN86Q<;B(I(&EF*"<M)R!N92`D=&5R;6EN86PI.PT*
+M#0HC(&QO;W`@<F5A9&EN9R!S:7AE;"!C:'5N:W,L(&5S8V%P92!T:&5M('5S
+M:6YG('1M=7@@1$-3(&%N9"!L;V]P(&%G86EN#0IM>2`H)&US9RP@)'!A>6QO
+M860L("1C:'5N:RD@/2`H)R<L("<G+"`G)RD[#0IM>2`D;6%X7V)Y=&5?<VEZ
+M92`](#<T.3DT.PT*8FEN;6]D92!35$1)3CL-"F)I;FUO9&4@)'1T>3L-"G=H
+M:6QE*'-Y<W)E860@4U1$24XL("1M<V<L(#(U-BD@>PT*("`@("1P87EL;V%D
+M("X]("1M<V<[#0H@("`@=VAI;&4H)'!A>6QO860@/7X@<R]>*"@N*BD_7&5<
+M7"DO+V<I('L-"B`@("`@("`@)&-H=6YK(#T@)#$[#0H@("`@("`@("1C:'5N
+M:R`]('1M=7A?9&-S7V5S8V%P92@D;W!T7VPL("1C:'5N:RD[#0H@("`@("`@
+M(&EF*&QE;F=T:"@D8VAU;FLI(#X@)&UA>%]B>71E7W-I>F4I('L-"B`@("`@
+M("`@("`@('!R:6YT(%-41$524B`B06X@97-C87!E('-E<75E;F-E(&ES('1O
+M;R!L87)G92!T;R!P87-S+71H<F]U9V@Z("(N;&5N9W1H*"1C:'5N:RDN(B`^
+M("1M87A?8GET95]S:7IE+B!!8F]R=&EN9R%<;B([#0H@("`@("`@("`@("!E
+M>&ET(#$[#0H@("`@("`@('T-"B`@("`@("`@<WES=W)I=&4@)'1T>2P@)&-H
+M=6YK.PT*("`@('T-"GT-"B1C:'5N:R`]('1M=7A?9&-S7V5S8V%P92@D;W!T
+M7VPL("1P87EL;V%D*3L-"G-Y<W=R:71E("1T='DL("1C:'5N:SL-"F-L;W-E
+M*"1T='DI(&EF*"<M)R!N92`D=&5R;6EN86PI.PT*#0I?7T5.1%]?#0H]:&5A
+M9#$@3D%-10T*#0IS:7AE;#)T;75X("T@4V-R:7!T(&-O;G9E<G1I;F<@<VEX
+M96P@:6YP=70@:6YT;R!T;75X)W,@1$-3(&5S8V%P92!S97%U96YC90T*#0H]
+M:&5A9#$@4UE.3U!325,-"@T*0CQS:7AE;#)T;75X/B!"/"UH/GQ"/"TM:&5L
+M<#X-"@T*0CQS:7AE;#)T;75X/B!;0CQ/4%1)3TY3/ET-"@T*1TY55$5233US
+M:7AE;&=D(&=N=7!L;W0@+64@)W!L;W0@<VEN*'@I)R!\($(\<VEX96PR=&UU
+M>#X-"@T*/6AE860Q($1%4T-225!424].#0H-"E1H:7,@=&]O;"!C;VYV97)T
+M<R!S=&%N9&%R9"!I;G!U="!I;G1O(&$@23QT;75X/B!S<&5C:69I8R!"/$1#
+M4SX@97-C87!E('-E<75E;F-E#0IA;F0@;W5T<'5T<R!I="!T;R!A('1E<FUI
+M;F%L+@T*#0I4:&4@;W5T<'5T(&]F('1H92!P<F]G<F%M('-H;W5L9"!B92!D
+M:7)E8W1E9"!T;R!A('1E<FUI;F%L+B!);B!C87-E(&YO('1E<FUI;F%L#0II
+M<R!S<&5C:69I960L('1H92!S8W)I<'0@=VEL;"!U<V4@1CPO9&5V+W1T>3XN
+M#0H-"CUH96%D,2!/4%1)3TY3#0H-"CUO=F5R#0H-"CUI=&5M($(\+6@^?$(\
+M+2UH96QP/@T*#0I0<FEN="!T:&4@=7-A9V4L(&AE;'`@86YD('9E<G-I;VX@
+M:6YF;W)M871I;VX@9F]R('1H:7,@<')O9W)A;2!A;F0@97AI="X-"@T*/6ET
+M96T@0CPM=#X@23Q415)-24Y!3#Y\0CPM+71E<FUI;F%L/CU)/%1%4DU)3D%,
+M/@T*#0I3971S('1H92!T97)M:6YA;"!U<V5D('1O(&]U='!U="!T:&4@=&UU
+M>"!$0U,@97-C87!E('-E<75E;F-E+B!);B!C87-E('1H90T*=&5R;6EN86P@
+M:7,@;F]T('-P96-I9FEE9"P@=&AE(&1E9F%U;'0@=F%L=64@:7,Z($8\+V1E
+M=B]T='D^+@T*#0I4:&4@<W!E8VEA;"!N86UE.B`G+2<@;65A;G,@23QS=&1O
+M=70^#0H-"CUI=&5M($(\+6P^/4D\24Y#15!424]./GQ"/"TM:6YC97!T:6]N
+M+6QE=F5L/CU)/$E.0T505$E/3CX-"@T*4V5T<R!T:&4@0CQT;75X/B!I;F-E
+M<'1I;VX@;&5V96PN(%1H:7,@:7,@;F5E9&5D(&EN(&-A<V4@>6]U(&-O;FYE
+M8W0@=&\@86YO=&AE<@T*0CQT;75X/B!S97-S:6]N(&9R;VT@=VET:&EN(&$@
+M0CQT;75X/B!S97-S:6]N+B!$969A=6QT('9A;'5E(&ES(#`@=6YL97-S('1H
+M90T*0CQ43558/B!E;G9I<F]N;65N="!V87)I86)L92!I<R!S970L(&EN('=H
+M:6-H(&-A<V4@=&AE(&1E9F%U;'0@=F%L=64@:7,@,2X-"@T*/6)A8VL-"@T*
+M#0H]:&5A9#$@14Y625)/3DU%3E0@5D%224%"3$53#0H-"CUO=F5R#0H-"CUI
+M=&5M(%1-55@-"@T*5&AE($(\5$U56#X@96YV:7)O;FUE;G0@=F%R:6%B;&4@
+M:7,@=7-E9"!T;R!F:6YD(&]U="!I9B!W92!A<F4@<G5N;FEN9R!I;G-I9&4-
+M"F$@0CQT;75X/B!P86YE+@T*#0H]8F%C:PT*#0H-"CUH96%D,2!3144@04Q3
+M3PT*#0IX=&5R;2@Q*2P@=&UU>"@Q*0T*#0H];W9E<@T*#0H]:71E;2!)/%A4
+M97)M($-O;G1R;VP@4V5Q=65N8V5S/@T*#0H@("`@:'1T<',Z+R]I;G9I<VEB
+M;&4M:7-L86YD+FYE="]X=&5R;2]C=&QS97%S+V-T;'-E<7,N:'1M;"-H,BU/
+M<&5R871I;F<M4WES=&5M+4-O;6UA;F1S#0H-"CUI=&5M($D\1&5V:6-E($-O
+M;G1R;VP@4W1R:6YG(%-E<75E;F-E<SX-"@T*("`@(&AT='!S.B\O=G0Q,#`N
+M;F5T+V1O8W,O=G0U,3`M<FTO8VAA<'1E<C0N:'1M;`T*#0H]:71E;2!)/%1-
+M=7@@1$-3(%-E<75E;F-E<SX-"@T*("`@('-E92!T;75X(&-H86YG96QO9PT*
+M#0H]8F%C:PT*#0H]:&5A9#$@05542$]2#0H-"D9R961E<FEC($I!4D1/3B`\
+M9G)E9&5R:6,N:F%R9&]N0&=M86EL+F-O;3X-"@T*/6AE860Q($-/4%E224=(
+M5"!!3D0@3$E#14Y310T*#0I#;W!Y<FEG:'0@*$,I(#(P,3<@8GD@1G)E9&5R
+M:6,@2D%21$].(#QF<F5D97)I8RYJ87)D;VY`9VUA:6PN8V]M/@T*#0I4:&ES
+M('!R;V=R86T@:7,@9G)E92!S;V9T=V%R93L@>6]U(&-A;B!R961I<W1R:6)U
+M=&4@:70@86YD+V]R(&UO9&EF>0T*:70@=6YD97(@=&AE($U)5"!L:6-E;G-E
+-+@T*#0H]8W5T#0H-"FUO
+`
+end
+SHAR_EOF
+  (set 20 25 12 23 17 07 12 'scripts/sixel2tmux'
+   eval "${shar_touch}") && \
+  chmod 0755 'scripts/sixel2tmux'
+if test $? -ne 0
+then ${echo} "restore of scripts/sixel2tmux failed"
+fi
+  if ${md5check}
+  then (
+       ${MD5SUM} -c >/dev/null 2>&1 || ${echo} 'scripts/sixel2tmux': 'MD5 check failed'
+       ) << \SHAR_EOF
+179a3394ea8bee29766b6f1d1091c222  scripts/sixel2tmux
+SHAR_EOF
+
+else
+test `LC_ALL=C wc -c < 'scripts/sixel2tmux'` -ne 3748 && \
+  ${echo} "restoration warning:  size of 'scripts/sixel2tmux' is not 3748"
+  fi
+fi
+# ============= scripts/yank ==============
+if test -n "${keep_file}" && test -f 'scripts/yank'
+then
+${echo} "x - SKIPPING scripts/yank (file already exists)"
+
+else
+${echo} "x - extracting scripts/yank (text)"
+  sed 's/^X//' << 'SHAR_EOF' | uudecode &&
+begin 600 scripts/yank
+M(R$O=7-R+V)I;B]E;G8@<&5R;`T*#0IU<V4@<W1R:6-T.PT*=7-E('=A<FYI
+M;F=S("=A;&PG.PT*#0IU<V4@0V%R<#L-"G5S92!'971O<'0Z.DQO;F<@<7<H
+M1V5T3W!T:6]N<T9R;VU!<G)A>2`Z8V]N9FEG(&YO7VEG;F]R95]C87-E*3L-
+M"G5S92!-24U%.CI"87-E-C0@<7<H96YC;V1E7V)A<V4V-"D[#0IU<V4@4&]D
+M.CI5<V%G93L-"@T*<W5B(&=E=%]T;75X7W1T>2![#0H@("`@;7D@)'!T>2`]
+M(&!T;75X(&QI<W0M<&%N97,@+48@(B-[<&%N95]T='E](F`[#0H@("`@<F5T
+M=7)N('5N9&5F(&EF*"0_*3L-"B`@("!R971U<FX@)'!T>3L-"GT-"@T*(R!0
+M87)S92!O<'1I;VYS#0IM>2`H)&]P=%]H96QP+"`D;W!T7W0L("1O<'1?=&UU
+M>%]T='DL("1O<'1?;"D[#0I'971/<'1I;VYS1G)O;4%R<F%Y*`T*("`@(%Q`
+M05)'5BP-"B`@("`G:&5L<'QH)R`@("`@("`]/B!<)&]P=%]H96QP+`T*("`@
+M("=L?&EN8V5P=&EO;BUL979E;#US)R`]/B!<)&]P=%]L+`T*("`@("=T?'1E
+M<FUI;F%L/7,G(#T^(%PD;W!T7W0L#0H@("`@)W1M=7@M='1Y)R`@("`@/3X@
+M7"1O<'1?=&UU>%]T='DL#0HI(&]R(&-R;V%K*"=%<G)O<B!P87)S:6YG(&-O
+M;6UA;F0@;&EN92!A<F=U;65N=',G*3L-"@T*(R!(86YD;&4@:&5L<"!O<'1I
+M;VX-"G!O9#)U<V%G92@M97AI='9A;"`]/B`P*2!I9B`D;W!T7VAE;'`[#0H-
+M"B,@9V5T('1E<FUI;F%L#0IM>2`H)'1E<FUI;F%L*3L-"B1T97)M:6YA;"`O
+M+ST@9V5T7W1M=7A?='1Y(&EF*&1E9FEN960H)&]P=%]T;75X7W1T>2DI.PT*
+M)'1E<FUI;F%L("\O/2`D;W!T7W0@:68H9&5F:6YE9"@D;W!T7W0I*3L-"B1T
+M97)M:6YA;"`O+ST@)R]D978O='1Y)SL-"@T*(R!I;F-E<'1I;VX@;&5V96P-
+M"B1O<'1?;"`O+ST@,2!I9BAE>&ES=',H)$5.5GLG5$U56"=]*2D[#0HD;W!T
+M7VP@+R\](#`[#0H-"B,@<F5A9"!I;G!U=`T*;7D@)&UA>%]B>71E7W-I>F4@
+M/2`W-#DY-#L-"FUY("1M<V<@/2`G)SL-"G=H:6QE*&QE;F=T:"@D;7-G*2`\
+M("1M87A?8GET95]S:7IE*2![#0H@("`@;7D@)&QI;F4@/2`\4U1$24X^.PT*
+M("`@(&QA<W0@:68H(61E9FEN960H)&QI;F4I*3L-"B`@("`D;7-G(#T@)&US
+M9RXD;&EN93L-"GT-"F-R;V%K*"=%<G)O<CH@;65S<V%G92!I<R!T;V\@8FEG
+M)RD-"B`@("!I9BAL96YG=&@H)&US9RD@/B`D;6%X7V)Y=&5?<VEZ92D[#0IM
+M>2`H)&(V-"P@)&]S8S4R*3L-"B1B-C0@("`](&5N8V]D95]B87-E-C0H)&US
+M9RD[#0HD8C8T("`@/7X@<R];7')<;ETO+V<[#0H-"B,@3U-#(#4M,B!I<R!T
+M;R!M;V1I9GD@=&AE(&]P97)A=&EN9R!S>7-T96T@<V5L96-T:6]N("AC;W!Y
+M+W!A<W1E(&)U9F9E<BD-"B1O<V,U,B`](")<,#,S734R.V,[)&(V-%QA(CL-
+M"@T*(R!);B!C87-E('=E(&%R92!I;F-E<'1E9"!I;B!43558+"!U<V4@82!T
+M;75X('-P96-I9FEC($1#4R!T;R!P87-S('1H92!/4T,@=&\-"B,@=&AE(&]U
+M=&5R('1T>0T*9F]R*&UY("1L/3`[("1L/"1O<'1?;#L@*RLD;"D@>PT*("`@
+M(&UY("1D8W-?<&%Y;&]A9"`]("1O<V,U,CL-"B`@("`D9&-S7W!A>6QO860@
+M/7X@<R]<,#,S+UPP,S-<,#,S+V<[#0H@("`@)&]S8S4R(#T@(EPP,S-0=&UU
+M>#LD9&-S7W!A>6QO861<,#,S7%PB.PT*?0T*#0HC(&]U='!U="!T;R!T='D-
+M"F]P96XH;7D@)'1T>2P@)SXG+"`D=&5R;6EN86PI(&]R(&-R;V%K*")5;F%B
+M;&4@=&\@;W!E;B!T='DZ("1T97)M:6YA;%QN(BD[#0IP<FEN="`D='1Y("1O
+M<V,U,CL-"F-L;W-E*"1T='DI.PT*#0I?7T5.1%]?#0H]:&5A9#$@3D%-10T*
+M#0IY86YK("T@4V-R:7!T(&-O;G9E<G1I;F<@:6YP=70@:6YT;R!/4T,@-2TR
+M(&5S8V%P92!S97%U96YC90T*#0H]:&5A9#$@4UE.3U!325,-"@T*0CQY86YK
+M/B!"/"UH/GQ"/"TM:&5L<#X-"@T*0CQY86YK/B!;0CQ/4%1)3TY3/ET-"@T*
+M96-H;R`B5&5X="!4;R!#;W!Y(B!\($(\>6%N:SX-"@T*/6AE860Q($1%4T-2
+M25!424].#0H-"E1H:7,@=&]O;"!C;VYV97)T<R!S=&%N9&%R9"!I;G!U="!I
+M;G1O($(\3U-#(#4M,CX@97-C87!E('-E<75E;F-E(&%N9"!O=71P=71S#0II
+M="!T;R!A('1E<FUI;F%L+B!4:&5S92!E<V-A<&4@<V5Q=65N8V5S(&%R92!I
+M;G1E<G!R971E9"!B>2!T97)M:6YA;',@=&\@<V5T#0IT:&5I<B!"/'-E;&5C
+M=&EO;CX@8G5F9F5R+B!&;W(@0CQ85&5R;3X@:70@;65A;G,@=&AE($(\6#$Q
+M/B!C;W!Y+W!A<W1E(&)U9F9E<BX-"@T*5&AE('-C<FEP="!C86X@=7-E9"!T
+M;R!P<F]V:61E('-E86UL97-S(&-O<'DO<&%S=&4@8V%P86)I;&ET:65S(&)E
+M='=E96X@82!H;W-T#0IA;F0@82!R96UO=&4@<V5S<VEO;BX@1F]R(&EN<W1A
+M;F-E(&$@=7-E<B!R=6YN:6YG($(\=FEM/B!T:')O=6=H($(\=&UU>#X@;VX@
+M80T*<F5M;W1E(&AO<W0@8V]N;F5C=&5D(&)Y($(\<W-H/B!R=6YN:6YG(&]N
+M(&ET<R!"/%=I;F1O=W,^(&QA<'1O<"X-"@T*5&AE(&]U='!U="!O9B!T:&4@
+M<')O9W)A;2!S:&]U;&0@8F4@9&ER96-T960@=&\@82!T97)M:6YA;"X@26X@
+M8V%S92!N;R!T97)M:6YA;`T*:7,@<W!E8VEF:65D+"!T:&4@<V-R:7!T('=I
+M;&P@=7-E($8\+V1E=B]T='D^+@T*#0H]:&5A9#$@3U!424].4PT*#0H];W9E
+M<@T*#0H]:71E;2!"/"UH/GQ"/"TM:&5L<#X-"@T*4')I;G0@=&AE('5S86=E
+M+"!H96QP(&%N9"!V97)S:6]N(&EN9F]R;6%T:6]N(&9O<B!T:&ES('!R;V=R
+M86T@86YD(&5X:70N#0H-"CUI=&5M($(\+70^($D\5$5234E.04P^?$(\+2UT
+M97)M:6YA;#X]23Q415)-24Y!3#X-"@T*4V5T<R!T:&4@=&5R;6EN86P@=7-E
+M9"!T;R!O=71P=70@=&AE($]30R`U+3(@97-C87!E('-E<75E;F-E+B!);B!C
+M87-E('1H90T*=&5R;6EN86P@:7,@;F]T('-P96-I9FEE9"P@=&AE(&1E9F%U
+M;'0@=F%L=64@:7,Z($8\+V1E=B]T='D^+@T*#0H]:71E;2!"/"TM=&UU>"UT
+M='D^#0H-"E-E=',@=&AE('1E<FUI;F%L('5S960@=&\@;W5T<'5T('1H92!/
+M4T,@-2TR(&5S8V%P92!S97%U96YC92!T;R!T:&4@0CQT;75X/B!P86YE#0IT
+M='DN($EN(&-A<V4@=&AE('!R;V=R86T@:7,@=6YA8FQE('1O(&9I;F0@;W5T
+M($(\=&UU>#X@<&%N92=S('1T>2P@=&AE('9A;'5E(&]F#0IT:&4@0CPM+71E
+M<FUI;F%L/B!O<'1I;VX@:7,@=&%K96X@:6YT;R!A8V-O=6YT+@T*#0H]:71E
+M;2!"/"UL/CU)/$E.0T505$E/3CY\0CPM+6EN8V5P=&EO;BUL979E;#X]23Q)
+M3D-%4%1)3TX^#0H-"E-E=',@=&AE($(\=&UU>#X@:6YC97!T:6]N(&QE=F5L
+M+B!4:&ES(&ES(&YE961E9"!I;B!C87-E('EO=2!C;VYN96-T('1O(&%N;W1H
+M97(-"D(\=&UU>#X@<V5S<VEO;B!F<F]M('=I=&AI;B!A($(\=&UU>#X@<V5S
+M<VEO;BX@1&5F875L="!V86QU92!I<R`P('5N;&5S<R!T:&4-"D(\5$U56#X@
+M96YV:7)O;FUE;G0@=F%R:6%B;&4@:7,@<V5T+"!I;B!W:&EC:"!C87-E('1H
+M92!D969A=6QT('9A;'5E(&ES(#$N#0H-"CUB86-K#0H-"CUH96%D,2!,24U)
+M5$%424].4PT*#0I.;R!M;W)E('1H86X@-S0Y.30@8GET97,@;V8@9&%T82!C
+M86X@8F4@=')A;G-M:71T960@=&AR;W5G:"!T:&4@3U-#(#4M,B!E<V-A<&4-
+M"G-E<75E;F-E+@T*#0H]:&5A9#$@14Y625)/3DU%3E0@5D%224%"3$53#0H-
+M"CUO=F5R#0H-"CUI=&5M(%1-55@-"@T*5&AE($(\5$U56#X@96YV:7)O;FUE
+M;G0@=F%R:6%B;&4@:7,@=7-E9"!T;R!F:6YD(&]U="!I9B!W92!A<F4@<G5N
+M;FEN9R!I;G-I9&4-"F$@0CQT;75X/B!P86YE+@T*#0H]8F%C:PT*#0H-"CUH
+M96%D,2!3144@04Q33PT*#0IX=&5R;2@Q*2P@=&UU>"@Q*0T*#0H];W9E<@T*
+M#0H]:71E;2!)/%A497)M($-O;G1R;VP@4V5Q=65N8V5S/@T*#0H@("`@:'1T
+M<',Z+R]I;G9I<VEB;&4M:7-L86YD+FYE="]X=&5R;2]C=&QS97%S+V-T;'-E
+M<7,N:'1M;"-H,BU/<&5R871I;F<M4WES=&5M+4-O;6UA;F1S#0H-"CUI=&5M
+M($D\1&5V:6-E($-O;G1R;VP@4W1R:6YG(%-E<75E;F-E<SX-"@T*("`@(&AT
+M='!S.B\O=G0Q,#`N;F5T+V1O8W,O=G0U,3`M<FTO8VAA<'1E<C0N:'1M;`T*
+M#0H]:71E;2!)/%1-=7@@1$-3(%-E<75E;F-E<SX-"@T*("`@('-E92!T;75X
+M(&-H86YG96QO9PT*#0H]8F%C:PT*#0H]:&5A9#$@05542$]2#0H-"D9R961E
+M<FEC($I!4D1/3B`\9G)E9&5R:6,N:F%R9&]N0&=M86EL+F-O;3X-"@T*/6AE
+M860Q($-/4%E224=(5"!!3D0@3$E#14Y310T*#0I#;W!Y<FEG:'0@*$,I(#(P
+M,3<@8GD@1G)E9&5R:6,@2D%21$].(#QF<F5D97)I8RYJ87)D;VY`9VUA:6PN
+M8V]M/@T*#0I4:&ES('!R;V=R86T@:7,@9G)E92!S;V9T=V%R93L@>6]U(&-A
+M;B!R961I<W1R:6)U=&4@:70@86YD+V]R(&UO9&EF>0T*:70@=6YD97(@=&AE
+9($U)5"!L:6-E;G-E+@T*#0H]8W5T#0H-"FUO
+`
+end
+SHAR_EOF
+  (set 20 25 12 23 17 07 12 'scripts/yank'
+   eval "${shar_touch}") && \
+  chmod 0755 'scripts/yank'
+if test $? -ne 0
+then ${echo} "restore of scripts/yank failed"
+fi
+  if ${md5check}
+  then (
+       ${MD5SUM} -c >/dev/null 2>&1 || ${echo} 'scripts/yank': 'MD5 check failed'
+       ) << \SHAR_EOF
+be7bdbb27b8475997a9121b2f529634a  scripts/yank
+SHAR_EOF
+
+else
+test `LC_ALL=C wc -c < 'scripts/yank'` -ne 4300 && \
+  ${echo} "restoration warning:  size of 'scripts/yank' is not 4300"
+  fi
+fi
+# ============= data/tmux-256color.tinfo ==============
+if test -n "${keep_file}" && test -f 'data/tmux-256color.tinfo'
+then
+${echo} "x - SKIPPING data/tmux-256color.tinfo (file already exists)"
+
+else
+${echo} "x - extracting data/tmux-256color.tinfo (text)"
+  sed 's/^X//' << 'SHAR_EOF' | uudecode &&
+begin 600 data/tmux-256color.tinfo
+M(R`@("`@("!296-O;G-T<G5C=&5D('9I82!I;F9O8VUP(&9R;VT@9FEL93H@
+M+W5S<B]S:&%R92]T97)M:6YF;R\W-"]T;75X+3(U-F-O;&]R#0IT;75X+3(U
+M-F-O;&]R?'1M=7@@=VET:"`R-38@8V]L;W)S+`T*("`@("`@("!A;2P@:',L
+M(&MM+"!M:7(L(&US9W(L('AE;FPL#0H@("`@("`@(&-O;&]R<R,P>#$P,"P@
+M8V]L<R,X,"P@:70C."P@;&EN97,C,C0L('!A:7)S(S!X-V9F9BP-"B`@("`@
+M("`@86-S8STK*UPL7"PM+2XN,#!@8&%A9F9G9VAH:6EJ:FMK;&QM;6YN;V]P
+M<'%Q<G)S<W1T=75V=G=W>'AY>7IZ>WM\?'U]?GXL#0H@("`@("`@(&)E;#U>
+M1RP@8FQI;FL]7$5;-6TL(&)O;&0]7$5;,6TL(&-B=#U<15M:+"!C:79I<SU<
+M15L_,C5L+`T*("`@("`@("!C;&5A<CU<15M(7$5;2BP@8VYO<FT]7$5;,S1H
+M7$5;/S(U:"P@8W(]7'(L#0H@("`@("`@(&-S<CU<15LE:25P,25D.R5P,B5D
+M<BP@8W5B/5Q%6R5P,25D1"P@8W5B,3U>2"P-"B`@("`@("`@8W5D/5Q%6R5P
+M,25D0BP@8W5D,3U<;BP@8W5F/5Q%6R5P,25D0RP@8W5F,3U<15M#+`T*("`@
+M("`@("!C=7`]7$5;)6DE<#$E9#LE<#(E9$@L(&-U=3U<15LE<#$E9$$L(&-U
+M=3$]7$5-+`T*("`@("`@("!C=G9I<SU<15LS-&PL(&1C:#U<15LE<#$E9%`L
+M(&1C:#$]7$5;4"P@9&EM/5Q%6S)M+`T*("`@("`@("!D;#U<15LE<#$E9$TL
+M(&1L,3U<15M-+"!D<VP]7$5=,#M<,#`W+"!E9#U<15M*+"!E;#U<15M++`T*
+M("`@("`@("!E;#$]7$5;,4LL(&5N86-S/5Q%*$)<12DP+"!F;&%S:#U<16<L
+M(&9S;#U>1RP@:&]M93U<15M(+`T*("`@("`@("!H=#U>22P@:'1S/5Q%2"P@
+M:6-H/5Q%6R5P,25D0"P@:6P]7$5;)7`Q)61,+"!I;#$]7$5;3"P-"B`@("`@
+M("`@:6YD/5QN+"!I<S(]7$4I,"P@:T1#/5Q%6S,[,GXL(&M%3D0]7$5;,3LR
+M1BP@:TA/33U<15LQ.S)(+`T*("`@("`@("!K24,]7$5;,CLR?BP@:TQ&5#U<
+M15LQ.S)$+"!K3EA4/5Q%6S8[,GXL(&M04E8]7$5;-3LR?BP-"B`@("`@("`@
+M:U))5#U<15LQ.S)#+"!K8G,]7D@L(&MC8G0]7$5;6BP@:V-U8C$]7$5/1"P@
+M:V-U9#$]7$5/0BP-"B`@("`@("`@:V-U9C$]7$5/0RP@:V-U=3$]7$5/02P@
+M:V1C:#$]7$5;,WXL(&ME;F0]7$5;-'XL(&MF,3U<14]0+`T*("`@("`@("!K
+M9C$P/5Q%6S(Q?BP@:V8Q,3U<15LR,WXL(&MF,3(]7$5;,C1^+"!K9C$S/5Q%
+M6S$[,E`L#0H@("`@("`@(&MF,30]7$5;,3LR42P@:V8Q-3U<15LQ.S)2+"!K
+M9C$V/5Q%6S$[,E,L(&MF,3<]7$5;,34[,GXL#0H@("`@("`@(&MF,3@]7$5;
+M,3<[,GXL(&MF,3D]7$5;,3@[,GXL(&MF,CU<14]1+"!K9C(P/5Q%6S$Y.S)^
+M+`T*("`@("`@("!K9C(Q/5Q%6S(P.S)^+"!K9C(R/5Q%6S(Q.S)^+"!K9C(S
+M/5Q%6S(S.S)^+`T*("`@("`@("!K9C(T/5Q%6S(T.S)^+"!K9C(U/5Q%6S$[
+M-5`L(&MF,C8]7$5;,3LU42P@:V8R-SU<15LQ.S52+`T*("`@("`@("!K9C(X
+M/5Q%6S$[-5,L(&MF,CD]7$5;,34[-7XL(&MF,SU<14]2+"!K9C,P/5Q%6S$W
+M.S5^+`T*("`@("`@("!K9C,Q/5Q%6S$X.S5^+"!K9C,R/5Q%6S$Y.S5^+"!K
+M9C,S/5Q%6S(P.S5^+`T*("`@("`@("!K9C,T/5Q%6S(Q.S5^+"!K9C,U/5Q%
+M6S(S.S5^+"!K9C,V/5Q%6S(T.S5^+`T*("`@("`@("!K9C,W/5Q%6S$[-E`L
+M(&MF,S@]7$5;,3LV42P@:V8S.3U<15LQ.S92+"!K9C0]7$5/4RP-"B`@("`@
+M("`@:V8T,#U<15LQ.S93+"!K9C0Q/5Q%6S$U.S9^+"!K9C0R/5Q%6S$W.S9^
+M+`T*("`@("`@("!K9C0S/5Q%6S$X.S9^+"!K9C0T/5Q%6S$Y.S9^+"!K9C0U
+M/5Q%6S(P.S9^+`T*("`@("`@("!K9C0V/5Q%6S(Q.S9^+"!K9C0W/5Q%6S(S
+M.S9^+"!K9C0X/5Q%6S(T.S9^+`T*("`@("`@("!K9C0Y/5Q%6S$[,U`L(&MF
+M-3U<15LQ-7XL(&MF-3`]7$5;,3LS42P@:V8U,3U<15LQ.S-2+`T*("`@("`@
+M("!K9C4R/5Q%6S$[,U,L(&MF-3,]7$5;,34[,WXL(&MF-30]7$5;,3<[,WXL
+M#0H@("`@("`@(&MF-34]7$5;,3@[,WXL(&MF-38]7$5;,3D[,WXL(&MF-3<]
+M7$5;,C`[,WXL#0H@("`@("`@(&MF-3@]7$5;,C$[,WXL(&MF-3D]7$5;,C,[
+M,WXL(&MF-CU<15LQ-WXL(&MF-C`]7$5;,C0[,WXL#0H@("`@("`@(&MF-C$]
+M7$5;,3LT4"P@:V8V,CU<15LQ.S11+"!K9C8S/5Q%6S$[-%(L(&MF-SU<15LQ
+M.'XL#0H@("`@("`@(&MF.#U<15LQ.7XL(&MF.3U<15LR,'XL(&MH;VUE/5Q%
+M6S%^+"!K:6-H,3U<15LR?BP-"B`@("`@("`@:VEN9#U<15LQ.S)"+"!K;6]U
+M<SU<15M-+"!K;G`]7$5;-GXL(&MP<#U<15LU?BP-"B`@("`@("`@:W)I/5Q%
+M6S$[,D$L(&YE;#U<144L(&]P/5Q%6S,Y.S0Y;2P@<F,]7$4X+"!R978]7$5;
+M-VTL#0H@("`@("`@(')I/5Q%32P@<FET;3U<15LR,VTL(')M86-S/5Y/+"!R
+M;6-U<#U<15L_,3`T.6PL(')M:7(]7$5;-&PL#0H@("`@("`@(')M:W@]7$5;
+M/S%L7$4^+"!R;7-O/5Q%6S(W;2P@<FUU;#U<15LR-&TL#0H@("`@("`@(')S
+M,CU<16-<15L_,3`P,&Q<15L_,C5H+"!S8SU<13<L#0H@("`@("`@('-E=&%B
+M/5Q%6R4_)7`Q)7LX?24\)70T)7`Q)60E925P,25[,39])3PE=#$P)7`Q)7LX
+M?24M)60E930X.S4[)7`Q)60E.VTL#0H@("`@("`@('-E=&%F/5Q%6R4_)7`Q
+M)7LX?24\)70S)7`Q)60E925P,25[,39])3PE=#DE<#$E>SA])2TE9"5E,S@[
+M-3LE<#$E9"4[;2P-"B`@("`@("`@<V=R/5Q%6S`E/R5P-B5T.S$E.R4_)7`Q
+M)70[,R4[)3\E<#(E=#LT)3LE/R5P,R5T.S<E.R4_)7`T)70[-24[)3\E<#4E
+M=#LR)3MM)3\E<#DE=%PP,38E95PP,3<E.RP-"B`@("`@("`@<V=R,#U<15MM
+M7#`Q-RP@<VET;3U<15LS;2P@<VUA8W,]7DXL('-M8W5P/5Q%6S\Q,#0Y:"P-
+M"B`@("`@("`@<VUI<CU<15LT:"P@<VUK>#U<15L_,6A<13TL('-M<V\]7$5;
+M-VTL('-M=6P]7$5;-&TL#0H@("`@("`@('1B8SU<15LS9RP@='-L/5Q%73`[
+#+`T*
+`
+end
+SHAR_EOF
+  (set 20 25 12 23 17 07 12 'data/tmux-256color.tinfo'
+   eval "${shar_touch}") && \
+  chmod 0644 'data/tmux-256color.tinfo'
+if test $? -ne 0
+then ${echo} "restore of data/tmux-256color.tinfo failed"
+fi
+  if ${md5check}
+  then (
+       ${MD5SUM} -c >/dev/null 2>&1 || ${echo} 'data/tmux-256color.tinfo': 'MD5 check failed'
+       ) << \SHAR_EOF
+54862b8e0a1020cee2d3760861b48c2e  data/tmux-256color.tinfo
+SHAR_EOF
+
+else
+test `LC_ALL=C wc -c < 'data/tmux-256color.tinfo'` -ne 2883 && \
+  ${echo} "restoration warning:  size of 'data/tmux-256color.tinfo' is not 2883"
+  fi
+fi
+# ============= scripts/uudecode.pl ==============
+if test -n "${keep_file}" && test -f 'scripts/uudecode.pl'
+then
+${echo} "x - SKIPPING scripts/uudecode.pl (file already exists)"
+
+else
+${echo} "x - extracting scripts/uudecode.pl (text)"
+  sed 's/^X//' << 'SHAR_EOF' | uudecode &&
+begin 600 scripts/uudecode.pl
+M(R$O=7-R+V)I;B]E;G8@<&5R;`T*#0HD7ST\/CL-"FTO7F)E9VEN("A;,"TW
+M72LI("@N*RDD+R!O<B!D:64H(E5N86)L92!T;R!F:6YD(&AE861E<B(I.PT*
+M;7D@*"1M;V1E+"1F:6QE;F%M92D@/2`H;V-T*"0Q*2P@)#(I.PT*#0IO<&5N
+M*&UY("1F:"P@)SXG+"`D9FEL96YA;64I(&]R(&1I92@B56YA8FQE('1O(&]P
+M96XZ("<D9FEL96YA;64G(BD[#0IB:6YM;V1E("1F:#L-"G=H:6QE*"1?/3P^
+M*2![#0H@("`@;&%S="!I9B!M+UYE;F0D+SL-"B`@("!M>2`D;W5T(#T@=6YP
+M86-K("=U*B<L("1?.PT*("`@('!R:6YT("1F:"`D;W5T.PT*?0T*8VQO<V4H
+@)&9H*3L-"F-H;6]D("1M;V1E+"`D9FEL96YA;64[#0IT
+`
+end
+SHAR_EOF
+  (set 20 25 12 23 17 07 12 'scripts/uudecode.pl'
+   eval "${shar_touch}") && \
+  chmod 0755 'scripts/uudecode.pl'
+if test $? -ne 0
+then ${echo} "restore of scripts/uudecode.pl failed"
+fi
+  if ${md5check}
+  then (
+       ${MD5SUM} -c >/dev/null 2>&1 || ${echo} 'scripts/uudecode.pl': 'MD5 check failed'
+       ) << \SHAR_EOF
+efdf1c6e581f4db59d0263427157a561  scripts/uudecode.pl
+SHAR_EOF
+
+else
+test `LC_ALL=C wc -c < 'scripts/uudecode.pl'` -ne 347 && \
+  ${echo} "restoration warning:  size of 'scripts/uudecode.pl' is not 347"
+  fi
+fi
+# ============= scripts/runcron ==============
+if test -n "${keep_file}" && test -f 'scripts/runcron'
+then
+${echo} "x - SKIPPING scripts/runcron (file already exists)"
+
+else
+${echo} "x - extracting scripts/runcron (text)"
+  sed 's/^X//' << 'SHAR_EOF' | uudecode &&
+begin 600 scripts/runcron
+M(R$O=7-R+V)I;B]E;G8@8F%S:`T*#0HC($5X:70@;VX@86YY(&5R<F]R<PT*
+M<V5T("UE#0H-"B,@02!F=6YC=&EO;B!T;R!O=71P=70@;VX@<W1D97)R#0IF
+M=6YC=&EO;B!E8VAO97)R*"D@>R!E8VAO("(D0"(@,3XF,CL@?0T*#0HC($-O
+M;F9I9W5R871I;VX-"D-23TY$25(]?B\N;&]C86PO971C+V-R;VX-"@T*(R!'
+M970@=&AI<R!S8W)I<'0@;F%M90T*<V-R:7!T/2(D,"(-"@T*(R!386YI='D@
+M8VAE8VL-"G-C<FEP=&1I<CTB)#$B#0II9B!;("UZ("(D>W-C<FEP=&1I<GTB
+M(%T[('1H96X-"B`@("!E8VAO97)R(")5<V%G93H@)'MS8W)I<'1](#QD:7)E
+M8W1O<GD^(@T*("`@(&5C:&]E<G(@(B(-"B`@("!E8VAO97)R(")2=6X@86QL
+M('-C<FEP=',@:6YS:61E(&$@9&ER96-T;W)Y+B(-"B`@("!E>&ET(#$-"F9I
+M#0H-"E-#4DE05$1)4CTB)'M#4D].1$E2?2\D>W-C<FEP=&1I<GTB#0II9B!;
+M("$@+60@(B1[4T-225!41$E2?2(@73L@=&AE;@T*("`@(&5C:&]E<G(@(D1I
+M<F5C=&]R>3H@)R1[4T-225!41$E2?2<@9&]E<VXG="!E>&ES="X@04)/4E1)
+M3D<A(@T*("`@(&5X:70@,0T*9FD-"@T*#0HC($QO860@8W5S=&]M(&-R;VX@
+M96YV:7)O;FUE;G0@:68@<')E<V5N=`T*:68@6R`M92`B)'M#4D].1$E2?2]E
+M;G9I<F]N+F)A<V@B(%T[('1H96X-"B`@("!S;W5R8V4@(B1[0U)/3D1)4GTO
+M96YV:7)O;BYB87-H(@T*9FD-"@T*(R!2=6X@=&AE(&-O;6UA;F1S#0IF;W(@
+M<V-R:7!T(&EN("(D>U-#4DE05$1)4GTB+RH-"F1O#0H@("`@:68@6R`M9B`B
+M)'MS8W)I<'1](B`M82`M>"`B)'MS8W)I<'1](B!=.R!T:&5N#0H@("`@("`@
+M(&5C:&\@(E)U;FYI;F<@<V-R:7!T.B`G)'MS8W)I<'1])R`N+BXB#0H@("`@
+M("`@(&5C:&\@(BTM+2TM+2TM+2TM+2TM+2(-"B`@("`@("`@*"`B)'MS8W)I
+M<'1](B`I#0H@("`@("`@(&5C:&\@+64@(EQF(@T*("`@(&9I#0ID;VYE#0H-
+#"@T*
+`
+end
+SHAR_EOF
+  (set 20 25 12 23 17 07 12 'scripts/runcron'
+   eval "${shar_touch}") && \
+  chmod 0755 'scripts/runcron'
+if test $? -ne 0
+then ${echo} "restore of scripts/runcron failed"
+fi
+  if ${md5check}
+  then (
+       ${MD5SUM} -c >/dev/null 2>&1 || ${echo} 'scripts/runcron': 'MD5 check failed'
+       ) << \SHAR_EOF
+a80ec5ef4d3f477abb92f91c0ff14179  scripts/runcron
+SHAR_EOF
+
+else
+test `LC_ALL=C wc -c < 'scripts/runcron'` -ne 948 && \
+  ${echo} "restoration warning:  size of 'scripts/runcron' is not 948"
+  fi
+fi
+# ============= man/byzanz-helper.1 ==============
+if test ! -d 'man'; then
+  mkdir 'man'
+if test $? -eq 0
+then ${echo} "x - created directory man."
+else ${echo} "x - failed to create directory man."
+     exit 1
+fi
+fi
+if test -n "${keep_file}" && test -f 'man/byzanz-helper.1'
+then
+${echo} "x - SKIPPING man/byzanz-helper.1 (file already exists)"
+
+else
+${echo} "x - extracting man/byzanz-helper.1 (text)"
+  sed 's/^X//' << 'SHAR_EOF' > 'man/byzanz-helper.1' &&
+X.\" -*- mode: troff; coding: utf-8 -*-
+X.\" Automatically generated by Pod::Man 5.01 (Pod::Simple 3.43)
+X.\"
+X.\" Standard preamble:
+X.\" ========================================================================
+X.de Sp \" Vertical space (when we can't use .PP)
+X.if t .sp .5v
+X.if n .sp
+X..
+X.de Vb \" Begin verbatim text
+X.ft CW
+X.nf
+X.ne \\$1
+X..
+X.de Ve \" End verbatim text
+X.ft R
+X.fi
+X..
+X.\" \*(C` and \*(C' are quotes in nroff, nothing in troff, for use with C<>.
+X.ie n \{\
+X.    ds C` ""
+X.    ds C' ""
+'br\}
+X.el\{\
+X.    ds C`
+X.    ds C'
+'br\}
+X.\"
+X.\" Escape single quotes in literal strings from groff's Unicode transform.
+X.ie \n(.g .ds Aq \(aq
+X.el       .ds Aq '
+X.\"
+X.\" If the F register is >0, we'll generate index entries on stderr for
+X.\" titles (.TH), headers (.SH), subsections (.SS), items (.Ip), and index
+X.\" entries marked with X<> in POD.  Of course, you'll have to process the
+X.\" output yourself in some meaningful fashion.
+X.\"
+X.\" Avoid warning from groff about undefined register 'F'.
+X.de IX
+X..
+X.nr rF 0
+X.if \n(.g .if rF .nr rF 1
+X.if (\n(rF:(\n(.g==0)) \{\
+X.    if \nF \{\
+X.        de IX
+X.        tm Index:\\$1\t\\n%\t"\\$2"
+X..
+X.        if !\nF==2 \{\
+X.            nr % 0
+X.            nr F 2
+X.        \}
+X.    \}
+X.\}
+X.rr rF
+X.\" ========================================================================
+X.\"
+X.IX Title "BYZANZ-HELPER 1"
+X.TH BYZANZ-HELPER 1 2025-12-23 github.com/fjardon/unix-config "FJ Unix Config Commands"
+X.\" For nroff, turn off justification.  Always turn off hyphenation; it makes
+X.\" way too many mistakes in technical documents.
+X.if n .ad l
+X.nh
+X.SH NAME
+byzanz\-helper \- Helper script to record an X\-Window with byzanz\-record
+X.SH SYNOPSIS
+X.IX Header "SYNOPSIS"
+\&\fBbyzanz-helper\fR \fB\-h\fR|\fB\-\-help\fR
+X.PP
+\&\fBbyzanz-helper\fR [\fBOPTIONS\fR] \fB\-o\fR \fIFILE\fR
+X.SH DESCRIPTION
+X.IX Header "DESCRIPTION"
+This tool helps record a specific \fBX11\fR window using \fBbyzanz-record\fR. When
+run, the script will ask the user to pick the desired X\-Window using the mouse.
+The recording will then start for the specified duration.
+X.PP
+Internally the script uses \fBxwininfo\fR to obtain the position and size of the
+recorded video. These parameters are not updated while the video is recorded.
+It the recorded window is moved it will leave the area of recording and be
+only partially visible in the resulting video.
+X.SH OPTIONS
+X.IX Header "OPTIONS"
+X.IP \fB\-h\fR|\fB\-\-help\fR 4
+X.IX Item "-h|--help"
+Print the usage, help and version information for this program and exit.
+X.IP "\fB\-o\fR \fIFILE\fR|\fB\-\-output\fR=\fIFILE\fR" 4
+X.IX Item "-o FILE|--output=FILE"
+Sets the output file for the recorded video.
+X.IP "\fB\-t\fR \fIDURATION\fR|\fB\-\-duration\fR=\fIDURATION\fR" 4
+X.IX Item "-t DURATION|--duration=DURATION"
+Sets the recording duration in seconds. Default is 30 seconds.
+X.SH "SEE ALSO"
+X.IX Header "SEE ALSO"
+\&\fBbyzanz\-record\fR\|(1), \fBbyzanz\-playback\fR\|(1), \fBxwininfo\fR\|(1)
+X.SH AUTHOR
+X.IX Header "AUTHOR"
+Frederic JARDON <frederic.jardon@gmail.com>
+X.SH "COPYRIGHT AND LICENSE"
+X.IX Header "COPYRIGHT AND LICENSE"
+Copyright (C) 2018 by Frederic JARDON <frederic.jardon@gmail.com>
+X.PP
+This program is free software; you can redistribute it and/or modify
+it under the MIT license.
+SHAR_EOF
+  (set 20 25 12 23 21 22 08 'man/byzanz-helper.1'
+   eval "${shar_touch}") && \
+  chmod 0644 'man/byzanz-helper.1'
+if test $? -ne 0
+then ${echo} "restore of man/byzanz-helper.1 failed"
+fi
+  if ${md5check}
+  then (
+       ${MD5SUM} -c >/dev/null 2>&1 || ${echo} 'man/byzanz-helper.1': 'MD5 check failed'
+       ) << \SHAR_EOF
+a1059c10f35915b29923ee069688b013  man/byzanz-helper.1
+SHAR_EOF
+
+else
+test `LC_ALL=C wc -c < 'man/byzanz-helper.1'` -ne 3231 && \
+  ${echo} "restoration warning:  size of 'man/byzanz-helper.1' is not 3231"
+  fi
+fi
+# ============= man/codefmt.1 ==============
+if test ! -d 'man'; then
+  mkdir 'man'
+if test $? -eq 0
+then ${echo} "x - created directory man."
+else ${echo} "x - failed to create directory man."
+     exit 1
+fi
+fi
+if test -n "${keep_file}" && test -f 'man/codefmt.1'
+then
+${echo} "x - SKIPPING man/codefmt.1 (file already exists)"
+
+else
+${echo} "x - extracting man/codefmt.1 (text)"
+  sed 's/^X//' << 'SHAR_EOF' > 'man/codefmt.1' &&
+X.\" -*- mode: troff; coding: utf-8 -*-
+X.\" Automatically generated by Pod::Man 5.01 (Pod::Simple 3.43)
+X.\"
+X.\" Standard preamble:
+X.\" ========================================================================
+X.de Sp \" Vertical space (when we can't use .PP)
+X.if t .sp .5v
+X.if n .sp
+X..
+X.de Vb \" Begin verbatim text
+X.ft CW
+X.nf
+X.ne \\$1
+X..
+X.de Ve \" End verbatim text
+X.ft R
+X.fi
+X..
+X.\" \*(C` and \*(C' are quotes in nroff, nothing in troff, for use with C<>.
+X.ie n \{\
+X.    ds C` ""
+X.    ds C' ""
+'br\}
+X.el\{\
+X.    ds C`
+X.    ds C'
+'br\}
+X.\"
+X.\" Escape single quotes in literal strings from groff's Unicode transform.
+X.ie \n(.g .ds Aq \(aq
+X.el       .ds Aq '
+X.\"
+X.\" If the F register is >0, we'll generate index entries on stderr for
+X.\" titles (.TH), headers (.SH), subsections (.SS), items (.Ip), and index
+X.\" entries marked with X<> in POD.  Of course, you'll have to process the
+X.\" output yourself in some meaningful fashion.
+X.\"
+X.\" Avoid warning from groff about undefined register 'F'.
+X.de IX
+X..
+X.nr rF 0
+X.if \n(.g .if rF .nr rF 1
+X.if (\n(rF:(\n(.g==0)) \{\
+X.    if \nF \{\
+X.        de IX
+X.        tm Index:\\$1\t\\n%\t"\\$2"
+X..
+X.        if !\nF==2 \{\
+X.            nr % 0
+X.            nr F 2
+X.        \}
+X.    \}
+X.\}
+X.rr rF
+X.\" ========================================================================
+X.\"
+X.IX Title "CODEFMT 1"
+X.TH CODEFMT 1 2025-12-23 github.com/fjardon/unix-config "FJ Unix Config Commands"
+X.\" For nroff, turn off justification.  Always turn off hyphenation; it makes
+X.\" way too many mistakes in technical documents.
+X.if n .ad l
+X.nh
+X.SH NAME
+codefmt \- Code Formatter tool
+X.SH SYNOPSIS
+X.IX Header "SYNOPSIS"
+\&\fBcodefmt\fR \fB\-h\fR|\fB\-\-help\fR
+X.PP
+\&\fBcodefmt\fR [\fBOPTIONS\fR] [\fBFILE\fR ...]
+X.SH DESCRIPTION
+X.IX Header "DESCRIPTION"
+This tool format tabular data into fixed size columns.
+X.SH OPTIONS
+X.IX Header "OPTIONS"
+X.IP \fB\-h\fR|\fB\-\-help\fR 4
+X.IX Item "-h|--help"
+Print the usage, help and version information for this program and exit.
+X.IP "\fB\-e\fR \fIEOL-SEPARATOR\fR|\fB\-\-eol\fR=\fIEOL-SEPARATOR\fR" 4
+X.IX Item "-e EOL-SEPARATOR|--eol=EOL-SEPARATOR"
+Sets the end-of-line separator. Default value is: \f(CW\*(C` \e\e\*(C'\fR.
+X.IP "\fB\-s\fR \fICOLUMN-SEPARATOR\fR|\fB\-\-separator\fR=\fICOLUMN-SEPARATOR\fR" 4
+X.IX Item "-s COLUMN-SEPARATOR|--separator=COLUMN-SEPARATOR"
+Sets the end-of-line separator. Default value is: \f(CW\*(C` \*(C'\fR.
+X.SH "SEE ALSO"
+X.IX Header "SEE ALSO"
+\&\fBfmt\fR\|(1), \fBcolumn\fR\|(1), \fBcodemv\fR\|(1)
+X.SH AUTHOR
+X.IX Header "AUTHOR"
+Frederic JARDON <frederic.jardon@gmail.com>
+X.SH "COPYRIGHT AND LICENSE"
+X.IX Header "COPYRIGHT AND LICENSE"
+Copyright (C) 2019 by Frederic JARDON <frederic.jardon@gmail.com>
+X.PP
+This program is free software; you can redistribute it and/or modify
+it under the GPL license.
+SHAR_EOF
+  (set 20 25 12 23 21 22 08 'man/codefmt.1'
+   eval "${shar_touch}") && \
+  chmod 0644 'man/codefmt.1'
+if test $? -ne 0
+then ${echo} "restore of man/codefmt.1 failed"
+fi
+  if ${md5check}
+  then (
+       ${MD5SUM} -c >/dev/null 2>&1 || ${echo} 'man/codefmt.1': 'MD5 check failed'
+       ) << \SHAR_EOF
+1902288b716bca83744596cc9f1fe078  man/codefmt.1
+SHAR_EOF
+
+else
+test `LC_ALL=C wc -c < 'man/codefmt.1'` -ne 2786 && \
+  ${echo} "restoration warning:  size of 'man/codefmt.1' is not 2786"
+  fi
+fi
+# ============= man/codemv.1 ==============
+if test -n "${keep_file}" && test -f 'man/codemv.1'
+then
+${echo} "x - SKIPPING man/codemv.1 (file already exists)"
+
+else
+${echo} "x - extracting man/codemv.1 (text)"
+  sed 's/^X//' << 'SHAR_EOF' > 'man/codemv.1' &&
+X.\" -*- mode: troff; coding: utf-8 -*-
+X.\" Automatically generated by Pod::Man 5.01 (Pod::Simple 3.43)
+X.\"
+X.\" Standard preamble:
+X.\" ========================================================================
+X.de Sp \" Vertical space (when we can't use .PP)
+X.if t .sp .5v
+X.if n .sp
+X..
+X.de Vb \" Begin verbatim text
+X.ft CW
+X.nf
+X.ne \\$1
+X..
+X.de Ve \" End verbatim text
+X.ft R
+X.fi
+X..
+X.\" \*(C` and \*(C' are quotes in nroff, nothing in troff, for use with C<>.
+X.ie n \{\
+X.    ds C` ""
+X.    ds C' ""
+'br\}
+X.el\{\
+X.    ds C`
+X.    ds C'
+'br\}
+X.\"
+X.\" Escape single quotes in literal strings from groff's Unicode transform.
+X.ie \n(.g .ds Aq \(aq
+X.el       .ds Aq '
+X.\"
+X.\" If the F register is >0, we'll generate index entries on stderr for
+X.\" titles (.TH), headers (.SH), subsections (.SS), items (.Ip), and index
+X.\" entries marked with X<> in POD.  Of course, you'll have to process the
+X.\" output yourself in some meaningful fashion.
+X.\"
+X.\" Avoid warning from groff about undefined register 'F'.
+X.de IX
+X..
+X.nr rF 0
+X.if \n(.g .if rF .nr rF 1
+X.if (\n(rF:(\n(.g==0)) \{\
+X.    if \nF \{\
+X.        de IX
+X.        tm Index:\\$1\t\\n%\t"\\$2"
+X..
+X.        if !\nF==2 \{\
+X.            nr % 0
+X.            nr F 2
+X.        \}
+X.    \}
+X.\}
+X.rr rF
+X.\" ========================================================================
+X.\"
+X.IX Title "CODEMV 1"
+X.TH CODEMV 1 2025-12-23 github.com/fjardon/unix-config "FJ Unix Config Commands"
+X.\" For nroff, turn off justification.  Always turn off hyphenation; it makes
+X.\" way too many mistakes in technical documents.
+X.if n .ad l
+X.nh
+X.SH NAME
+codemv \- Code Mover Tool
+X.SH SYNOPSIS
+X.IX Header "SYNOPSIS"
+\&\fBcodemv\fR \fB\-h\fR|\fB\-\-help\fR
+X.PP
+\&\fBcodemv\fR [\fBOPTIONS\fR]...
+X.SH DESCRIPTION
+X.IX Header "DESCRIPTION"
+This tool divert part of its input to a specified file.
+X.SH OPTIONS
+X.IX Header "OPTIONS"
+X.IP \fB\-h\fR|\fB\-\-help\fR 4
+X.IX Item "-h|--help"
+Print the usage, help and version information for this program and exit.
+X.IP "\fB\-a\fR \fIFILE\fR|\fB\-\-append\fR=\fIFILE\fR" 4
+X.IX Item "-a FILE|--append=FILE"
+Sets the file where diverted input is appended. This option is mutually
+exclusive with the \fB\-o\fR option.
+X.IP \fB\-c\fR|\fB\-\-copy\fR 4
+X.IX Item "-c|--copy"
+Copy to stdout the whole input.
+X.IP "\fB\-o\fR \fIFILE\fR|\fB\-\-overwrite\fR=\fIFILE\fR" 4
+X.IX Item "-o FILE|--overwrite=FILE"
+Sets the file overwritten by the diverted input. This option is mutually
+exclusive with the \fB\-o\fR option.
+X.SH "SEE ALSO"
+X.IX Header "SEE ALSO"
+\&\fBfmt\fR\|(1), \fBcolumn\fR\|(1), \fBcodefmt\fR\|(1)
+X.SH AUTHOR
+X.IX Header "AUTHOR"
+Frederic JARDON <frederic.jardon@gmail.com>
+X.SH "COPYRIGHT AND LICENSE"
+X.IX Header "COPYRIGHT AND LICENSE"
+Copyright (C) 2019 by Frederic JARDON <frederic.jardon@gmail.com>
+X.PP
+This program is free software; you can redistribute it and/or modify
+it under the GPL license.
+SHAR_EOF
+  (set 20 25 12 23 21 22 08 'man/codemv.1'
+   eval "${shar_touch}") && \
+  chmod 0644 'man/codemv.1'
+if test $? -ne 0
+then ${echo} "restore of man/codemv.1 failed"
+fi
+  if ${md5check}
+  then (
+       ${MD5SUM} -c >/dev/null 2>&1 || ${echo} 'man/codemv.1': 'MD5 check failed'
+       ) << \SHAR_EOF
+1d5fb93098bfcd1b864bd4e56dfc3c14  man/codemv.1
+SHAR_EOF
+
+else
+test `LC_ALL=C wc -c < 'man/codemv.1'` -ne 2844 && \
+  ${echo} "restoration warning:  size of 'man/codemv.1' is not 2844"
+  fi
+fi
+# ============= man/plgen.1 ==============
+if test -n "${keep_file}" && test -f 'man/plgen.1'
+then
+${echo} "x - SKIPPING man/plgen.1 (file already exists)"
+
+else
+${echo} "x - extracting man/plgen.1 (text)"
+  sed 's/^X//' << 'SHAR_EOF' > 'man/plgen.1' &&
+X.\" -*- mode: troff; coding: utf-8 -*-
+X.\" Automatically generated by Pod::Man 5.01 (Pod::Simple 3.43)
+X.\"
+X.\" Standard preamble:
+X.\" ========================================================================
+X.de Sp \" Vertical space (when we can't use .PP)
+X.if t .sp .5v
+X.if n .sp
+X..
+X.de Vb \" Begin verbatim text
+X.ft CW
+X.nf
+X.ne \\$1
+X..
+X.de Ve \" End verbatim text
+X.ft R
+X.fi
+X..
+X.\" \*(C` and \*(C' are quotes in nroff, nothing in troff, for use with C<>.
+X.ie n \{\
+X.    ds C` ""
+X.    ds C' ""
+'br\}
+X.el\{\
+X.    ds C`
+X.    ds C'
+'br\}
+X.\"
+X.\" Escape single quotes in literal strings from groff's Unicode transform.
+X.ie \n(.g .ds Aq \(aq
+X.el       .ds Aq '
+X.\"
+X.\" If the F register is >0, we'll generate index entries on stderr for
+X.\" titles (.TH), headers (.SH), subsections (.SS), items (.Ip), and index
+X.\" entries marked with X<> in POD.  Of course, you'll have to process the
+X.\" output yourself in some meaningful fashion.
+X.\"
+X.\" Avoid warning from groff about undefined register 'F'.
+X.de IX
+X..
+X.nr rF 0
+X.if \n(.g .if rF .nr rF 1
+X.if (\n(rF:(\n(.g==0)) \{\
+X.    if \nF \{\
+X.        de IX
+X.        tm Index:\\$1\t\\n%\t"\\$2"
+X..
+X.        if !\nF==2 \{\
+X.            nr % 0
+X.            nr F 2
+X.        \}
+X.    \}
+X.\}
+X.rr rF
+X.\" ========================================================================
+X.\"
+X.IX Title "PLGEN 1"
+X.TH PLGEN 1 2025-12-23 github.com/fjardon/unix-config "FJ Unix Config Commands"
+X.\" For nroff, turn off justification.  Always turn off hyphenation; it makes
+X.\" way too many mistakes in technical documents.
+X.if n .ad l
+X.nh
+X.SH NAME
+plgen \- Code Formatter tool
+X.SH SYNOPSIS
+X.IX Header "SYNOPSIS"
+\&\fBplgen\fR \fB\-h\fR|\fB\-\-help\fR
+X.PP
+\&\fBplgen\fR [\fBOPTIONS\fR] \-c \fBFILE\fR
+X.SH DESCRIPTION
+X.IX Header "DESCRIPTION"
+This tool format tabular data into fixed size columns.
+X.SH OPTIONS
+X.IX Header "OPTIONS"
+X.IP \fB\-h\fR|\fB\-\-help\fR 4
+X.IX Item "-h|--help"
+Print the usage, help and version information for this program and exit.
+X.IP "\fB\-c\fR \fIFILE\fR" 4
+X.IX Item "-c FILE"
+Sets the input file to compile.
+X.IP "\fB\-o\fR \fIOUTPUT\fR" 4
+X.IX Item "-o OUTPUT"
+Sets the output file to generate.
+X.SH "INPUT FILE FORMAT"
+X.IX Header "INPUT FILE FORMAT"
+The input file describe a simple data record. The file format is line oriented
+and should start with a header:
+X.PP
+X.Vb 8
+\&    :class\-name: The::Class::Name
+\&    :version: 0.0.2a
+\&    # Some comment
+\&    #
+\&    # Field       Default\-Value   Item\-Type_opt
+\&    field\-name\-1  \*(Aq\*(Aq
+\&    field\-name\-2  []              Item::Type
+\&    field\-name\-3  0
+X.Ve
+X.PP
+The following methods are created for scalar fields:
+X.IP \fBget_field_name()\fR 5
+X.IX Item "get_field_name()"
+Gets the scalar value of the field.
+X.ie n .IP set_field_name(\fR\fI$new_value\fR\fI\fR) 5
+X.el .IP set_field_name(\fR\f(CI$new_value\fR\fI\fR) 5
+X.IX Item "set_field_name($new_value)"
+Sets the scalar value of the new field.
+X.PP
+For array fields, the following methods are created:
+X.IP \fBcount_field_name()\fR 5
+X.IX Item "count_field_name()"
+Returns the count of elements in the array.
+X.IP \fBget_field_name()\fR 5
+X.IX Item "get_field_name()"
+Which returns a list.
+X.ie n .IP set_field_name(\fR\fI@new_values\fR\fI\fR) 5
+X.el .IP set_field_name(\fR\f(CI@new_values\fR\fI\fR) 5
+X.IX Item "set_field_name(@new_values)"
+Which copies the items in the internal array.
+X.ie n .IP push_field_name(\fR\fI@new_values\fR\fI\fR) 5
+X.el .IP push_field_name(\fR\f(CI@new_values\fR\fI\fR) 5
+X.IX Item "push_field_name(@new_values)"
+Which append items to the internal array.
+X.IP \fBclear_field_name()\fR 5
+X.IX Item "clear_field_name()"
+Which clears the internal array.
+X.IP "apply_field_name(\fIsub {...}\fR)" 5
+X.IX Item "apply_field_name(sub {...})"
+Which applies the sub on the array's items.
+X.SH DIAGNOSTICS
+X.IX Header "DIAGNOSTICS"
+X.SH "CONFIGURATION AND ENVIRONMENT"
+X.IX Header "CONFIGURATION AND ENVIRONMENT"
+X.SH DEPENDENCIES
+X.IX Header "DEPENDENCIES"
+X.SH INCOMPATIBILITIES
+X.IX Header "INCOMPATIBILITIES"
+X.SH "BUGS AND LIMITATIONS"
+X.IX Header "BUGS AND LIMITATIONS"
+X.SH "SEE ALSO"
+X.IX Header "SEE ALSO"
+X.SH AUTHOR
+X.IX Header "AUTHOR"
+Frederic JARDON <frederic.jardon@gmail.com>
+X.SH "COPYRIGHT AND LICENSE"
+X.IX Header "COPYRIGHT AND LICENSE"
+Copyright (C) 2019 by Frederic JARDON <frederic.jardon@gmail.com>
+X.PP
+This program is free software; you can redistribute it and/or modify
+it under the GPL license.
+SHAR_EOF
+  (set 20 25 12 23 21 22 08 'man/plgen.1'
+   eval "${shar_touch}") && \
+  chmod 0644 'man/plgen.1'
+if test $? -ne 0
+then ${echo} "restore of man/plgen.1 failed"
+fi
+  if ${md5check}
+  then (
+       ${MD5SUM} -c >/dev/null 2>&1 || ${echo} 'man/plgen.1': 'MD5 check failed'
+       ) << \SHAR_EOF
+d6b89a767cad68a563df51364225e10e  man/plgen.1
+SHAR_EOF
+
+else
+test `LC_ALL=C wc -c < 'man/plgen.1'` -ne 4364 && \
+  ${echo} "restoration warning:  size of 'man/plgen.1' is not 4364"
+  fi
+fi
+# ============= man/ffmpeg-helper.1 ==============
+if test -n "${keep_file}" && test -f 'man/ffmpeg-helper.1'
+then
+${echo} "x - SKIPPING man/ffmpeg-helper.1 (file already exists)"
+
+else
+${echo} "x - extracting man/ffmpeg-helper.1 (text)"
+  sed 's/^X//' << 'SHAR_EOF' > 'man/ffmpeg-helper.1' &&
+X.\" -*- mode: troff; coding: utf-8 -*-
+X.\" Automatically generated by Pod::Man 5.01 (Pod::Simple 3.43)
+X.\"
+X.\" Standard preamble:
+X.\" ========================================================================
+X.de Sp \" Vertical space (when we can't use .PP)
+X.if t .sp .5v
+X.if n .sp
+X..
+X.de Vb \" Begin verbatim text
+X.ft CW
+X.nf
+X.ne \\$1
+X..
+X.de Ve \" End verbatim text
+X.ft R
+X.fi
+X..
+X.\" \*(C` and \*(C' are quotes in nroff, nothing in troff, for use with C<>.
+X.ie n \{\
+X.    ds C` ""
+X.    ds C' ""
+'br\}
+X.el\{\
+X.    ds C`
+X.    ds C'
+'br\}
+X.\"
+X.\" Escape single quotes in literal strings from groff's Unicode transform.
+X.ie \n(.g .ds Aq \(aq
+X.el       .ds Aq '
+X.\"
+X.\" If the F register is >0, we'll generate index entries on stderr for
+X.\" titles (.TH), headers (.SH), subsections (.SS), items (.Ip), and index
+X.\" entries marked with X<> in POD.  Of course, you'll have to process the
+X.\" output yourself in some meaningful fashion.
+X.\"
+X.\" Avoid warning from groff about undefined register 'F'.
+X.de IX
+X..
+X.nr rF 0
+X.if \n(.g .if rF .nr rF 1
+X.if (\n(rF:(\n(.g==0)) \{\
+X.    if \nF \{\
+X.        de IX
+X.        tm Index:\\$1\t\\n%\t"\\$2"
+X..
+X.        if !\nF==2 \{\
+X.            nr % 0
+X.            nr F 2
+X.        \}
+X.    \}
+X.\}
+X.rr rF
+X.\" ========================================================================
+X.\"
+X.IX Title "FFMPEG-HELPER 1"
+X.TH FFMPEG-HELPER 1 2025-12-23 github.com/fjardon/unix-config "FJ Unix Config Commands"
+X.\" For nroff, turn off justification.  Always turn off hyphenation; it makes
+X.\" way too many mistakes in technical documents.
+X.if n .ad l
+X.nh
+X.SH NAME
+ffmpeg\-helper \- Helper script to record an X\-Window with ffmpeg\-record
+X.SH SYNOPSIS
+X.IX Header "SYNOPSIS"
+\&\fBffmpeg-helper\fR \fB\-h\fR|\fB\-\-help\fR
+X.PP
+\&\fBffmpeg-helper\fR [\fBOPTIONS\fR] \fB\-o\fR \fIFILE\fR
+X.SH DESCRIPTION
+X.IX Header "DESCRIPTION"
+This tool helps record a specific \fBX11\fR window using \fBffmpeg\fR. When
+run, the script will ask the user to pick the desired X\-Window using the mouse.
+The recording will then start for the specified duration.
+X.PP
+Internally the script uses \fBxwininfo\fR to obtain the position and size of the
+recorded video. These parameters are not updated while the video is recorded.
+It the recorded window is moved it will leave the area of recording and be
+only partially visible in the resulting video.
+X.SH OPTIONS
+X.IX Header "OPTIONS"
+X.IP \fB\-h\fR|\fB\-\-help\fR 4
+X.IX Item "-h|--help"
+Print the usage, help and version information for this program and exit.
+X.IP "\fB\-o\fR \fIFILE\fR|\fB\-\-output\fR=\fIFILE\fR" 4
+X.IX Item "-o FILE|--output=FILE"
+Sets the output file for the recorded video.
+X.IP "\fB\-t\fR \fIDURATION\fR|\fB\-\-duration\fR=\fIDURATION\fR" 4
+X.IX Item "-t DURATION|--duration=DURATION"
+Sets the recording duration in seconds. Default is 30 seconds.
+X.SH "SEE ALSO"
+X.IX Header "SEE ALSO"
+\&\fBffmpeg\fR\|(1), \fBxwininfo\fR\|(1)
+X.SH AUTHOR
+X.IX Header "AUTHOR"
+Frederic JARDON <frederic.jardon@gmail.com>
+X.SH "COPYRIGHT AND LICENSE"
+X.IX Header "COPYRIGHT AND LICENSE"
+Copyright (C) 2018 by Frederic JARDON <frederic.jardon@gmail.com>
+X.PP
+This program is free software; you can redistribute it and/or modify
+it under the MIT license.
+SHAR_EOF
+  (set 20 25 12 23 21 22 08 'man/ffmpeg-helper.1'
+   eval "${shar_touch}") && \
+  chmod 0644 'man/ffmpeg-helper.1'
+if test $? -ne 0
+then ${echo} "restore of man/ffmpeg-helper.1 failed"
+fi
+  if ${md5check}
+  then (
+       ${MD5SUM} -c >/dev/null 2>&1 || ${echo} 'man/ffmpeg-helper.1': 'MD5 check failed'
+       ) << \SHAR_EOF
+deeaaf03868b0395dc1fdca24d641613  man/ffmpeg-helper.1
+SHAR_EOF
+
+else
+test `LC_ALL=C wc -c < 'man/ffmpeg-helper.1'` -ne 3187 && \
+  ${echo} "restoration warning:  size of 'man/ffmpeg-helper.1' is not 3187"
+  fi
+fi
+# ============= man/hyper-v.1 ==============
+if test -n "${keep_file}" && test -f 'man/hyper-v.1'
+then
+${echo} "x - SKIPPING man/hyper-v.1 (file already exists)"
+
+else
+${echo} "x - extracting man/hyper-v.1 (text)"
+  sed 's/^X//' << 'SHAR_EOF' > 'man/hyper-v.1' &&
+X.\" -*- mode: troff; coding: utf-8 -*-
+X.\" Automatically generated by Pod::Man 5.01 (Pod::Simple 3.43)
+X.\"
+X.\" Standard preamble:
+X.\" ========================================================================
+X.de Sp \" Vertical space (when we can't use .PP)
+X.if t .sp .5v
+X.if n .sp
+X..
+X.de Vb \" Begin verbatim text
+X.ft CW
+X.nf
+X.ne \\$1
+X..
+X.de Ve \" End verbatim text
+X.ft R
+X.fi
+X..
+X.\" \*(C` and \*(C' are quotes in nroff, nothing in troff, for use with C<>.
+X.ie n \{\
+X.    ds C` ""
+X.    ds C' ""
+'br\}
+X.el\{\
+X.    ds C`
+X.    ds C'
+'br\}
+X.\"
+X.\" Escape single quotes in literal strings from groff's Unicode transform.
+X.ie \n(.g .ds Aq \(aq
+X.el       .ds Aq '
+X.\"
+X.\" If the F register is >0, we'll generate index entries on stderr for
+X.\" titles (.TH), headers (.SH), subsections (.SS), items (.Ip), and index
+X.\" entries marked with X<> in POD.  Of course, you'll have to process the
+X.\" output yourself in some meaningful fashion.
+X.\"
+X.\" Avoid warning from groff about undefined register 'F'.
+X.de IX
+X..
+X.nr rF 0
+X.if \n(.g .if rF .nr rF 1
+X.if (\n(rF:(\n(.g==0)) \{\
+X.    if \nF \{\
+X.        de IX
+X.        tm Index:\\$1\t\\n%\t"\\$2"
+X..
+X.        if !\nF==2 \{\
+X.            nr % 0
+X.            nr F 2
+X.        \}
+X.    \}
+X.\}
+X.rr rF
+X.\" ========================================================================
+X.\"
+X.IX Title "HYPER-V 1"
+X.TH HYPER-V 1 2025-12-23 github.com/fjardon/unix-config "FJ Unix Config Commands"
+X.\" For nroff, turn off justification.  Always turn off hyphenation; it makes
+X.\" way too many mistakes in technical documents.
+X.if n .ad l
+X.nh
+X.SH NAME
+hyper\-v \- Starts and stop the hyper\-v windows hypervisor
+X.SH SYNOPSIS
+X.IX Header "SYNOPSIS"
+\&\fBhyper-v\fR \fB\-h\fR|\fB\-\-help\fR
+X.PP
+\&\fBhyper-v\fR \-\-start
+X.PP
+\&\fBhyper-v\fR \-\-stop
+X.SH DESCRIPTION
+X.IX Header "DESCRIPTION"
+This tools enables or disables the hyper-v service on Windows 10. Note that for
+the change to take effect one has to reboot the computer.
+X.SH OPTIONS
+X.IX Header "OPTIONS"
+X.IP \fB\-h\fR|\fB\-\-help\fR 4
+X.IX Item "-h|--help"
+Print the usage, help and version information for this program and exit.
+X.IP \fBstart\fR 4
+X.IX Item "start"
+Mark the hyper-v service as running the next time windows starts.
+X.IP \fBstop\fR 4
+X.IX Item "stop"
+Mark the hyper-v service as not running the next time windows starts.
+X.SH "SEE ALSO"
+X.IX Header "SEE ALSO"
+X.SH AUTHOR
+X.IX Header "AUTHOR"
+Frederic JARDON <frederic.jardon@gmail.com>
+X.SH "COPYRIGHT AND LICENSE"
+X.IX Header "COPYRIGHT AND LICENSE"
+Copyright (C) 2018 by Frederic JARDON <frederic.jardon@gmail.com>
+X.PP
+This program is free software; you can redistribute it and/or modify
+it under the MIT license.
+SHAR_EOF
+  (set 20 25 12 23 21 22 09 'man/hyper-v.1'
+   eval "${shar_touch}") && \
+  chmod 0644 'man/hyper-v.1'
+if test $? -ne 0
+then ${echo} "restore of man/hyper-v.1 failed"
+fi
+  if ${md5check}
+  then (
+       ${MD5SUM} -c >/dev/null 2>&1 || ${echo} 'man/hyper-v.1': 'MD5 check failed'
+       ) << \SHAR_EOF
+92739fdbab0aa4e030076c8f51d77b20  man/hyper-v.1
+SHAR_EOF
+
+else
+test `LC_ALL=C wc -c < 'man/hyper-v.1'` -ne 2643 && \
+  ${echo} "restoration warning:  size of 'man/hyper-v.1' is not 2643"
+  fi
+fi
+# ============= man/msvc-shell.1 ==============
+if test -n "${keep_file}" && test -f 'man/msvc-shell.1'
+then
+${echo} "x - SKIPPING man/msvc-shell.1 (file already exists)"
+
+else
+${echo} "x - extracting man/msvc-shell.1 (text)"
+  sed 's/^X//' << 'SHAR_EOF' > 'man/msvc-shell.1' &&
+X.\" -*- mode: troff; coding: utf-8 -*-
+X.\" Automatically generated by Pod::Man 5.01 (Pod::Simple 3.43)
+X.\"
+X.\" Standard preamble:
+X.\" ========================================================================
+X.de Sp \" Vertical space (when we can't use .PP)
+X.if t .sp .5v
+X.if n .sp
+X..
+X.de Vb \" Begin verbatim text
+X.ft CW
+X.nf
+X.ne \\$1
+X..
+X.de Ve \" End verbatim text
+X.ft R
+X.fi
+X..
+X.\" \*(C` and \*(C' are quotes in nroff, nothing in troff, for use with C<>.
+X.ie n \{\
+X.    ds C` ""
+X.    ds C' ""
+'br\}
+X.el\{\
+X.    ds C`
+X.    ds C'
+'br\}
+X.\"
+X.\" Escape single quotes in literal strings from groff's Unicode transform.
+X.ie \n(.g .ds Aq \(aq
+X.el       .ds Aq '
+X.\"
+X.\" If the F register is >0, we'll generate index entries on stderr for
+X.\" titles (.TH), headers (.SH), subsections (.SS), items (.Ip), and index
+X.\" entries marked with X<> in POD.  Of course, you'll have to process the
+X.\" output yourself in some meaningful fashion.
+X.\"
+X.\" Avoid warning from groff about undefined register 'F'.
+X.de IX
+X..
+X.nr rF 0
+X.if \n(.g .if rF .nr rF 1
+X.if (\n(rF:(\n(.g==0)) \{\
+X.    if \nF \{\
+X.        de IX
+X.        tm Index:\\$1\t\\n%\t"\\$2"
+X..
+X.        if !\nF==2 \{\
+X.            nr % 0
+X.            nr F 2
+X.        \}
+X.    \}
+X.\}
+X.rr rF
+X.\" ========================================================================
+X.\"
+X.IX Title "MSVC-SHELL 1"
+X.TH MSVC-SHELL 1 2025-12-23 github.com/fjardon/unix-config "FJ Unix Config Commands"
+X.\" For nroff, turn off justification.  Always turn off hyphenation; it makes
+X.\" way too many mistakes in technical documents.
+X.if n .ad l
+X.nh
+X.SH NAME
+msvc\-shell \- MS\-VC++ build environment shell spawner
+X.SH SYNOPSIS
+X.IX Header "SYNOPSIS"
+\&\fBmsvc-shell\fR \fB\-h\fR|\fB\-\-help\fR
+X.PP
+\&\fBmsvc-shell\fR [\fBOPTIONS\fR] \fBVC_OPTIONS\fR
+X.SH DESCRIPTION
+X.IX Header "DESCRIPTION"
+This tool wraps the \fBvcvarsall.bat\fR batch script provided with visual studio
+to setup the build environment. Calling this script allows to spawn a shell
+with the same configuration that \fBvcvarsall.bat\fR setup when called in a
+windows console.
+X.PP
+The tool also setup a \fBVS_KIT\fR environment variable in the spawned shell to
+indicate the parameters that were passed to \fBvcvarsall.bat\fR.
+X.SH OPTIONS
+X.IX Header "OPTIONS"
+X.IP \fB\-h\fR|\fB\-\-help\fR 4
+X.IX Item "-h|--help"
+Print the usage, help and version information for this program and exit.
+X.IP "\fB\-p\fR \fIpath/to/vcvarsall.bat\fR|\fB\-\-vcvarsall\-path\fR=\fIpath/to/vcvarsall.bat\fR" 4
+X.IX Item "-p path/to/vcvarsall.bat|--vcvarsall-path=path/to/vcvarsall.bat"
+Sets the path to the \fBvcvarsall.bat\fR batch script. Before Visual Studio 2017
+it was possible to deduce the path to this script from the environment variable
+set at install time, but this is no longer the case.
+X.SH VC_OPTIONS
+X.IX Header "VC_OPTIONS"
+The \fBvcvarsall.bat\fR script accepts parameters to indicate which architecture,
+platform, SDK, etc. is targeted by the environment it sets up.
+X.PP
+Run the script without \fBVC_OPTIONS\fR to get more information in the error
+message printed by \fBvcvarsall.bat\fR.
+X.SH "SEE ALSO"
+X.IX Header "SEE ALSO"
+X.SH AUTHOR
+X.IX Header "AUTHOR"
+Frederic JARDON <frederic.jardon@gmail.com>
+X.SH "COPYRIGHT AND LICENSE"
+X.IX Header "COPYRIGHT AND LICENSE"
+Copyright (C) 2017\-2025 by Frederic JARDON <frederic.jardon@gmail.com>
+X.PP
+This program is free software; you can redistribute it and/or modify
+it under the MIT license.
+SHAR_EOF
+  (set 20 25 12 23 21 22 09 'man/msvc-shell.1'
+   eval "${shar_touch}") && \
+  chmod 0644 'man/msvc-shell.1'
+if test $? -ne 0
+then ${echo} "restore of man/msvc-shell.1 failed"
+fi
+  if ${md5check}
+  then (
+       ${MD5SUM} -c >/dev/null 2>&1 || ${echo} 'man/msvc-shell.1': 'MD5 check failed'
+       ) << \SHAR_EOF
+5256c1a2e8952dca94f21cb696b010c1  man/msvc-shell.1
+SHAR_EOF
+
+else
+test `LC_ALL=C wc -c < 'man/msvc-shell.1'` -ne 3402 && \
+  ${echo} "restoration warning:  size of 'man/msvc-shell.1' is not 3402"
+  fi
+fi
+# ============= man/sixel2tmux.1 ==============
+if test -n "${keep_file}" && test -f 'man/sixel2tmux.1'
+then
+${echo} "x - SKIPPING man/sixel2tmux.1 (file already exists)"
+
+else
+${echo} "x - extracting man/sixel2tmux.1 (text)"
+  sed 's/^X//' << 'SHAR_EOF' > 'man/sixel2tmux.1' &&
+X.\" -*- mode: troff; coding: utf-8 -*-
+X.\" Automatically generated by Pod::Man 5.01 (Pod::Simple 3.43)
+X.\"
+X.\" Standard preamble:
+X.\" ========================================================================
+X.de Sp \" Vertical space (when we can't use .PP)
+X.if t .sp .5v
+X.if n .sp
+X..
+X.de Vb \" Begin verbatim text
+X.ft CW
+X.nf
+X.ne \\$1
+X..
+X.de Ve \" End verbatim text
+X.ft R
+X.fi
+X..
+X.\" \*(C` and \*(C' are quotes in nroff, nothing in troff, for use with C<>.
+X.ie n \{\
+X.    ds C` ""
+X.    ds C' ""
+'br\}
+X.el\{\
+X.    ds C`
+X.    ds C'
+'br\}
+X.\"
+X.\" Escape single quotes in literal strings from groff's Unicode transform.
+X.ie \n(.g .ds Aq \(aq
+X.el       .ds Aq '
+X.\"
+X.\" If the F register is >0, we'll generate index entries on stderr for
+X.\" titles (.TH), headers (.SH), subsections (.SS), items (.Ip), and index
+X.\" entries marked with X<> in POD.  Of course, you'll have to process the
+X.\" output yourself in some meaningful fashion.
+X.\"
+X.\" Avoid warning from groff about undefined register 'F'.
+X.de IX
+X..
+X.nr rF 0
+X.if \n(.g .if rF .nr rF 1
+X.if (\n(rF:(\n(.g==0)) \{\
+X.    if \nF \{\
+X.        de IX
+X.        tm Index:\\$1\t\\n%\t"\\$2"
+X..
+X.        if !\nF==2 \{\
+X.            nr % 0
+X.            nr F 2
+X.        \}
+X.    \}
+X.\}
+X.rr rF
+X.\" ========================================================================
+X.\"
+X.IX Title "SIXEL2TMUX 1"
+X.TH SIXEL2TMUX 1 2025-12-23 github.com/fjardon/unix-config "FJ Unix Config Commands"
+X.\" For nroff, turn off justification.  Always turn off hyphenation; it makes
+X.\" way too many mistakes in technical documents.
+X.if n .ad l
+X.nh
+X.SH NAME
+sixel2tmux \- Script converting sixel input into tmux's DCS escape sequence
+X.SH SYNOPSIS
+X.IX Header "SYNOPSIS"
+\&\fBsixel2tmux\fR \fB\-h\fR|\fB\-\-help\fR
+X.PP
+\&\fBsixel2tmux\fR [\fBOPTIONS\fR]
+X.PP
+GNUTERM=sixelgd gnuplot \-e 'plot sin(x)' | \fBsixel2tmux\fR
+X.SH DESCRIPTION
+X.IX Header "DESCRIPTION"
+This tool converts standard input into a \fItmux\fR specific \fBDCS\fR escape sequence
+and outputs it to a terminal.
+X.PP
+The output of the program should be directed to a terminal. In case no terminal
+is specified, the script will use \fI/dev/tty\fR.
+X.SH OPTIONS
+X.IX Header "OPTIONS"
+X.IP \fB\-h\fR|\fB\-\-help\fR 4
+X.IX Item "-h|--help"
+Print the usage, help and version information for this program and exit.
+X.IP "\fB\-t\fR \fITERMINAL\fR|\fB\-\-terminal\fR=\fITERMINAL\fR" 4
+X.IX Item "-t TERMINAL|--terminal=TERMINAL"
+Sets the terminal used to output the tmux DCS escape sequence. In case the
+terminal is not specified, the default value is: \fI/dev/tty\fR.
+X.Sp
+The special name: '\-' means \fIstdout\fR
+X.IP \fB\-l\fR=\fIINCEPTION\fR|\fB\-\-inception\-level\fR=\fIINCEPTION\fR 4
+X.IX Item "-l=INCEPTION|--inception-level=INCEPTION"
+Sets the \fBtmux\fR inception level. This is needed in case you connect to another
+\&\fBtmux\fR session from within a \fBtmux\fR session. Default value is 0 unless the
+\&\fBTMUX\fR environment variable is set, in which case the default value is 1.
+X.SH "ENVIRONMENT VARIABLES"
+X.IX Header "ENVIRONMENT VARIABLES"
+X.IP TMUX 4
+X.IX Item "TMUX"
+The \fBTMUX\fR environment variable is used to find out if we are running inside
+a \fBtmux\fR pane.
+X.SH "SEE ALSO"
+X.IX Header "SEE ALSO"
+\&\fBxterm\fR\|(1), \fBtmux\fR\|(1)
+X.IP "\fIXTerm Control Sequences\fR" 4
+X.IX Item "XTerm Control Sequences"
+X.Vb 1
+\&    https://invisible\-island.net/xterm/ctlseqs/ctlseqs.html#h2\-Operating\-System\-Commands
+X.Ve
+X.IP "\fIDevice Control String Sequences\fR" 4
+X.IX Item "Device Control String Sequences"
+X.Vb 1
+\&    https://vt100.net/docs/vt510\-rm/chapter4.html
+X.Ve
+X.IP "\fITMux DCS Sequences\fR" 4
+X.IX Item "TMux DCS Sequences"
+X.Vb 1
+\&    see tmux changelog
+X.Ve
+X.SH AUTHOR
+X.IX Header "AUTHOR"
+Frederic JARDON <frederic.jardon@gmail.com>
+X.SH "COPYRIGHT AND LICENSE"
+X.IX Header "COPYRIGHT AND LICENSE"
+Copyright (C) 2017 by Frederic JARDON <frederic.jardon@gmail.com>
+X.PP
+This program is free software; you can redistribute it and/or modify
+it under the MIT license.
+SHAR_EOF
+  (set 20 25 12 23 21 22 09 'man/sixel2tmux.1'
+   eval "${shar_touch}") && \
+  chmod 0644 'man/sixel2tmux.1'
+if test $? -ne 0
+then ${echo} "restore of man/sixel2tmux.1 failed"
+fi
+  if ${md5check}
+  then (
+       ${MD5SUM} -c >/dev/null 2>&1 || ${echo} 'man/sixel2tmux.1': 'MD5 check failed'
+       ) << \SHAR_EOF
+fb28176fd00c2b64586d06764777e1c2  man/sixel2tmux.1
+SHAR_EOF
+
+else
+test `LC_ALL=C wc -c < 'man/sixel2tmux.1'` -ne 3947 && \
+  ${echo} "restoration warning:  size of 'man/sixel2tmux.1' is not 3947"
+  fi
+fi
+# ============= man/yank.1 ==============
+if test -n "${keep_file}" && test -f 'man/yank.1'
+then
+${echo} "x - SKIPPING man/yank.1 (file already exists)"
+
+else
+${echo} "x - extracting man/yank.1 (text)"
+  sed 's/^X//' << 'SHAR_EOF' > 'man/yank.1' &&
+X.\" -*- mode: troff; coding: utf-8 -*-
+X.\" Automatically generated by Pod::Man 5.01 (Pod::Simple 3.43)
+X.\"
+X.\" Standard preamble:
+X.\" ========================================================================
+X.de Sp \" Vertical space (when we can't use .PP)
+X.if t .sp .5v
+X.if n .sp
+X..
+X.de Vb \" Begin verbatim text
+X.ft CW
+X.nf
+X.ne \\$1
+X..
+X.de Ve \" End verbatim text
+X.ft R
+X.fi
+X..
+X.\" \*(C` and \*(C' are quotes in nroff, nothing in troff, for use with C<>.
+X.ie n \{\
+X.    ds C` ""
+X.    ds C' ""
+'br\}
+X.el\{\
+X.    ds C`
+X.    ds C'
+'br\}
+X.\"
+X.\" Escape single quotes in literal strings from groff's Unicode transform.
+X.ie \n(.g .ds Aq \(aq
+X.el       .ds Aq '
+X.\"
+X.\" If the F register is >0, we'll generate index entries on stderr for
+X.\" titles (.TH), headers (.SH), subsections (.SS), items (.Ip), and index
+X.\" entries marked with X<> in POD.  Of course, you'll have to process the
+X.\" output yourself in some meaningful fashion.
+X.\"
+X.\" Avoid warning from groff about undefined register 'F'.
+X.de IX
+X..
+X.nr rF 0
+X.if \n(.g .if rF .nr rF 1
+X.if (\n(rF:(\n(.g==0)) \{\
+X.    if \nF \{\
+X.        de IX
+X.        tm Index:\\$1\t\\n%\t"\\$2"
+X..
+X.        if !\nF==2 \{\
+X.            nr % 0
+X.            nr F 2
+X.        \}
+X.    \}
+X.\}
+X.rr rF
+X.\" ========================================================================
+X.\"
+X.IX Title "YANK 1"
+X.TH YANK 1 2025-12-23 github.com/fjardon/unix-config "FJ Unix Config Commands"
+X.\" For nroff, turn off justification.  Always turn off hyphenation; it makes
+X.\" way too many mistakes in technical documents.
+X.if n .ad l
+X.nh
+X.SH NAME
+yank \- Script converting input into OSC 5\-2 escape sequence
+X.SH SYNOPSIS
+X.IX Header "SYNOPSIS"
+\&\fByank\fR \fB\-h\fR|\fB\-\-help\fR
+X.PP
+\&\fByank\fR [\fBOPTIONS\fR]
+X.PP
+echo "Text To Copy" | \fByank\fR
+X.SH DESCRIPTION
+X.IX Header "DESCRIPTION"
+This tool converts standard input into \fBOSC 5\-2\fR escape sequence and outputs
+it to a terminal. These escape sequences are interpreted by terminals to set
+their \fBselection\fR buffer. For \fBXTerm\fR it means the \fBX11\fR copy/paste buffer.
+X.PP
+The script can used to provide seamless copy/paste capabilities between a host
+and a remote session. For instance a user running \fBvim\fR through \fBtmux\fR on a
+remote host connected by \fBssh\fR running on its \fBWindows\fR laptop.
+X.PP
+The output of the program should be directed to a terminal. In case no terminal
+is specified, the script will use \fI/dev/tty\fR.
+X.SH OPTIONS
+X.IX Header "OPTIONS"
+X.IP \fB\-h\fR|\fB\-\-help\fR 4
+X.IX Item "-h|--help"
+Print the usage, help and version information for this program and exit.
+X.IP "\fB\-t\fR \fITERMINAL\fR|\fB\-\-terminal\fR=\fITERMINAL\fR" 4
+X.IX Item "-t TERMINAL|--terminal=TERMINAL"
+Sets the terminal used to output the OSC 5\-2 escape sequence. In case the
+terminal is not specified, the default value is: \fI/dev/tty\fR.
+X.IP \fB\-\-tmux\-tty\fR 4
+X.IX Item "--tmux-tty"
+Sets the terminal used to output the OSC 5\-2 escape sequence to the \fBtmux\fR pane
+tty. In case the program is unable to find out \fBtmux\fR pane's tty, the value of
+the \fB\-\-terminal\fR option is taken into account.
+X.IP \fB\-l\fR=\fIINCEPTION\fR|\fB\-\-inception\-level\fR=\fIINCEPTION\fR 4
+X.IX Item "-l=INCEPTION|--inception-level=INCEPTION"
+Sets the \fBtmux\fR inception level. This is needed in case you connect to another
+\&\fBtmux\fR session from within a \fBtmux\fR session. Default value is 0 unless the
+\&\fBTMUX\fR environment variable is set, in which case the default value is 1.
+X.SH LIMITATIONS
+X.IX Header "LIMITATIONS"
+No more than 74994 bytes of data can be transmitted through the OSC 5\-2 escape
+sequence.
+X.SH "ENVIRONMENT VARIABLES"
+X.IX Header "ENVIRONMENT VARIABLES"
+X.IP TMUX 4
+X.IX Item "TMUX"
+The \fBTMUX\fR environment variable is used to find out if we are running inside
+a \fBtmux\fR pane.
+X.SH "SEE ALSO"
+X.IX Header "SEE ALSO"
+\&\fBxterm\fR\|(1), \fBtmux\fR\|(1)
+X.IP "\fIXTerm Control Sequences\fR" 4
+X.IX Item "XTerm Control Sequences"
+X.Vb 1
+\&    https://invisible\-island.net/xterm/ctlseqs/ctlseqs.html#h2\-Operating\-System\-Commands
+X.Ve
+X.IP "\fIDevice Control String Sequences\fR" 4
+X.IX Item "Device Control String Sequences"
+X.Vb 1
+\&    https://vt100.net/docs/vt510\-rm/chapter4.html
+X.Ve
+X.IP "\fITMux DCS Sequences\fR" 4
+X.IX Item "TMux DCS Sequences"
+X.Vb 1
+\&    see tmux changelog
+X.Ve
+X.SH AUTHOR
+X.IX Header "AUTHOR"
+Frederic JARDON <frederic.jardon@gmail.com>
+X.SH "COPYRIGHT AND LICENSE"
+X.IX Header "COPYRIGHT AND LICENSE"
+Copyright (C) 2017 by Frederic JARDON <frederic.jardon@gmail.com>
+X.PP
+This program is free software; you can redistribute it and/or modify
+it under the MIT license.
+SHAR_EOF
+  (set 20 25 12 23 21 22 09 'man/yank.1'
+   eval "${shar_touch}") && \
+  chmod 0644 'man/yank.1'
+if test $? -ne 0
+then ${echo} "restore of man/yank.1 failed"
+fi
+  if ${md5check}
+  then (
+       ${MD5SUM} -c >/dev/null 2>&1 || ${echo} 'man/yank.1': 'MD5 check failed'
+       ) << \SHAR_EOF
+f067305b3a07fe45d9e46fd9a5e1e20c  man/yank.1
+SHAR_EOF
+
+else
+test `LC_ALL=C wc -c < 'man/yank.1'` -ne 4604 && \
+  ${echo} "restoration warning:  size of 'man/yank.1' is not 4604"
+  fi
+fi
+if rm -fr ${lock_dir}
+then ${echo} "x - removed lock directory ${lock_dir}."
+else ${echo} "x - failed to remove lock directory ${lock_dir}."
+     exit 1
+fi
+exit 0
+SETUP_SHAR_EOF
+/bin/sh setup.shar > /dev/null
+# =============================================================================
+
+# Make uudecode available if not present on system
+if ! has_prog uudecode; then
+    mv scripts/uudecode.pl uudecode
+    chmod 0755 uudecode
+    export PATH="${PWD}:${PATH}"
+fi
+
+# Prepare backups directory
+DATE=$(date '+%Y%m%d')
+HOUR=$(date '+%H%M%S')
+BACKUPDIR="${PREFIX}/.backups/${DATE}/${HOUR}"
+${INSTALL_P} -d "${BACKUPDIR}"
+
+# Backup files
+echo "shell ..."
+if [ -e "${PREFIX}/.profile" ]; then
+    cp -f "${PREFIX}/.profile" "${BACKUPDIR}"
+fi
+if [ -e "${PREFIX}/.bash_profile" ]; then
+    cp -f "${PREFIX}/.bash_profile" "${BACKUPDIR}"
+fi
+if [ -e "${PREFIX}/.bashrc" ]; then
+    cp -f "${PREFIX}/.bashrc" "${BACKUPDIR}"
+fi
+if [ ! -e "${PREFIX}/.path_dirs" ]; then
+    cat <<DOT_PROFILE_PATHS_EOF > "${PREFIX}/.path_dirs"
+# Directory path in this file are scanned by .bash_profile
+# to setup the following variables:
+#  - PATH
+#  - LD_LIBRARY_PATH
+#  - MANPATH
+#  - INFOPATH
+#  - PERL5LIB
+#  - PKG_CONFIG_PATH
+
+${PREFIX}/.local
+${PREFIX}/.local/share/perl5
+DOT_PROFILE_PATHS_EOF
+fi
+${INSTALL_R} dot/profile      "${PREFIX}/.profile"
+${INSTALL_R} dot/bash_profile "${PREFIX}/.bash_profile"
+${INSTALL_R} dot/bashrc       "${PREFIX}/.bashrc"
+
+# .local setup
+echo "local ..."
+${INSTALL_X} -d "${PREFIX}/.local/bin"
+${INSTALL_X} -d "${PREFIX}/.local/lib"
+${INSTALL_X} -d "${PREFIX}/.local/opt"
+${INSTALL_X} -d "${PREFIX}/.local/share"
+${INSTALL_X} -d "${PREFIX}/.local/share/man/man1"
+${INSTALL_X} -d "${PREFIX}/.local/var"
+${INSTALL_X} -d "${PREFIX}/.local/var/lock"
+${INSTALL_X} -d "${PREFIX}/.local/var/log"
+${INSTALL_X} -d "${PREFIX}/.local/var/run"
+${INSTALL_X} -d "${PREFIX}/.local/etc/cron"
+${INSTALL_X} -d "${PREFIX}/.local/etc/profile.d"
+${INSTALL_X} scripts/runcron "${PREFIX}/.local/bin"
+PATH="${PATH}:${PREFIX}/.local/bin"
+export PATH
+
+# Cron setup
+echo "cron ..."
+if has_prog crontab; then
+    ${INSTALL_X} -d "${PREFIX}/.local/etc/cron"
+    ${INSTALL_X} -d "${PREFIX}/.local/etc/cron/hourly"
+    ${INSTALL_X} -d "${PREFIX}/.local/etc/cron/daily"
+    ${INSTALL_X} -d "${PREFIX}/.local/etc/cron/daily-4"
+    ${INSTALL_X} -d "${PREFIX}/.local/etc/cron/daily-8"
+    ${INSTALL_X} -d "${PREFIX}/.local/etc/cron/daily-12"
+    ${INSTALL_X} -d "${PREFIX}/.local/etc/cron/daily-16"
+    ${INSTALL_X} -d "${PREFIX}/.local/etc/cron/daily-20"
+    ${INSTALL_X} -d "${PREFIX}/.local/etc/cron/weekly"
+    ${INSTALL_X} -d "${PREFIX}/.local/etc/cron/monthly"
+    ${INSTALL_X} -d "${PREFIX}/.local/etc/cron/yearly"
+    ${INSTALL_X} -d "${PREFIX}/.local/etc/cron/commands"
+    touch "${PREFIX}/.local/etc/cron/environ.bash"
+
+    crontab -l > "${BACKUPDIR}/crontab"
+    tmpcrontab=$(mktemp)
+    grep -v "${PREFIX}/.local/bin/runcron" "${BACKUPDIR}/crontab" \
+         > "${tmpcrontab}"
+    echo "0  * * * *" "${PREFIX}/.local/bin/runcron hourly"   >> "${tmpcrontab}"
+    echo "0  0 * * *" "${PREFIX}/.local/bin/runcron daily"    >> "${tmpcrontab}"
+    echo "0  4 * * *" "${PREFIX}/.local/bin/runcron daily-4"  >> "${tmpcrontab}"
+    echo "0  8 * * *" "${PREFIX}/.local/bin/runcron daily-8"  >> "${tmpcrontab}"
+    echo "0 12 * * *" "${PREFIX}/.local/bin/runcron daily-12" >> "${tmpcrontab}"
+    echo "0 16 * * *" "${PREFIX}/.local/bin/runcron daily-16" >> "${tmpcrontab}"
+    echo "0 20 * * *" "${PREFIX}/.local/bin/runcron daily-20" >> "${tmpcrontab}"
+    echo "0  0 * * 0" "${PREFIX}/.local/bin/runcron weekly"   >> "${tmpcrontab}"
+    echo "0  0 1 * *" "${PREFIX}/.local/bin/runcron monthly"  >> "${tmpcrontab}"
+    echo "0  0 1 1 *" "${PREFIX}/.local/bin/runcron yearly"   >> "${tmpcrontab}"
+    crontab "${tmpcrontab}"
+    rm -f "${tmpcrontab}"
+fi
+
+# Cygwin
+if [[ "${os_name}" == CYGWIN* ]]; then
+    echo "Cygwin ..."
+    if [ -e "${PREFIX}/.XWinrc" ]; then
+        cp -f "${PREFIX}/.XWinrc" "${BACKUPDIR}"
+    fi
+    ${INSTALL_R} dot/XWinrc         "${PREFIX}/.XWinrc"
+    ${INSTALL_X} scripts/hyper-v    "${PREFIX}/.local/bin"
+    ${INSTALL_R} man/hyper-v.1      "${PREFIX}/.local/share/man/man1"
+    ${INSTALL_X} scripts/msvc-shell "${PREFIX}/.local/bin"
+    ${INSTALL_R} man/msvc-shell.1   "${PREFIX}/.local/share/man/man1"
+    ${INSTALL_X} apt-cyg            "${PREFIX}/.local/bin"
+fi
+if [[ "${os_name}" == MINGW* ]]; then
+    ${INSTALL_X} scripts/msvc-shell "${PREFIX}/.local/bin"
+    ${INSTALL_R} man/msvc-shell.1   "${PREFIX}/.local/share/man/man1"
+fi
+
+# Python
+echo "Python ..."
+echo " - checking if cppman is installed"
+if ! has_prog cppman; then
+    if has_prog pip3; then
+        echo " - installing cppman plugin with pip3"
+        [ 'yes' != "${DRYRUN}" ] && pip3 install --user cppman > install.log 2>&1
+    fi
+fi
+
+# Ruby
+if [ -e "${PREFIX}/.gemrc" ]; then
+    cp -f "${PREFIX}/.gemrc" "${BACKUPDIR}"
+fi
+${INSTALL_R} dot/gemrc "${PREFIX}/.gemrc"
+
+# vim
+echo "vim ..."
+if [ -e "${PREFIX}/.vimrc" ]; then
+    cp -f "${PREFIX}/.vimrc" "${BACKUPDIR}"
+fi
+${INSTALL_R} dot/vimrc "${PREFIX}/.vimrc"
+
+# tmux
+echo "tmux ..."
+if [ -e "${PREFIX}/.tmux.conf" ]; then
+    cp -f "${PREFIX}/.tmux.conf" "${BACKUPDIR}"
+fi
+${INSTALL_R} dot/tmux.conf "${PREFIX}/.tmux.conf"
+${INSTALL_X} scripts/yank  "${PREFIX}/.local/bin"
+${INSTALL_R} man/yank.1    "${PREFIX}/.local/share/man/man1"
+
+echo "terminfo ..."
+if has_prog tic; then
+    has_tmux256_terminfo=""
+    if [ -e /lib/terminfo/t/tmux-256color ]; then
+        has_tmux256_terminfo="y"
+    fi
+    if [ -e /usr/share/terminfo/t/tmux-256color ]; then
+        has_tmux256_terminfo="y"
+    fi
+    if [ -e "${PREFIX}/.terminfo/t/tmux-256color" ]; then
+        has_tmux256_terminfo="y"
+    fi
+    if [ -z "${has_tmux256_terminfo}" ]; then
+        mkdir -p "${PREFIX}/.terminfo"
+        tic -o "${PREFIX}/.terminfo" data/tmux-256color.tinfo
+    fi
+fi
+
+# Perl
+echo "Perl ..."
+if [ ! -e "${PREFIX}/.local/share/perl5" ]; then
+    perl_local_lib=local-lib-2.000029
+    curl -s -O "http://www.cpan.org/authors/id/H/HA/HAARG/${perl_local_lib}.tar.gz"
+    tar zxf "${perl_local_lib}.tar.gz"
+    cd  "${perl_local_lib}"
+    perl Makefile.PL "--bootstrap=${PREFIX}/.local/share/perl5" > install.log 2>&1
+    make test > install.log 2>&1 && make install > install.log 2>&1
+    cd ..
+    perl "-I${PREFIX}/.local/share/perl5/lib/perl5" "-Mlocal::lib=${PREFIX}/.local/share/perl5" \
+        > "${PREFIX}/.local/etc/profile.d/perl5.sh"
+    source "${PREFIX}/.local/etc/profile.d/perl5.sh"
+fi
+
+# Scripts
+${INSTALL_X} scripts/codefmt       "${PREFIX}/.local/bin"
+${INSTALL_R} man/codefmt.1         "${PREFIX}/.local/share/man/man1"
+${INSTALL_X} scripts/codemv        "${PREFIX}/.local/bin"
+${INSTALL_R} man/codemv.1          "${PREFIX}/.local/share/man/man1"
+${INSTALL_X} scripts/plgen         "${PREFIX}/.local/bin"
+${INSTALL_R} man/plgen.1           "${PREFIX}/.local/share/man/man1"
+${INSTALL_X} scripts/sixel2tmux    "${PREFIX}/.local/bin"
+${INSTALL_R} man/sixel2tmux.1      "${PREFIX}/.local/share/man/man1"
+${INSTALL_X} scripts/byzanz-helper "${PREFIX}/.local/bin"
+${INSTALL_R} man/byzanz-helper.1   "${PREFIX}/.local/share/man/man1"
+${INSTALL_X} scripts/ffmpeg-helper "${PREFIX}/.local/bin"
+${INSTALL_R} man/ffmpeg-helper.1   "${PREFIX}/.local/share/man/man1"
+
+# Autoconf cache
+echo "Autoconf cache ..."
+if [ ! -e "${PREFIX}/.local/etc/config.site" ]; then
+    cp data/config.site "${PREFIX}/.local/etc/config.site"
+fi
+
+# Gnulib
+echo "Gnulib ..."
+if ! has_prog gnulib-tool; then
+    if [ ! -e "${PREFIX}/.local/share/gnulib" ]; then
+        git clone git://git.savannah.gnu.org/gnulib.git "${PREFIX}/.local/share/gnulib" > install.log 2>&1
+    fi
+    ln -s "${PREFIX}/.local/share/gnulib/gnulib-tool"    "${PREFIX}/.local/bin/gnulib-tool"
+    ln -s "${PREFIX}/.local/share/gnulib/gnulib-tool.py" "${PREFIX}/.local/bin/gnulib-tool.py"
+fi
+
+# TeX
+echo "TeX ..."
+if has_prog kpsewhich; then
+    texmf_home=$(kpsewhich -var-value TEXMFHOME)
+    if [ ! -e "${texmf_home}/tex/latex/createspace" ]; then
+        mkdir -p "${texmf_home}/tex/latex/"
+        git clone https://github.com/aginiewicz/createspace.git "${texmf_home}/tex/latex/createspace" > install.log 2>&1
+    fi
+fi
+
+# # Asciidoctor
+# echo "Asciidoctor ..."
+# if has_prog gem && has_prog bison && has_prog flex && has_prog cmake; then
+#     gem install --user-install pygments.rb
+#     gem install --user-install asciimath
+#     gem install --user-install asciidoctor-pdf
+#     gem install --user-install mathematical
+#     gem install --user-install asciidoctor-mathematical
+#     gem install --user-install asciidoctor-diagram
+# fi
+
+
+echo "Finished installing in '${PREFIX}'. Backup created in '${BACKUPDIR}'."

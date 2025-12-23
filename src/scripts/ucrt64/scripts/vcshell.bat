@@ -10,7 +10,7 @@ if "%arg%" == "--ucrt64" goto:runUcrt64
 goto:unknownArg
 
 :loadVsDevCmd
-call "%PROGRAMFILES%\Microsoft Visual Studio\2022\Community\Common7\Tools\VsDevCmd.bat" -startdir=none -arch=x64 -host_arch=x64
+call "%PROGRAMFILES%\Microsoft Visual Studio\18\Community\Common7\Tools\VsDevCmd.bat" -startdir=none -arch=x64 -host_arch=x64
 cd %USERPROFILE%
 goto:eof
 
