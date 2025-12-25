@@ -36,6 +36,10 @@ sub call_vsdevcmd {
     # Get vsdevcmd.bat arguments
     my $vsdevcmd_args = $opts->{args};
     $vsdevcmd_args  //= [];
+    if (! @{$vsdevcmd_args}) {
+        print "You may want to run with the following arguments:\n";
+        print "    -startdir=none -arch=x64 -host_arch=x64\n";
+    }
 
     # Get paths to scripts and bash
     my $bat_dir      = File::Basename::dirname($vsdevcmd_bat_path);
@@ -100,7 +104,7 @@ BATCH
     %ENV = %saved_ENV;
 }
 
-sub get_default_vs_paths {
+sub get_default_vs_dev_cmd_bat_path {
     my @default_vs_paths = ();
     push(@default_vs_paths, $ENV{'ProgramW6432'})
         if(exists($ENV{'ProgramW6432'}));
@@ -110,7 +114,7 @@ sub get_default_vs_paths {
     @default_vs_paths = map { $_.'/Microsoft Visual Studio' } @default_vs_paths;
     @default_vs_paths = map { my $year=$_; map { $_.'/'.$year } @default_vs_paths; } (18, 2022, 2019, 2017);
     @default_vs_paths = map { $_.'/Community', $_.'/Professional', $_.'/Enterprise' } @default_vs_paths;
-    @default_vs_paths = map { $_.'/VC/Auxiliary/Build/vcvarsall.bat' } @default_vs_paths;
+    @default_vs_paths = map { $_.'/Common7/Tools/VsDevCmd.bat' } @default_vs_paths;
     return @default_vs_paths;
 }
 
@@ -122,8 +126,8 @@ my ($opt_help, $opt_p);
 Getopt::Long::Configure("no_ignore_case");
 Getopt::Long::GetOptionsFromArray(
     \@ARGV,
-    'help|h'             => \$opt_help,
-    'p|vcvarsall-path=s' => \$opt_p,
+    'help|h'            => \$opt_help,
+    'p|vsdevcmd-path=s' => \$opt_p,
 ) or Carp::croak('Error parsing command line arguments');
 
 # Handle help option
@@ -136,15 +140,15 @@ if($opt_help) {
 $opt_p = Cygwin::win_to_posix_path($opt_p)
     if(defined($opt_p));
 if(! defined($opt_p)) {
-    my @default_vs_paths = get_default_vs_paths();
-    my @found_vcvars = grep { -f $_ } @default_vs_paths;
-    if(@found_vcvars) {
-        $opt_p = $found_vcvars[0];
-        print "Using 'vcvarsall.bat' found in path: ".File::Basename::dirname($opt_p)."\n";
+    my @default_vs_paths = get_default_vs_dev_cmd_bat_path();
+    my @found_vsdevcmd_bats = grep { -f $_ } @default_vs_paths;
+    if(@found_vsdevcmd_bats) {
+        $opt_p = $found_vsdevcmd_bats[0];
+        print "Using 'VsDevCmd.bat' found in path: ".File::Basename::dirname($opt_p)."\n";
     }
 }
 if(! defined($opt_p)) {
-    print STDERR "Unable to find a suitable path to 'vcvarsall.bat'. Please use option '-p'\n";
+    print STDERR "Unable to find a suitable path to 'VsDevCmd.bat'. Please use option '-p'\n";
     require Pod::Usage;
     Pod::Usage::pod2usage(-exitval => 1);
 }
@@ -173,13 +177,13 @@ B<msvc-shell> [B<OPTIONS>] B<VC_OPTIONS>
 
 =head1 DESCRIPTION
 
-This tool wraps the B<vcvarsall.bat> batch script provided with visual studio
+This tool wraps the B<vsdevcmd.bat> batch script provided with visual studio
 to setup the build environment. Calling this script allows to spawn a shell
-with the same configuration that B<vcvarsall.bat> setup when called in a
+with the same configuration that B<vsdevcmd.bat> setup when called in a
 windows console.
 
 The tool also setup a B<VS_KIT> environment variable in the spawned shell to
-indicate the parameters that were passed to B<vcvarsall.bat>.
+indicate the parameters that were passed to B<vsdevcmd.bat>.
 
 =head1 OPTIONS
 
@@ -189,9 +193,9 @@ indicate the parameters that were passed to B<vcvarsall.bat>.
 
 Print the usage, help and version information for this program and exit.
 
-=item B<-p> I<path/to/vcvarsall.bat>|B<--vcvarsall-path>=I<path/to/vcvarsall.bat>
+=item B<-p> I<path/to/vsdevcmd.bat>|B<--vsdevcmd-path>=I<path/to/vsdevcmd.bat>
 
-Sets the path to the B<vcvarsall.bat> batch script. Before Visual Studio 2017
+Sets the path to the B<vsdevcmd.bat> batch script. Before Visual Studio 2017
 it was possible to deduce the path to this script from the environment variable
 set at install time, but this is no longer the case.
 
@@ -199,11 +203,11 @@ set at install time, but this is no longer the case.
 
 =head1 VC_OPTIONS
 
-The B<vcvarsall.bat> script accepts parameters to indicate which architecture,
+The B<vsdevcmd.bat> script accepts parameters to indicate which architecture,
 platform, SDK, etc. is targeted by the environment it sets up.
 
 Run the script without B<VC_OPTIONS> to get more information in the error
-message printed by B<vcvarsall.bat>.
+message printed by B<vsdevcmd.bat>.
 
 =head1 SEE ALSO
 
