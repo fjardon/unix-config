@@ -94,7 +94,10 @@ BATCH
     else {
         delete $ENV{'MSYS2_ARG_CONV_EXCL'};
     }
+    $ENV{PWD} = $cwd;
+    $ENV{OLDPWD} = $cwd;
     $ENV{VS_KIT}=join('-', 'msvc', $vc_env{VSCMD_VER}, @{$vcvarsall_args});
+    chdir $cwd;
     system 'bash', '-i';
 
     # Restore saved environment
