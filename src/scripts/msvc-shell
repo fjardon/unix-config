@@ -40,6 +40,7 @@ sub call_vcvarsall {
     # Get paths to scripts and bash
     my $bat_dir      = File::Basename::dirname($vcvarsall_bat_path);
     my $bat_dir_win  = Cygwin::posix_to_win_path($bat_dir);
+    my $bat_path_win = Cygwin::posix_to_win_path($vcvarsall_bat_path);
     my $bash_dir     ='/usr/bin';
     my $bash_dir_win = Cygwin::posix_to_win_path($bash_dir);
 
@@ -65,12 +66,16 @@ sub call_vcvarsall {
     print $fh <<BATCH;
 \@ECHO OFF
 CD "$bat_dir_win"
-CALL vcvarsall.bat $vcvarsall_params
+CALL "${bat_path_win}" $vcvarsall_params
 CD "$bash_dir_win"
 bash -c "perl -MStorable -e 'Cygwin::sync_winenv();' -e 'Storable::store \\%%ENV, \\\"$tmp_env_filename\\\";'"
 BATCH
     chmod 0755, $tmp_bat;
     chdir $tmp_bat_dir;
+    print "Executing: '${tmp_bat}' or '${tmp_bat_win}'\n";
+    # Add MSYS2_ARG_CONV_EXCL=* to the environment to prevent the '/C'
+    # argument to be converted to 'C:\' by msys2.
+    $ENV{'MSYS2_ARG_CONV_EXCL'}='*';
     system $comspec_path, '/C', $tmp_bat_win;
 
     # Read modified environment
@@ -82,6 +87,13 @@ BATCH
 
     # Start subshell with modified environment
     %ENV = %vc_env;
+    # Restore the original value of MSYS2_ARG_CONV_EXCL
+    if (exists($saved_ENV{'MSYS2_ARG_CONV_EXCL'})) {
+        $ENV{'MSYS2_ARG_CONV_EXCL'}=$saved_ENV{'MSYS2_ARG_CONV_EXCL'};
+    }
+    else {
+        delete $ENV{'MSYS2_ARG_CONV_EXCL'};
+    }
     $ENV{VS_KIT}=join('-', 'msvc', $vc_env{VSCMD_VER}, @{$vcvarsall_args});
     system 'bash', '-i';
 
