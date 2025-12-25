@@ -8,16 +8,19 @@ setup: templates/setup tmp/setup-files.shar
 	chmod 0755 $@
 
 # GIT_FILES  = apt-cyg
-MAN1_FILES = man/byzanz-helper.1 \
+MAN1_FILES = \
+             man/byzanz-helper.1 \
              man/codefmt.1 \
              man/codemv.1 \
-             man/plgen.1 \
              man/ffmpeg-helper.1 \
              man/hyper-v.1 \
              man/msvc-shell.1 \
+             man/plgen.1 \
              man/sixel2tmux.1 \
              man/yank.1
-SHAR_FILES = data/config.site \
+SHAR_FILES = \
+             data/config.site \
+             data/tmux-256color.tinfo \
              dot/bash_profile \
              dot/bashrc \
              dot/gemrc \
@@ -28,18 +31,18 @@ SHAR_FILES = data/config.site \
              dot/Xresources \
              dot/Xresources_user \
              dot/XWinrc \
+             scripts/bshell.bat \
              scripts/byzanz-helper \
              scripts/codefmt \
              scripts/codemv \
-             scripts/plgen \
              scripts/ffmpeg-helper \
              scripts/hyper-v \
              scripts/msvc-shell \
-             scripts/sixel2tmux \
-             scripts/yank \
-             data/tmux-256color.tinfo \
-             scripts/uudecode.pl \
+             scripts/plgen \
              scripts/runcron \
+             scripts/sixel2tmux \
+             scripts/uudecode.pl \
+             scripts/yank \
              $(MAN1_FILES)
 
 man-dir:

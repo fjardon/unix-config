@@ -1,4 +1,0 @@
-#!/usr/bin/env bash
-VSDIR='C:/Program Files/Microsoft Visual Studio/18/Community'
-VSDEVCMD=$(cygpath -a -t dos "${VSDIR}/Common7/Tools/VsDevCmd.bat")
-exec cmd.exe "/K ${VSDEVCMD}"

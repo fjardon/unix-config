@@ -1,5 +1,12 @@
 @echo off
 
+rem We can configure the windows terminal to use MSYS2 using the
+rem `bshell.bat` script:
+rem 
+rem ----
+rem cmd.exe /k "bshell.bat --ucrt64"
+rem ----
+
 set arg=%1
 
 if "%arg%" == "--help" goto:argHelp
@@ -9,18 +16,11 @@ if "%arg%" == "--git-bash" goto:runGitBash
 if "%arg%" == "--ucrt64" goto:runUcrt64
 goto:unknownArg
 
-:loadVsDevCmd
-call "%PROGRAMFILES%\Microsoft Visual Studio\18\Community\Common7\Tools\VsDevCmd.bat" -startdir=none -arch=x64 -host_arch=x64
-cd %USERPROFILE%
-goto:eof
-
 :runGitBash
-call:loadVsDevCmd
 "%PROGRAMFILES%\Git\bin\bash.exe" -l -i
 goto:end
 
 :runUcrt64
-call:loadVsDevCmd
 set MSYSTEM=UCRT64
 set MSYS2_PATH_TYPE=inherit
 "C:\msys64\usr\bin\bash" -l -i

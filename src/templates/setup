@@ -203,22 +203,26 @@ if has_prog crontab; then
 fi
 
 # Cygwin
-if [[ "${os_name}" == CYGWIN* ]]; then
-    echo "Cygwin ..."
-    if [ -e "${PREFIX}/.XWinrc" ]; then
-        cp -f "${PREFIX}/.XWinrc" "${BACKUPDIR}"
-    fi
-    ${INSTALL_R} dot/XWinrc         "${PREFIX}/.XWinrc"
-    ${INSTALL_X} scripts/hyper-v    "${PREFIX}/.local/bin"
-    ${INSTALL_R} man/hyper-v.1      "${PREFIX}/.local/share/man/man1"
-    ${INSTALL_X} scripts/msvc-shell "${PREFIX}/.local/bin"
-    ${INSTALL_R} man/msvc-shell.1   "${PREFIX}/.local/share/man/man1"
-    ${INSTALL_X} apt-cyg            "${PREFIX}/.local/bin"
-fi
-if [[ "${os_name}" == MINGW* ]]; then
-    ${INSTALL_X} scripts/msvc-shell "${PREFIX}/.local/bin"
-    ${INSTALL_R} man/msvc-shell.1   "${PREFIX}/.local/share/man/man1"
-fi
+case "${os_name}" in
+    CYGWIN*)
+        echo "Cygwin ..."
+        if [ -e "${PREFIX}/.XWinrc" ]; then
+            cp -f "${PREFIX}/.XWinrc" "${BACKUPDIR}"
+        fi
+        ${INSTALL_R} dot/XWinrc         "${PREFIX}/.XWinrc"
+        ${INSTALL_X} scripts/hyper-v    "${PREFIX}/.local/bin"
+        ${INSTALL_R} man/hyper-v.1      "${PREFIX}/.local/share/man/man1"
+        ${INSTALL_X} apt-cyg            "${PREFIX}/.local/bin"
+        ${INSTALL_X} scripts/msvc-shell "${PREFIX}/.local/bin"
+        ${INSTALL_R} man/msvc-shell.1   "${PREFIX}/.local/share/man/man1"
+        ${INSTALL_X} scripts/bshell.bat "${PREFIX}/.local/bin"
+        ;;
+    MINGW*)
+        ${INSTALL_X} scripts/msvc-shell "${PREFIX}/.local/bin"
+        ${INSTALL_R} man/msvc-shell.1   "${PREFIX}/.local/share/man/man1"
+        ${INSTALL_X} scripts/bshell.bat "${PREFIX}/.local/bin"
+        ;;
+esac
 
 # Python
 echo "Python ..."
