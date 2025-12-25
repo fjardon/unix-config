@@ -11,7 +11,7 @@ require Storable;
 
 use File::Temp;
 
-sub call_vcvarsall {
+sub call_vsdevcmd {
     my ($opts) = @_;
 
     # Save current context to restore it later
@@ -28,18 +28,19 @@ sub call_vcvarsall {
         if(!defined($comspec_win));
     my $comspec_path = Cygwin::win_to_posix_path($comspec_win);
 
-    # Get path to vcvarsall.bat
-    my $vcvarsall_bat_path = $opts->{vcvarsall_bat_path};
-    Carp::croak("'vcvarsall_bat_path' parameter is mandatory")
-        if(!defined($vcvarsall_bat_path));
+    # Get path to vsdevcmd.bat
+    my $vsdevcmd_bat_path = $opts->{vsdevcmd_bat_path};
+    Carp::croak("'vsdevcmd_bat_path' parameter is mandatory")
+        if(!defined($vsdevcmd_bat_path));
 
-    # Get vcvarsall.bat arguments
-    my $vcvarsall_args = $opts->{args};
-    $vcvarsall_args  //= [];
+    # Get vsdevcmd.bat arguments
+    my $vsdevcmd_args = $opts->{args};
+    $vsdevcmd_args  //= [];
 
     # Get paths to scripts and bash
-    my $bat_dir      = File::Basename::dirname($vcvarsall_bat_path);
+    my $bat_dir      = File::Basename::dirname($vsdevcmd_bat_path);
     my $bat_dir_win  = Cygwin::posix_to_win_path($bat_dir);
+    my $bat_path_win = Cygwin::posix_to_win_path($vsdevcmd_bat_path);
     my $bash_dir     ='/usr/bin';
     my $bash_dir_win = Cygwin::posix_to_win_path($bash_dir);
 
@@ -58,19 +59,22 @@ sub call_vcvarsall {
     close($tmp_bat_handle);
 
     # Compute parameters
-    my $vcvarsall_params = join(' ', @{$vcvarsall_args});
+    my $vsdevcmd_params = join(' ', @{$vsdevcmd_args});
 
     open(my $fh, '>', $tmp_bat) or
         Carp::croak("Unable to create batch file");
     print $fh <<BATCH;
-\@ECHO OFF
+;\@ECHO OFF
 CD "$bat_dir_win"
-CALL vcvarsall.bat $vcvarsall_params
+CALL "${bat_path_win}" $vsdevcmd_params
 CD "$bash_dir_win"
-bash -c "perl -MStorable -e 'Cygwin::sync_winenv();' -e 'Storable::store \\%%ENV, \\\"$tmp_env_filename\\\";'"
+"bash" -c "perl -MStorable -e 'Cygwin::sync_winenv();' -e 'Storable::store \\%%ENV, \\\"$tmp_env_filename\\\";'"
 BATCH
     chmod 0755, $tmp_bat;
     chdir $tmp_bat_dir;
+    print "Executing: '${tmp_bat}' or '${tmp_bat_win}'\n";
+    my $prev_msys2_arg_conv_excl=$ENV{'MSYS2_ARG_CONV_EXCL'};
+    $ENV{'MSYS2_ARG_CONV_EXCL'}='*';
     system $comspec_path, '/C', $tmp_bat_win;
 
     # Read modified environment
@@ -82,7 +86,13 @@ BATCH
 
     # Start subshell with modified environment
     %ENV = %vc_env;
-    $ENV{VS_KIT}=join('-', 'msvc', $vc_env{VSCMD_VER}, @{$vcvarsall_args});
+    if (defined($prev_msys2_arg_conv_excl)) {
+        $ENV{'MSYS2_ARG_CONV_EXCL'}=$prev_msys2_arg_conv_excl;
+    }
+    else {
+        delete $ENV{'MSYS2_ARG_CONV_EXCL'};
+    }
+    $ENV{VS_KIT}=join('-', 'msvc', $vc_env{VSCMD_VER}, @{$vsdevcmd_args});
     system 'bash', '-i';
 
     # Restore saved environment
@@ -144,8 +154,8 @@ if(! -f $opt_p) {
     Pod::Usage::pod2usage(-exitval => 1);
 }
 
-call_vcvarsall({
-    vcvarsall_bat_path => $opt_p,
+call_vsdevcmd({
+    vsdevcmd_bat_path => $opt_p,
     args => \@ARGV,
 });
 
