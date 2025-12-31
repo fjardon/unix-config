@@ -7,7 +7,7 @@ setup: templates/setup tmp/setup-files.shar
 	sed -e '/[@]SHAR_ARCHIVE[@]/ r tmp/setup-files.shar' templates/setup > $@
 	chmod 0755 $@
 
-# GIT_FILES  = apt-cyg
+GIT_FILES  = scripts/apt-cyg
 MAN1_FILES = \
              man/byzanz-helper.1 \
              man/codefmt.1 \
@@ -43,14 +43,15 @@ SHAR_FILES = \
              scripts/sixel2tmux \
              scripts/uudecode.pl \
              scripts/yank \
+			 $(GIT_FILES) \
              $(MAN1_FILES)
 
 man-dir:
 	mkdir -p man
 
-# scripts/apt-cyg:
-# 	curl -O 'https://raw.githubusercontent.com/fjardon/apt-cyg/master/apt-cyg'
-# 	chmod a+x apt-cyg
+scripts/apt-cyg:
+	curl -o $@ 'https://raw.githubusercontent.com/fjardon/apt-cyg/master/apt-cyg'
+	chmod a+x scripts/apt-cyg
 
 man/byzanz-helper.1 : scripts/byzanz-helper
 	$(POD2MAN) $< $@
@@ -87,6 +88,7 @@ clean:
 	$(RM) -f setup
 	$(RM) -f tmp/setup-files.shar
 	$(RM) -rf tmp
+	$(RM) -f $(GIT_FILES)
 	$(RM) -f $(MAN1_FILES)
 	$(RM) -rf man
 

@@ -212,7 +212,7 @@ case "${os_name}" in
         ${INSTALL_R} dot/XWinrc         "${PREFIX}/.XWinrc"
         ${INSTALL_X} scripts/hyper-v    "${PREFIX}/.local/bin"
         ${INSTALL_R} man/hyper-v.1      "${PREFIX}/.local/share/man/man1"
-        ${INSTALL_X} apt-cyg            "${PREFIX}/.local/bin"
+        ${INSTALL_X} scripts/apt-cyg    "${PREFIX}/.local/bin"
         ${INSTALL_X} scripts/msvc-shell "${PREFIX}/.local/bin"
         ${INSTALL_R} man/msvc-shell.1   "${PREFIX}/.local/share/man/man1"
         ${INSTALL_X} scripts/bshell.bat "${PREFIX}/.local/bin"
