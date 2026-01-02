@@ -309,6 +309,17 @@ if [ ! -e "${PREFIX}/.local/etc/config.site" ]; then
     cp data/config.site "${PREFIX}/.local/etc/config.site"
 fi
 
+# GDB pretty printers
+echo "GDB pretty-printers for libstdc++"
+if [ ! -e "${PREFIX}/.local/share/gdb" ]; then
+    mkdir -p "${PREFIX}/.local/share/gdb"
+    cp -r libstdc++-v3/python "${PREFIX}/.local/share/gdb/"
+    if [ -e "${PREFIX}/.gdbinit" ]; then
+        cp -f "${PREFIX}/.gdbinit" "${BACKUPDIR}"
+    fi
+    cp -f dot/gdbinit "${PREFIX}/.gdbinit"
+fi
+
 # Gnulib
 echo "Gnulib ..."
 if ! has_prog gnulib-tool; then
