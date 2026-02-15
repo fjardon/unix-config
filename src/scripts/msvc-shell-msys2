@@ -112,7 +112,7 @@ BATCH
     my %vc_env = %{Storable::retrieve($tmp_env_filename)};
 
     # Check for errors
-    Carp::croak("Error while setuping VC++ environment")
+    Carp::croak("Error during setup of VC++ environment")
         if(! exists($vc_env{VSCMD_VER}) || $vc_env{VSCMD_VER} eq '');
 
     # Start subshell with modified environment
