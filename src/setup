@@ -108,8 +108,8 @@ cat <<'SETUP_SHAR_EOF'> setup.shar
 # To extract the files from this archive, save it to some FILE, remove
 # everything before the '#!/bin/sh' line above, then type 'sh FILE'.
 #
-lock_dir=_sh17403
-# Made on 2026-02-15 11:28 CET by <frede@white-fang>.
+lock_dir=_sh17516
+# Made on 2026-02-15 13:12 CET by <frede@white-fang>.
 # Source directory was '/cygdrive/f/workspace/github/unix-config/src'.
 #
 # Existing files will *not* be overwritten, unless '-c' is specified.
@@ -136,7 +136,7 @@ lock_dir=_sh17403
 #   4685 -rwxrwx--- scripts/codemv
 #   3766 -rwxrwx--- scripts/ffmpeg-helper
 #   1820 -rwxrwx--- scripts/hyper-v
-#   8006 -rwxrw-r-- scripts/msvc-shell
+#   8007 -rwxrw-r-- scripts/msvc-shell
 #  16939 -rwxrwx--- scripts/plgen
 #    901 -rwxrwx--- scripts/runcron
 #   3591 -rwxrwx--- scripts/sixel2tmux
@@ -2308,7 +2308,7 @@ X    # Read modified environment
 X    my %vc_env = %{Storable::retrieve($tmp_env_filename)};
 X
 X    # Check for errors
-X    Carp::croak("Error while setuping VC++ environment")
+X    Carp::croak("Error during setup of VC++ environment")
 X        if(! exists($vc_env{VSCMD_VER}) || $vc_env{VSCMD_VER} eq '');
 X
 X    # Start subshell with modified environment
@@ -2453,7 +2453,7 @@ X
 =cut
 X
 SHAR_EOF
-  (set 20 26 02 15 11 19 41 'scripts/msvc-shell'
+  (set 20 26 02 15 13 10 07 'scripts/msvc-shell'
    eval "${shar_touch}") && \
   chmod 0764 'scripts/msvc-shell'
 if test $? -ne 0
@@ -2463,12 +2463,12 @@ fi
   then (
        ${MD5SUM} -c >/dev/null 2>&1 || ${echo} 'scripts/msvc-shell': 'MD5 check failed'
        ) << \SHAR_EOF
-923bdcabc9a878f1afa0ca8d637648ee  scripts/msvc-shell
+2bb14755a2096d82dc6861149b134774  scripts/msvc-shell
 SHAR_EOF
 
 else
-test `LC_ALL=C wc -c < 'scripts/msvc-shell'` -ne 8006 && \
-  ${echo} "restoration warning:  size of 'scripts/msvc-shell' is not 8006"
+test `LC_ALL=C wc -c < 'scripts/msvc-shell'` -ne 8007 && \
+  ${echo} "restoration warning:  size of 'scripts/msvc-shell' is not 8007"
   fi
 fi
 # ============= scripts/plgen ==============
@@ -9142,7 +9142,7 @@ X.PP
 This program is free software; you can redistribute it and/or modify
 it under the GPL license.
 SHAR_EOF
-  (set 20 26 02 15 11 19 58 'man/msvc-shell.1'
+  (set 20 26 02 15 13 12 03 'man/msvc-shell.1'
    eval "${shar_touch}") && \
   chmod 0760 'man/msvc-shell.1'
 if test $? -ne 0
