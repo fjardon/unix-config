@@ -108,8 +108,8 @@ cat <<'SETUP_SHAR_EOF'> setup.shar
 # To extract the files from this archive, save it to some FILE, remove
 # everything before the '#!/bin/sh' line above, then type 'sh FILE'.
 #
-lock_dir=_sh17293
-# Made on 2026-02-15 11:19 CET by <frede@white-fang>.
+lock_dir=_sh17403
+# Made on 2026-02-15 11:28 CET by <frede@white-fang>.
 # Source directory was '/cygdrive/f/workspace/github/unix-config/src'.
 #
 # Existing files will *not* be overwritten, unless '-c' is specified.
@@ -119,8 +119,8 @@ lock_dir=_sh17293
 # ------ ---------- ------------------------------------------
 #    601 -rwxrwx--- data/config.site
 #   2836 -rwxrwx--- data/tmux-256color.tinfo
-#    455 -rwxrwx--- dot/bash_profile
-#   3065 -rwxrwx--- dot/bashrc
+#    486 -rwxrwx--- dot/bash_profile
+#   3247 -rwxrwx--- dot/bashrc
 #    219 -rwxrw-r-- dot/gdbinit
 #     89 -rwxrwx--- dot/gemrc
 #   2479 -rwxrwx--- dot/profile
@@ -405,6 +405,7 @@ else
 ${echo} "x - extracting dot/bash_profile (text)"
   sed 's/^X//' << 'SHAR_EOF' > 'dot/bash_profile' &&
 # .bash_profile executed by bash(1) for login shells.
+export BASH_PROFILE_LOADED=yes
 X
 X. ~/.profile
 X
@@ -425,7 +426,7 @@ if [ -f ~/.bashrc ]; then
 X    . ~/.bashrc
 fi
 SHAR_EOF
-  (set 20 25 12 31 14 16 57 'dot/bash_profile'
+  (set 20 26 02 15 11 25 38 'dot/bash_profile'
    eval "${shar_touch}") && \
   chmod 0770 'dot/bash_profile'
 if test $? -ne 0
@@ -435,12 +436,12 @@ fi
   then (
        ${MD5SUM} -c >/dev/null 2>&1 || ${echo} 'dot/bash_profile': 'MD5 check failed'
        ) << \SHAR_EOF
-07adf6ac1b41071190ff98bb97223ac1  dot/bash_profile
+bb556884f61d24976ee7f53a805a0720  dot/bash_profile
 SHAR_EOF
 
 else
-test `LC_ALL=C wc -c < 'dot/bash_profile'` -ne 455 && \
-  ${echo} "restoration warning:  size of 'dot/bash_profile' is not 455"
+test `LC_ALL=C wc -c < 'dot/bash_profile'` -ne 486 && \
+  ${echo} "restoration warning:  size of 'dot/bash_profile' is not 486"
   fi
 fi
 # ============= dot/bashrc ==============
@@ -459,6 +460,11 @@ ${echo} "x - SKIPPING dot/bashrc (file already exists)"
 else
 ${echo} "x - extracting dot/bashrc (text)"
   sed 's/^X//' << 'SHAR_EOF' > 'dot/bashrc' &&
+# If we didn't load the .bash_profile, do it now
+# This can happen in windows when running 'bash -c xxx' from cmd.exe
+if [ -z "${BASH_PROFILE_LOADED}" ]; then
+X  . ~/.bash_profile
+fi
 # If not running interactively, don't do anything
 [[ "$-" != *i* ]] && return
 X
@@ -566,7 +572,7 @@ X    ssh-agent > ~/.ssh/ssh-agent.pid 2> /dev/null
 X    source ~/.ssh/ssh-agent.pid > /dev/null 2>&1
 fi
 SHAR_EOF
-  (set 20 25 12 31 14 16 57 'dot/bashrc'
+  (set 20 26 02 15 11 24 42 'dot/bashrc'
    eval "${shar_touch}") && \
   chmod 0770 'dot/bashrc'
 if test $? -ne 0
@@ -576,12 +582,12 @@ fi
   then (
        ${MD5SUM} -c >/dev/null 2>&1 || ${echo} 'dot/bashrc': 'MD5 check failed'
        ) << \SHAR_EOF
-54ab6629396b8f997b4a616df60a2e5e  dot/bashrc
+76b1ee37f2fbb40b7c9e6f8700f7b437  dot/bashrc
 SHAR_EOF
 
 else
-test `LC_ALL=C wc -c < 'dot/bashrc'` -ne 3065 && \
-  ${echo} "restoration warning:  size of 'dot/bashrc' is not 3065"
+test `LC_ALL=C wc -c < 'dot/bashrc'` -ne 3247 && \
+  ${echo} "restoration warning:  size of 'dot/bashrc' is not 3247"
   fi
 fi
 # ============= dot/gdbinit ==============
