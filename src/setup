@@ -108,8 +108,8 @@ cat <<'SETUP_SHAR_EOF'> setup.shar
 # To extract the files from this archive, save it to some FILE, remove
 # everything before the '#!/bin/sh' line above, then type 'sh FILE'.
 #
-lock_dir=_sh09515
-# Made on 2026-01-02 11:48 CET by <frede@white-fang>.
+lock_dir=_sh17293
+# Made on 2026-02-15 11:19 CET by <frede@white-fang>.
 # Source directory was '/cygdrive/f/workspace/github/unix-config/src'.
 #
 # Existing files will *not* be overwritten, unless '-c' is specified.
@@ -121,7 +121,7 @@ lock_dir=_sh09515
 #   2836 -rwxrwx--- data/tmux-256color.tinfo
 #    455 -rwxrwx--- dot/bash_profile
 #   3065 -rwxrwx--- dot/bashrc
-#    219 -rwxrwx--- dot/gdbinit
+#    219 -rwxrw-r-- dot/gdbinit
 #     89 -rwxrwx--- dot/gemrc
 #   2479 -rwxrwx--- dot/profile
 #    995 -rwxrwx--- dot/tmux.conf
@@ -130,13 +130,13 @@ lock_dir=_sh09515
 #    832 -rwxrwx--- dot/Xresources
 #    832 -rwxrwx--- dot/Xresources_user
 #   4076 -rwxrwx--- dot/XWinrc
-#    724 -rwxrwx--- scripts/bshell.bat
+#    724 -rwxrw-r-- scripts/bshell.bat
 #   2541 -rwxrwx--- scripts/byzanz-helper
 #   8094 -rwxrwx--- scripts/codefmt
 #   4685 -rwxrwx--- scripts/codemv
 #   3766 -rwxrwx--- scripts/ffmpeg-helper
 #   1820 -rwxrwx--- scripts/hyper-v
-#   6898 -rwxrwx--- scripts/msvc-shell
+#   8006 -rwxrw-r-- scripts/msvc-shell
 #  16939 -rwxrwx--- scripts/plgen
 #    901 -rwxrwx--- scripts/runcron
 #   3591 -rwxrwx--- scripts/sixel2tmux
@@ -601,9 +601,9 @@ G96=I<W1E<E]L:6)S=&1C>'A?<')I;G1E<G,H3F]N92D-"F5N9`T*
 `
 end
 SHAR_EOF
-  (set 20 26 01 02 11 48 19 'dot/gdbinit'
+  (set 20 26 02 12 21 39 20 'dot/gdbinit'
    eval "${shar_touch}") && \
-  chmod 0770 'dot/gdbinit'
+  chmod 0764 'dot/gdbinit'
 if test $? -ne 0
 then ${echo} "restore of dot/gdbinit failed"
 fi
@@ -1278,9 +1278,9 @@ X
 :end
 X
 SHAR_EOF
-  (set 20 25 12 31 14 16 58 'scripts/bshell.bat'
+  (set 20 26 02 12 21 39 20 'scripts/bshell.bat'
    eval "${shar_touch}") && \
-  chmod 0770 'scripts/bshell.bat'
+  chmod 0764 'scripts/bshell.bat'
 if test $? -ne 0
 then ${echo} "restore of scripts/bshell.bat failed"
 fi
@@ -2197,6 +2197,29 @@ ${echo} "x - extracting scripts/msvc-shell (text)"
   sed 's/^X//' << 'SHAR_EOF' > 'scripts/msvc-shell' &&
 #!/usr/bin/env perl
 X
+#*  Copyright (c) 2017-2026 Frederic Jardon  <frederic.jardon@gmail.com>
+#*
+#*  ------------------ GPL Licensed Source Code ------------------
+#*  Frederic Jardon makes this software available under the GNU
+#*  General Public License (GPL) license for open source projects.
+#*  For details of the GPL license please see www.gnu.org or read
+#*  the file license.gpl provided in this package.
+#*
+#*  This program is free software; you can redistribute it and/or
+#*  modify it under the terms of the GNU General Public License as
+#*  published by the Free Software Foundation; using version 3 of 
+#*  the License.
+#*
+#*  This program is distributed in the hope that it will be useful,
+#*  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#*  GNU General Public License for more details.
+#*
+#*  You should have received a copy of the GNU General Public
+#*  License along with this program in the file 'license.gpl'; if
+#*  not, see <http://www.gnu.org/licenses/>.
+#*  --------------------------------------------------------------
+X
 use strict;
 use warnings 'all';
 X
@@ -2416,17 +2439,17 @@ Frederic JARDON <frederic.jardon@gmail.com>
 X
 =head1 COPYRIGHT AND LICENSE
 X
-Copyright (C) 2017-2025 by Frederic JARDON <frederic.jardon@gmail.com>
+Copyright (C) 2017-2026 by Frederic JARDON <frederic.jardon@gmail.com>
 X
 This program is free software; you can redistribute it and/or modify
-it under the MIT license.
+it under the GPL license.
 X
 =cut
 X
 SHAR_EOF
-  (set 20 25 12 31 14 16 58 'scripts/msvc-shell'
+  (set 20 26 02 15 11 19 41 'scripts/msvc-shell'
    eval "${shar_touch}") && \
-  chmod 0770 'scripts/msvc-shell'
+  chmod 0764 'scripts/msvc-shell'
 if test $? -ne 0
 then ${echo} "restore of scripts/msvc-shell failed"
 fi
@@ -2434,12 +2457,12 @@ fi
   then (
        ${MD5SUM} -c >/dev/null 2>&1 || ${echo} 'scripts/msvc-shell': 'MD5 check failed'
        ) << \SHAR_EOF
-5f8e80a82dddd671647e531edcb4f35c  scripts/msvc-shell
+923bdcabc9a878f1afa0ca8d637648ee  scripts/msvc-shell
 SHAR_EOF
 
 else
-test `LC_ALL=C wc -c < 'scripts/msvc-shell'` -ne 6898 && \
-  ${echo} "restoration warning:  size of 'scripts/msvc-shell' is not 6898"
+test `LC_ALL=C wc -c < 'scripts/msvc-shell'` -ne 8006 && \
+  ${echo} "restoration warning:  size of 'scripts/msvc-shell' is not 8006"
   fi
 fi
 # ============= scripts/plgen ==============
@@ -3640,7 +3663,7 @@ ${echo} "x - extracting libstdc++-v3/python/libstdcxx/__init__.py (text)"
   sed 's/^X//' << 'SHAR_EOF' > 'libstdc++-v3/python/libstdcxx/__init__.py' &&
 X
 SHAR_EOF
-  (set 20 26 01 02 11 48 43 'libstdc++-v3/python/libstdcxx/__init__.py'
+  (set 20 26 02 15 11 19 12 'libstdc++-v3/python/libstdcxx/__init__.py'
    eval "${shar_touch}") && \
   chmod 0760 'libstdc++-v3/python/libstdcxx/__init__.py'
 if test $? -ne 0
@@ -3714,7 +3737,7 @@ X    if gdb_has_xmethods():
 X        from .xmethods import register_libstdcxx_xmethods
 X        register_libstdcxx_xmethods(obj)
 SHAR_EOF
-  (set 20 26 01 02 11 48 43 'libstdc++-v3/python/libstdcxx/v6/__init__.py'
+  (set 20 26 02 15 11 19 12 'libstdc++-v3/python/libstdcxx/v6/__init__.py'
    eval "${shar_touch}") && \
   chmod 0760 'libstdc++-v3/python/libstdcxx/v6/__init__.py'
 if test $? -ne 0
@@ -6722,7 +6745,7 @@ X
 X
 build_libstdcxx_dictionary()
 SHAR_EOF
-  (set 20 26 01 02 11 48 44 'libstdc++-v3/python/libstdcxx/v6/printers.py'
+  (set 20 26 02 15 11 19 14 'libstdc++-v3/python/libstdcxx/v6/printers.py'
    eval "${shar_touch}") && \
   chmod 0760 'libstdc++-v3/python/libstdcxx/v6/printers.py'
 if test $? -ne 0
@@ -7633,7 +7656,7 @@ X        locus, AssociativeContainerMethodsMatcher('unordered_multimap'))
 X    gdb.xmethod.register_xmethod_matcher(locus, UniquePtrMethodsMatcher())
 X    gdb.xmethod.register_xmethod_matcher(locus, SharedPtrMethodsMatcher())
 SHAR_EOF
-  (set 20 26 01 02 11 48 44 'libstdc++-v3/python/libstdcxx/v6/xmethods.py'
+  (set 20 26 02 15 11 19 14 'libstdc++-v3/python/libstdcxx/v6/xmethods.py'
    eval "${shar_touch}") && \
   chmod 0760 'libstdc++-v3/python/libstdcxx/v6/xmethods.py'
 if test $? -ne 0
@@ -8333,7 +8356,7 @@ else
 X  printf "$usage"
 fi
 SHAR_EOF
-  (set 20 26 01 02 11 48 45 'scripts/apt-cyg'
+  (set 20 26 02 15 11 19 15 'scripts/apt-cyg'
    eval "${shar_touch}") && \
   chmod 0775 'scripts/apt-cyg'
 if test $? -ne 0
@@ -8470,7 +8493,7 @@ X.PP
 This program is free software; you can redistribute it and/or modify
 it under the MIT license.
 SHAR_EOF
-  (set 20 26 01 02 11 48 45 'man/byzanz-helper.1'
+  (set 20 26 02 15 11 19 15 'man/byzanz-helper.1'
    eval "${shar_touch}") && \
   chmod 0760 'man/byzanz-helper.1'
 if test $? -ne 0
@@ -8600,7 +8623,7 @@ X.PP
 This program is free software; you can redistribute it and/or modify
 it under the GPL license.
 SHAR_EOF
-  (set 20 26 01 02 11 48 45 'man/codefmt.1'
+  (set 20 26 02 15 11 19 15 'man/codefmt.1'
    eval "${shar_touch}") && \
   chmod 0760 'man/codefmt.1'
 if test $? -ne 0
@@ -8727,7 +8750,7 @@ X.PP
 This program is free software; you can redistribute it and/or modify
 it under the GPL license.
 SHAR_EOF
-  (set 20 26 01 02 11 48 45 'man/codemv.1'
+  (set 20 26 02 15 11 19 15 'man/codemv.1'
    eval "${shar_touch}") && \
   chmod 0760 'man/codemv.1'
 if test $? -ne 0
@@ -8856,7 +8879,7 @@ X.PP
 This program is free software; you can redistribute it and/or modify
 it under the MIT license.
 SHAR_EOF
-  (set 20 26 01 02 11 48 45 'man/ffmpeg-helper.1'
+  (set 20 26 02 15 11 19 15 'man/ffmpeg-helper.1'
    eval "${shar_touch}") && \
   chmod 0760 'man/ffmpeg-helper.1'
 if test $? -ne 0
@@ -8980,7 +9003,7 @@ X.PP
 This program is free software; you can redistribute it and/or modify
 it under the MIT license.
 SHAR_EOF
-  (set 20 26 01 02 11 48 45 'man/hyper-v.1'
+  (set 20 26 02 15 11 19 16 'man/hyper-v.1'
    eval "${shar_touch}") && \
   chmod 0760 'man/hyper-v.1'
 if test $? -ne 0
@@ -9063,7 +9086,7 @@ X.rr rF
 X.\" ========================================================================
 X.\"
 X.IX Title "MSVC-SHELL 1"
-X.TH MSVC-SHELL 1 2025-12-31 github.com/fjardon/unix-config "FJ Unix Config Commands"
+X.TH MSVC-SHELL 1 2026-02-15 github.com/fjardon/unix-config "FJ Unix Config Commands"
 X.\" For nroff, turn off justification.  Always turn off hyphenation; it makes
 X.\" way too many mistakes in technical documents.
 X.if n .ad l
@@ -9108,12 +9131,12 @@ X.IX Header "AUTHOR"
 Frederic JARDON <frederic.jardon@gmail.com>
 X.SH "COPYRIGHT AND LICENSE"
 X.IX Header "COPYRIGHT AND LICENSE"
-Copyright (C) 2017\-2025 by Frederic JARDON <frederic.jardon@gmail.com>
+Copyright (C) 2017\-2026 by Frederic JARDON <frederic.jardon@gmail.com>
 X.PP
 This program is free software; you can redistribute it and/or modify
-it under the MIT license.
+it under the GPL license.
 SHAR_EOF
-  (set 20 26 01 02 11 48 45 'man/msvc-shell.1'
+  (set 20 26 02 15 11 19 58 'man/msvc-shell.1'
    eval "${shar_touch}") && \
   chmod 0760 'man/msvc-shell.1'
 if test $? -ne 0
@@ -9123,7 +9146,7 @@ fi
   then (
        ${MD5SUM} -c >/dev/null 2>&1 || ${echo} 'man/msvc-shell.1': 'MD5 check failed'
        ) << \SHAR_EOF
-99bd067e1f973b8dca9e24f3ba675001  man/msvc-shell.1
+6395b89762b5bc66a522b660ff1ef126  man/msvc-shell.1
 SHAR_EOF
 
 else
@@ -9290,7 +9313,7 @@ X.PP
 This program is free software; you can redistribute it and/or modify
 it under the GPL license.
 SHAR_EOF
-  (set 20 26 01 02 11 48 46 'man/plgen.1'
+  (set 20 26 02 15 11 19 16 'man/plgen.1'
    eval "${shar_touch}") && \
   chmod 0760 'man/plgen.1'
 if test $? -ne 0
@@ -9444,7 +9467,7 @@ X.PP
 This program is free software; you can redistribute it and/or modify
 it under the MIT license.
 SHAR_EOF
-  (set 20 26 01 02 11 48 46 'man/sixel2tmux.1'
+  (set 20 26 02 15 11 19 16 'man/sixel2tmux.1'
    eval "${shar_touch}") && \
   chmod 0760 'man/sixel2tmux.1'
 if test $? -ne 0
@@ -9610,7 +9633,7 @@ X.PP
 This program is free software; you can redistribute it and/or modify
 it under the MIT license.
 SHAR_EOF
-  (set 20 26 01 02 11 48 46 'man/yank.1'
+  (set 20 26 02 15 11 19 16 'man/yank.1'
    eval "${shar_touch}") && \
   chmod 0760 'man/yank.1'
 if test $? -ne 0
