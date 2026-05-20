@@ -1,4 +1,8 @@
 # .profile executed by sh(1) for login shells.
+if [ "$(uname -o)" = "Msys" ]; then
+    PATH="${PATH//\/cygdrive\///}"
+    SYSTEM_PATH="${SYSTEM_PATH//\/cygdrive\///}"
+fi
 
 # Save system paths the first time
 if [ -z "${SYSTEM_PATH}" ] ; then
@@ -79,4 +83,3 @@ if [ -d ~/.local/etc/profile.d ]; then
         . "${profile_script}"
     done
 fi
-

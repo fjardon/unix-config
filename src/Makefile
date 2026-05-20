@@ -39,6 +39,7 @@ SHAR_FILES = \
 	dot/Xresources \
 	dot/Xresources_user \
 	dot/XWinrc \
+	scripts/bshell \
 	scripts/bshell.bat \
 	scripts/byzanz-helper \
 	scripts/codefmt \

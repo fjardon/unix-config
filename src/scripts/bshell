@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+
+arg="${1}"
+if [ -z "${arg}" ] || [ "${arg}" = "--help" ] || [ "${arg}" = "-h" ]; then
+    echo "Usage:"
+    echo "    $(basename "$0") -h|--help"
+    echo "    $(basename "$0") --git-bash|--ucrt64"
+    if [ -z "${arg}" ]; then
+        exit 1
+    fi
+    exit 0
+fi
+
+if [ -n "${SYSTEM_PATH}" ]; then
+    echo "Reloading PATH"
+    export PATH="${SYSTEM_PATH}"
+fi
+
+
+if [ "--git-bash" = "${arg}" ]; then
+    unset BASH_PROFILE_LOADED
+    SYSTEM_PATH="${SYSTEM_PATH//\/cygdrive\///}"
+    BINDIR="$(cygpath -u "${PROGRAMFILES}\Git\bin")"
+    "${BINDIR}/bash" -l -i
+elif [ "--ucrt64" = "${arg}" ]; then
+    if [ -z "${MSYS_HOME}" ]; then
+        MSYS_HOME="C:\\msys64"
+        echo "MSYS_HOME not defined. Using default: '${MSYS_HOME}'"
+    fi
+    unset BASH_PROFILE_LOADED
+    SYSTEM_PATH="${SYSTEM_PATH//\/cygdrive\///}"
+    BINDIR="$(cygpath -u "${MSYS_HOME}/usr/bin")"
+    export MSYSTEM=UCRT64
+    export MSYS2_PATH_TYPE=inherit
+    "${BINDIR}/bash" -l -i
+fi
+
