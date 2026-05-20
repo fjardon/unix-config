@@ -108,8 +108,8 @@ cat <<'SETUP_SHAR_EOF'> setup.shar
 # To extract the files from this archive, save it to some FILE, remove
 # everything before the '#!/bin/sh' line above, then type 'sh FILE'.
 #
-lock_dir=_sh17516
-# Made on 2026-02-15 13:12 CET by <frede@white-fang>.
+lock_dir=_sh12949
+# Made on 2026-05-20 08:59 CEST by <frede@white-fang>.
 # Source directory was '/cygdrive/f/workspace/github/unix-config/src'.
 #
 # Existing files will *not* be overwritten, unless '-c' is specified.
@@ -119,17 +119,18 @@ lock_dir=_sh17516
 # ------ ---------- ------------------------------------------
 #    601 -rwxrwx--- data/config.site
 #   2836 -rwxrwx--- data/tmux-256color.tinfo
-#    486 -rwxrwx--- dot/bash_profile
+#    486 -rwxrw-r-- dot/bash_profile
 #   3247 -rwxrwx--- dot/bashrc
 #    219 -rwxrw-r-- dot/gdbinit
 #     89 -rwxrwx--- dot/gemrc
-#   2479 -rwxrwx--- dot/profile
+#   2601 -rwxrwx--- dot/profile
 #    995 -rwxrwx--- dot/tmux.conf
 #   1489 -rwxrwx--- dot/vimrc
 #    340 -rwxrwx--- dot/xprofile
 #    832 -rwxrwx--- dot/Xresources
 #    832 -rwxrwx--- dot/Xresources_user
 #   4076 -rwxrwx--- dot/XWinrc
+#    977 -rwxrwxr-x scripts/bshell
 #    724 -rwxrw-r-- scripts/bshell.bat
 #   2541 -rwxrwx--- scripts/byzanz-helper
 #   8094 -rwxrwx--- scripts/codefmt
@@ -426,9 +427,9 @@ if [ -f ~/.bashrc ]; then
 X    . ~/.bashrc
 fi
 SHAR_EOF
-  (set 20 26 02 15 11 25 38 'dot/bash_profile'
+  (set 20 26 05 20 08 54 27 'dot/bash_profile'
    eval "${shar_touch}") && \
-  chmod 0770 'dot/bash_profile'
+  chmod 0764 'dot/bash_profile'
 if test $? -ne 0
 then ${echo} "restore of dot/bash_profile failed"
 fi
@@ -572,7 +573,7 @@ X    ssh-agent > ~/.ssh/ssh-agent.pid 2> /dev/null
 X    source ~/.ssh/ssh-agent.pid > /dev/null 2>&1
 fi
 SHAR_EOF
-  (set 20 26 02 15 11 24 42 'dot/bashrc'
+  (set 20 26 05 20 08 54 33 'dot/bashrc'
    eval "${shar_touch}") && \
   chmod 0770 'dot/bashrc'
 if test $? -ne 0
@@ -664,6 +665,10 @@ else
 ${echo} "x - extracting dot/profile (text)"
   sed 's/^X//' << 'SHAR_EOF' > 'dot/profile' &&
 # .profile executed by sh(1) for login shells.
+if [ "$(uname -o)" = "Msys" ]; then
+X    PATH="${PATH//\/cygdrive\///}"
+X    SYSTEM_PATH="${SYSTEM_PATH//\/cygdrive\///}"
+fi
 X
 # Save system paths the first time
 if [ -z "${SYSTEM_PATH}" ] ; then
@@ -744,9 +749,8 @@ X        [ -e "${profile_script}" ] || continue
 X        . "${profile_script}"
 X    done
 fi
-X
 SHAR_EOF
-  (set 20 25 12 31 14 16 57 'dot/profile'
+  (set 20 26 05 20 08 53 45 'dot/profile'
    eval "${shar_touch}") && \
   chmod 0770 'dot/profile'
 if test $? -ne 0
@@ -756,12 +760,12 @@ fi
   then (
        ${MD5SUM} -c >/dev/null 2>&1 || ${echo} 'dot/profile': 'MD5 check failed'
        ) << \SHAR_EOF
-a06ac8c065a95711e0c59921981c5353  dot/profile
+3e9104ba1a64e0f7c50243a378125e78  dot/profile
 SHAR_EOF
 
 else
-test `LC_ALL=C wc -c < 'dot/profile'` -ne 2479 && \
-  ${echo} "restoration warning:  size of 'dot/profile' is not 2479"
+test `LC_ALL=C wc -c < 'dot/profile'` -ne 2601 && \
+  ${echo} "restoration warning:  size of 'dot/profile' is not 2601"
   fi
 fi
 # ============= dot/tmux.conf ==============
@@ -1222,6 +1226,78 @@ test `LC_ALL=C wc -c < 'dot/XWinrc'` -ne 4076 && \
   ${echo} "restoration warning:  size of 'dot/XWinrc' is not 4076"
   fi
 fi
+# ============= scripts/bshell ==============
+if test ! -d 'scripts'; then
+  mkdir 'scripts'
+if test $? -eq 0
+then ${echo} "x - created directory scripts."
+else ${echo} "x - failed to create directory scripts."
+     exit 1
+fi
+fi
+if test -n "${keep_file}" && test -f 'scripts/bshell'
+then
+${echo} "x - SKIPPING scripts/bshell (file already exists)"
+
+else
+${echo} "x - extracting scripts/bshell (text)"
+  sed 's/^X//' << 'SHAR_EOF' > 'scripts/bshell' &&
+#!/usr/bin/env bash
+X
+arg="${1}"
+if [ -z "${arg}" ] || [ "${arg}" = "--help" ] || [ "${arg}" = "-h" ]; then
+X    echo "Usage:"
+X    echo "    $(basename "$0") -h|--help"
+X    echo "    $(basename "$0") --git-bash|--ucrt64"
+X    if [ -z "${arg}" ]; then
+X        exit 1
+X    fi
+X    exit 0
+fi
+X
+if [ -n "${SYSTEM_PATH}" ]; then
+X    echo "Reloading PATH"
+X    export PATH="${SYSTEM_PATH}"
+fi
+X
+X
+if [ "--git-bash" = "${arg}" ]; then
+X    unset BASH_PROFILE_LOADED
+X    SYSTEM_PATH="${SYSTEM_PATH//\/cygdrive\///}"
+X    BINDIR="$(cygpath -u "${PROGRAMFILES}\Git\bin")"
+X    "${BINDIR}/bash" -l -i
+elif [ "--ucrt64" = "${arg}" ]; then
+X    if [ -z "${MSYS_HOME}" ]; then
+X        MSYS_HOME="C:\\msys64"
+X        echo "MSYS_HOME not defined. Using default: '${MSYS_HOME}'"
+X    fi
+X    unset BASH_PROFILE_LOADED
+X    SYSTEM_PATH="${SYSTEM_PATH//\/cygdrive\///}"
+X    BINDIR="$(cygpath -u "${MSYS_HOME}/usr/bin")"
+X    export MSYSTEM=UCRT64
+X    export MSYS2_PATH_TYPE=inherit
+X    "${BINDIR}/bash" -l -i
+fi
+X
+SHAR_EOF
+  (set 20 26 05 20 08 53 22 'scripts/bshell'
+   eval "${shar_touch}") && \
+  chmod 0775 'scripts/bshell'
+if test $? -ne 0
+then ${echo} "restore of scripts/bshell failed"
+fi
+  if ${md5check}
+  then (
+       ${MD5SUM} -c >/dev/null 2>&1 || ${echo} 'scripts/bshell': 'MD5 check failed'
+       ) << \SHAR_EOF
+d2c0724c4e3b993f86926bdb0d0c26a3  scripts/bshell
+SHAR_EOF
+
+else
+test `LC_ALL=C wc -c < 'scripts/bshell'` -ne 977 && \
+  ${echo} "restoration warning:  size of 'scripts/bshell' is not 977"
+  fi
+fi
 # ============= scripts/bshell.bat ==============
 if test ! -d 'scripts'; then
   mkdir 'scripts'
@@ -1303,14 +1379,6 @@ test `LC_ALL=C wc -c < 'scripts/bshell.bat'` -ne 724 && \
   fi
 fi
 # ============= scripts/byzanz-helper ==============
-if test ! -d 'scripts'; then
-  mkdir 'scripts'
-if test $? -eq 0
-then ${echo} "x - created directory scripts."
-else ${echo} "x - failed to create directory scripts."
-     exit 1
-fi
-fi
 if test -n "${keep_file}" && test -f 'scripts/byzanz-helper'
 then
 ${echo} "x - SKIPPING scripts/byzanz-helper (file already exists)"
@@ -9775,11 +9843,13 @@ case "${os_name}" in
         ${INSTALL_X} scripts/apt-cyg    "${PREFIX}/.local/bin"
         ${INSTALL_X} scripts/msvc-shell "${PREFIX}/.local/bin"
         ${INSTALL_R} man/msvc-shell.1   "${PREFIX}/.local/share/man/man1"
+        ${INSTALL_X} scripts/bshell     "${PREFIX}/.local/bin"
         ${INSTALL_X} scripts/bshell.bat "${PREFIX}/.local/bin"
         ;;
     MINGW*)
         ${INSTALL_X} scripts/msvc-shell "${PREFIX}/.local/bin"
         ${INSTALL_R} man/msvc-shell.1   "${PREFIX}/.local/share/man/man1"
+        ${INSTALL_X} scripts/bshell     "${PREFIX}/.local/bin"
         ${INSTALL_X} scripts/bshell.bat "${PREFIX}/.local/bin"
         ;;
 esac
