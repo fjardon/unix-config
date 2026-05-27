@@ -23,19 +23,28 @@ if [ -t 1 -a -n "${TPUT}" ]; then
     fi
 fi
 
-case "${TERM}" in
-  *xterm* | tmux*)
-    SETXTERMTITLE='\[\e]0;\h - \w\a\]\n';
-    PS1="${SETXTERMTITLE}${PS1}"
-    ;;
-esac
+PS1_LEDS=()
+if [[ "${SHLVL:-1}" -gt 1 ]]; then
+    PS1_LEDS+=("[${SHLVL}]")
+fi
 if [[ -n "${VIMRUNTIME}" ]]; then
-    VIM_LED="${RED_FG}[vim] "
+    PS1_LEDS+=("${RED_FG}[vim]")
 fi
 if [[ -n "${VS_KIT}" ]]; then
-    VS_LED="${CYAN_FG}[msvc ${VS_KIT} ${VS_VERSION:0:2}.${VS_VERSION:2:1}] "
+    PS1_LEDS+=("${CYAN_FG}[msvc ${VS_KIT} ${VS_VERSION:0:2}.${VS_VERSION:2:1}]")
 fi
-PS1="${SETXTERMTITLE}${VIM_LED}${VS_LED}${GREEN_FG}\\u@\\h ${MAGENTA_FG}\\t ${YELLOW_FG}\\w${DEFAULT_FG}\n\$ "
+if [[ -n "${WINEPREFIX}" ]]; then
+    PS1_LEDS+=("${CYAN_FG}[wine $(basename "${WINEPREFIX}")/${WINEARCH:-64}]")
+fi
+PS1_LEDS+=("${GREEN_FG}\\u@\\h")                # user @ host
+PS1_LEDS+=("${MAGENTA_FG}\\t")                  # time
+PS1_LEDS+=("${YELLOW_FG}\\w${DEFAULT_FG}\n\$ ") # current working dir.
+PS1="${PS1_LEDS[@]}"
+case "${TERM}" in
+  *xterm* | tmux*)
+    PS1="\\[\\e]0;\\h - \\w\\a\\]\\n${PS1}"
+    ;;
+esac
 export PS1
 
 # Make bash append rather than overwrite the history on disk
