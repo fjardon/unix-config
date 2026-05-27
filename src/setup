@@ -108,55 +108,55 @@ cat <<'SETUP_SHAR_EOF'> setup.shar
 # To extract the files from this archive, save it to some FILE, remove
 # everything before the '#!/bin/sh' line above, then type 'sh FILE'.
 #
-lock_dir=_sh12949
-# Made on 2026-05-20 08:59 CEST by <frede@white-fang>.
-# Source directory was '/cygdrive/f/workspace/github/unix-config/src'.
+lock_dir=_sh19518
+# Made on 2026-05-27 07:32 CEST by <ajensen@old-beaver>.
+# Source directory was '/home/ajensen/Documents/workspace/github/unix-config/src'.
 #
 # Existing files will *not* be overwritten, unless '-c' is specified.
 #
 # This shar contains:
 # length mode       name
 # ------ ---------- ------------------------------------------
-#    601 -rwxrwx--- data/config.site
-#   2836 -rwxrwx--- data/tmux-256color.tinfo
-#    486 -rwxrw-r-- dot/bash_profile
-#   3247 -rwxrwx--- dot/bashrc
-#    219 -rwxrw-r-- dot/gdbinit
-#     89 -rwxrwx--- dot/gemrc
-#   2601 -rwxrwx--- dot/profile
-#    995 -rwxrwx--- dot/tmux.conf
-#   1489 -rwxrwx--- dot/vimrc
-#    340 -rwxrwx--- dot/xprofile
-#    832 -rwxrwx--- dot/Xresources
-#    832 -rwxrwx--- dot/Xresources_user
-#   4076 -rwxrwx--- dot/XWinrc
-#    977 -rwxrwxr-x scripts/bshell
-#    724 -rwxrw-r-- scripts/bshell.bat
-#   2541 -rwxrwx--- scripts/byzanz-helper
-#   8094 -rwxrwx--- scripts/codefmt
-#   4685 -rwxrwx--- scripts/codemv
-#   3766 -rwxrwx--- scripts/ffmpeg-helper
-#   1820 -rwxrwx--- scripts/hyper-v
-#   8007 -rwxrw-r-- scripts/msvc-shell
-#  16939 -rwxrwx--- scripts/plgen
-#    901 -rwxrwx--- scripts/runcron
-#   3591 -rwxrwx--- scripts/sixel2tmux
-#    332 -rwxrwx--- scripts/uudecode.pl
-#   4128 -rwxrwx--- scripts/yank
-#      1 -rwxrw---- libstdc++-v3/python/libstdcxx/__init__.py
-#   1149 -rwxrw---- libstdc++-v3/python/libstdcxx/v6/__init__.py
-# 110581 -rwxrw---- libstdc++-v3/python/libstdcxx/v6/printers.py
-#  28943 -rwxrw---- libstdc++-v3/python/libstdcxx/v6/xmethods.py
+#    601 -rw-rw-r-- data/config.site
+#   2836 -rw-rw-r-- data/tmux-256color.tinfo
+#    486 -rw-rw-r-- dot/bash_profile
+#   3516 -rw-rw-r-- dot/bashrc
+#    219 -rw-rw-r-- dot/gdbinit
+#     89 -rw-rw-r-- dot/gemrc
+#   2601 -rw-rw-r-- dot/profile
+#    995 -rw-rw-r-- dot/tmux.conf
+#   1489 -rw-rw-r-- dot/vimrc
+#    340 -rw-rw-r-- dot/xprofile
+#    832 -rw-rw-r-- dot/Xresources
+#    832 -rw-rw-r-- dot/Xresources_user
+#   4076 -rw-rw-r-- dot/XWinrc
+#    977 -rw-rw-r-- scripts/bshell
+#    724 -rw-rw-r-- scripts/bshell.bat
+#   2541 -rw-rw-r-- scripts/byzanz-helper
+#   8094 -rw-rw-r-- scripts/codefmt
+#   4685 -rw-rw-r-- scripts/codemv
+#   3766 -rw-rw-r-- scripts/ffmpeg-helper
+#   1820 -rw-rw-r-- scripts/hyper-v
+#   8007 -rw-rw-r-- scripts/msvc-shell
+#  16939 -rw-rw-r-- scripts/plgen
+#    901 -rw-rw-r-- scripts/runcron
+#   3591 -rw-rw-r-- scripts/sixel2tmux
+#    332 -rw-rw-r-- scripts/uudecode.pl
+#   4128 -rw-rw-r-- scripts/yank
+#      1 -rw-rw-r-- libstdc++-v3/python/libstdcxx/__init__.py
+#   1149 -rw-rw-r-- libstdc++-v3/python/libstdcxx/v6/__init__.py
+# 110581 -rw-rw-r-- libstdc++-v3/python/libstdcxx/v6/printers.py
+#  28943 -rw-rw-r-- libstdc++-v3/python/libstdcxx/v6/xmethods.py
 #  13765 -rwxrwxr-x scripts/apt-cyg
-#   3233 -rwxrw---- man/byzanz-helper.1
-#   2788 -rwxrw---- man/codefmt.1
-#   2846 -rwxrw---- man/codemv.1
-#   3189 -rwxrw---- man/ffmpeg-helper.1
-#   2645 -rwxrw---- man/hyper-v.1
-#   3404 -rwxrw---- man/msvc-shell.1
-#   4366 -rwxrw---- man/plgen.1
-#   3949 -rwxrw---- man/sixel2tmux.1
-#   4606 -rwxrw---- man/yank.1
+#   3233 -rw-rw-r-- man/byzanz-helper.1
+#   2788 -rw-rw-r-- man/codefmt.1
+#   2846 -rw-rw-r-- man/codemv.1
+#   3189 -rw-rw-r-- man/ffmpeg-helper.1
+#   2645 -rw-rw-r-- man/hyper-v.1
+#   3404 -rw-rw-r-- man/msvc-shell.1
+#   4366 -rw-rw-r-- man/plgen.1
+#   3949 -rw-rw-r-- man/sixel2tmux.1
+#   4606 -rw-rw-r-- man/yank.1
 #
 MD5SUM=${MD5SUM-md5sum}
 f=`${MD5SUM} --version | egrep '^md5sum .*(core|text)utils'`
@@ -289,9 +289,9 @@ X  fi
 fi
 X
 SHAR_EOF
-  (set 20 25 12 31 14 16 57 'data/config.site'
+  (set 20 26 05 25 08 33 50 'data/config.site'
    eval "${shar_touch}") && \
-  chmod 0770 'data/config.site'
+  chmod 0664 'data/config.site'
 if test $? -ne 0
 then ${echo} "restore of data/config.site failed"
 fi
@@ -371,9 +371,9 @@ X        sgr0=\E[m\017, sitm=\E[3m, smacs=^N, smcup=\E[?1049h,
 X        smir=\E[4h, smkx=\E[?1h\E=, smso=\E[7m, smul=\E[4m,
 X        tbc=\E[3g, tsl=\E]0;,
 SHAR_EOF
-  (set 20 25 12 31 14 16 57 'data/tmux-256color.tinfo'
+  (set 20 26 05 25 08 33 50 'data/tmux-256color.tinfo'
    eval "${shar_touch}") && \
-  chmod 0770 'data/tmux-256color.tinfo'
+  chmod 0664 'data/tmux-256color.tinfo'
 if test $? -ne 0
 then ${echo} "restore of data/tmux-256color.tinfo failed"
 fi
@@ -427,9 +427,9 @@ if [ -f ~/.bashrc ]; then
 X    . ~/.bashrc
 fi
 SHAR_EOF
-  (set 20 26 05 20 08 54 27 'dot/bash_profile'
+  (set 20 26 05 25 08 33 50 'dot/bash_profile'
    eval "${shar_touch}") && \
-  chmod 0764 'dot/bash_profile'
+  chmod 0664 'dot/bash_profile'
 if test $? -ne 0
 then ${echo} "restore of dot/bash_profile failed"
 fi
@@ -486,19 +486,28 @@ X        DEFAULT_FG=$(tput sgr0)
 X    fi
 fi
 X
-case "${TERM}" in
-X  *xterm* | tmux*)
-X    SETXTERMTITLE='\[\e]0;\h - \w\a\]\n';
-X    PS1="${SETXTERMTITLE}${PS1}"
-X    ;;
-esac
+PS1_LEDS=()
+if [[ "${SHLVL:-1}" -gt 1 ]]; then
+X    PS1_LEDS+=("[${SHLVL}]")
+fi
 if [[ -n "${VIMRUNTIME}" ]]; then
-X    VIM_LED="${RED_FG}[vim] "
+X    PS1_LEDS+=("${RED_FG}[vim]")
 fi
 if [[ -n "${VS_KIT}" ]]; then
-X    VS_LED="${CYAN_FG}[msvc ${VS_KIT} ${VS_VERSION:0:2}.${VS_VERSION:2:1}] "
+X    PS1_LEDS+=("${CYAN_FG}[msvc ${VS_KIT} ${VS_VERSION:0:2}.${VS_VERSION:2:1}]")
 fi
-PS1="${SETXTERMTITLE}${VIM_LED}${VS_LED}${GREEN_FG}\\u@\\h ${MAGENTA_FG}\\t ${YELLOW_FG}\\w${DEFAULT_FG}\n\$ "
+if [[ -n "${WINEPREFIX}" ]]; then
+X    PS1_LEDS+=("${CYAN_FG}[wine $(basename "${WINEPREFIX}")/${WINEARCH:-64}]")
+fi
+PS1_LEDS+=("${GREEN_FG}\\u@\\h")                # user @ host
+PS1_LEDS+=("${MAGENTA_FG}\\t")                  # time
+PS1_LEDS+=("${YELLOW_FG}\\w${DEFAULT_FG}\n\$ ") # current working dir.
+PS1="${PS1_LEDS[@]}"
+case "${TERM}" in
+X  *xterm* | tmux*)
+X    PS1="\\[\\e]0;\\h - \\w\\a\\]\\n${PS1}"
+X    ;;
+esac
 export PS1
 X
 # Make bash append rather than overwrite the history on disk
@@ -573,9 +582,9 @@ X    ssh-agent > ~/.ssh/ssh-agent.pid 2> /dev/null
 X    source ~/.ssh/ssh-agent.pid > /dev/null 2>&1
 fi
 SHAR_EOF
-  (set 20 26 05 20 08 54 33 'dot/bashrc'
+  (set 20 26 05 26 10 46 26 'dot/bashrc'
    eval "${shar_touch}") && \
-  chmod 0770 'dot/bashrc'
+  chmod 0664 'dot/bashrc'
 if test $? -ne 0
 then ${echo} "restore of dot/bashrc failed"
 fi
@@ -583,12 +592,12 @@ fi
   then (
        ${MD5SUM} -c >/dev/null 2>&1 || ${echo} 'dot/bashrc': 'MD5 check failed'
        ) << \SHAR_EOF
-76b1ee37f2fbb40b7c9e6f8700f7b437  dot/bashrc
+dced84b7383e0908fba8bd30d6e447a0  dot/bashrc
 SHAR_EOF
 
 else
-test `LC_ALL=C wc -c < 'dot/bashrc'` -ne 3247 && \
-  ${echo} "restoration warning:  size of 'dot/bashrc' is not 3247"
+test `LC_ALL=C wc -c < 'dot/bashrc'` -ne 3516 && \
+  ${echo} "restoration warning:  size of 'dot/bashrc' is not 3516"
   fi
 fi
 # ============= dot/gdbinit ==============
@@ -608,9 +617,9 @@ G96=I<W1E<E]L:6)S=&1C>'A?<')I;G1E<G,H3F]N92D-"F5N9`T*
 `
 end
 SHAR_EOF
-  (set 20 26 02 12 21 39 20 'dot/gdbinit'
+  (set 20 26 05 25 08 33 50 'dot/gdbinit'
    eval "${shar_touch}") && \
-  chmod 0764 'dot/gdbinit'
+  chmod 0664 'dot/gdbinit'
 if test $? -ne 0
 then ${echo} "restore of dot/gdbinit failed"
 fi
@@ -638,9 +647,9 @@ gem: --user-install --bindir ~/.local/bin
 install: --user-install --bindir ~/.local/bin
 X
 SHAR_EOF
-  (set 20 25 12 31 14 16 57 'dot/gemrc'
+  (set 20 26 05 25 08 33 50 'dot/gemrc'
    eval "${shar_touch}") && \
-  chmod 0770 'dot/gemrc'
+  chmod 0664 'dot/gemrc'
 if test $? -ne 0
 then ${echo} "restore of dot/gemrc failed"
 fi
@@ -750,9 +759,9 @@ X        . "${profile_script}"
 X    done
 fi
 SHAR_EOF
-  (set 20 26 05 20 08 53 45 'dot/profile'
+  (set 20 26 05 25 08 33 50 'dot/profile'
    eval "${shar_touch}") && \
-  chmod 0770 'dot/profile'
+  chmod 0664 'dot/profile'
 if test $? -ne 0
 then ${echo} "restore of dot/profile failed"
 fi
@@ -807,9 +816,9 @@ set -g monitor-activity on
 set -g visual-activity off
 X
 SHAR_EOF
-  (set 20 25 12 31 14 16 57 'dot/tmux.conf'
+  (set 20 26 05 25 08 33 50 'dot/tmux.conf'
    eval "${shar_touch}") && \
-  chmod 0770 'dot/tmux.conf'
+  chmod 0664 'dot/tmux.conf'
 if test $? -ne 0
 then ${echo} "restore of dot/tmux.conf failed"
 fi
@@ -897,9 +906,9 @@ endif
 X
 hi Terminal ctermbg=black ctermfg=white
 SHAR_EOF
-  (set 20 25 12 31 14 16 57 'dot/vimrc'
+  (set 20 26 05 25 08 33 50 'dot/vimrc'
    eval "${shar_touch}") && \
-  chmod 0770 'dot/vimrc'
+  chmod 0664 'dot/vimrc'
 if test $? -ne 0
 then ${echo} "restore of dot/vimrc failed"
 fi
@@ -933,9 +942,9 @@ X
 [ -f ~/.Xresources ] && xrdb -merge ~/.Xresources
 X
 SHAR_EOF
-  (set 20 25 12 31 14 16 57 'dot/xprofile'
+  (set 20 26 05 25 08 33 50 'dot/xprofile'
    eval "${shar_touch}") && \
-  chmod 0770 'dot/xprofile'
+  chmod 0664 'dot/xprofile'
 if test $? -ne 0
 then ${echo} "restore of dot/xprofile failed"
 fi
@@ -987,9 +996,9 @@ XXTerm*decTerminalID: vt340
 XXTerm*numColorRegisters: 256
 X
 SHAR_EOF
-  (set 20 25 12 31 14 16 57 'dot/Xresources'
+  (set 20 26 05 25 08 33 50 'dot/Xresources'
    eval "${shar_touch}") && \
-  chmod 0770 'dot/Xresources'
+  chmod 0664 'dot/Xresources'
 if test $? -ne 0
 then ${echo} "restore of dot/Xresources failed"
 fi
@@ -1042,9 +1051,9 @@ XXTerm*toolBar: false
 XXTerm*utf8: 2
 XXTerm*visualBell: true
 SHAR_EOF
-  (set 20 25 12 31 14 16 57 'dot/Xresources_user'
+  (set 20 26 05 25 08 33 50 'dot/Xresources_user'
    eval "${shar_touch}") && \
-  chmod 0770 'dot/Xresources_user'
+  chmod 0664 'dot/Xresources_user'
 if test $? -ne 0
 then ${echo} "restore of dot/Xresources_user failed"
 fi
@@ -1208,9 +1217,9 @@ X
 DEBUG "Done parsing the configuration file..."
 X
 SHAR_EOF
-  (set 20 25 12 31 14 16 57 'dot/XWinrc'
+  (set 20 26 05 25 08 33 50 'dot/XWinrc'
    eval "${shar_touch}") && \
-  chmod 0770 'dot/XWinrc'
+  chmod 0664 'dot/XWinrc'
 if test $? -ne 0
 then ${echo} "restore of dot/XWinrc failed"
 fi
@@ -1280,9 +1289,9 @@ X    "${BINDIR}/bash" -l -i
 fi
 X
 SHAR_EOF
-  (set 20 26 05 20 08 53 22 'scripts/bshell'
+  (set 20 26 05 25 08 33 50 'scripts/bshell'
    eval "${shar_touch}") && \
-  chmod 0775 'scripts/bshell'
+  chmod 0664 'scripts/bshell'
 if test $? -ne 0
 then ${echo} "restore of scripts/bshell failed"
 fi
@@ -1360,9 +1369,9 @@ X
 :end
 X
 SHAR_EOF
-  (set 20 26 02 12 21 39 20 'scripts/bshell.bat'
+  (set 20 26 05 25 08 33 50 'scripts/bshell.bat'
    eval "${shar_touch}") && \
-  chmod 0764 'scripts/bshell.bat'
+  chmod 0664 'scripts/bshell.bat'
 if test $? -ne 0
 then ${echo} "restore of scripts/bshell.bat failed"
 fi
@@ -1494,9 +1503,9 @@ it under the MIT license.
 X
 =cut
 SHAR_EOF
-  (set 20 25 12 31 14 16 58 'scripts/byzanz-helper'
+  (set 20 26 05 25 08 33 50 'scripts/byzanz-helper'
    eval "${shar_touch}") && \
-  chmod 0770 'scripts/byzanz-helper'
+  chmod 0664 'scripts/byzanz-helper'
 if test $? -ne 0
 then ${echo} "restore of scripts/byzanz-helper failed"
 fi
@@ -1781,9 +1790,9 @@ X
 =cut
 X
 SHAR_EOF
-  (set 20 25 12 31 14 16 58 'scripts/codefmt'
+  (set 20 26 05 25 08 33 50 'scripts/codefmt'
    eval "${shar_touch}") && \
-  chmod 0770 'scripts/codefmt'
+  chmod 0664 'scripts/codefmt'
 if test $? -ne 0
 then ${echo} "restore of scripts/codefmt failed"
 fi
@@ -1950,9 +1959,9 @@ X
 =cut
 X
 SHAR_EOF
-  (set 20 25 12 31 14 16 58 'scripts/codemv'
+  (set 20 26 05 25 08 33 50 'scripts/codemv'
    eval "${shar_touch}") && \
-  chmod 0770 'scripts/codemv'
+  chmod 0664 'scripts/codemv'
 if test $? -ne 0
 then ${echo} "restore of scripts/codemv failed"
 fi
@@ -2125,9 +2134,9 @@ it under the MIT license.
 X
 =cut
 SHAR_EOF
-  (set 20 25 12 31 14 16 58 'scripts/ffmpeg-helper'
+  (set 20 26 05 25 08 33 50 'scripts/ffmpeg-helper'
    eval "${shar_touch}") && \
-  chmod 0770 'scripts/ffmpeg-helper'
+  chmod 0664 'scripts/ffmpeg-helper'
 if test $? -ne 0
 then ${echo} "restore of scripts/ffmpeg-helper failed"
 fi
@@ -2243,9 +2252,9 @@ X
 =cut
 X
 SHAR_EOF
-  (set 20 25 12 31 14 16 58 'scripts/hyper-v'
+  (set 20 26 05 25 08 33 50 'scripts/hyper-v'
    eval "${shar_touch}") && \
-  chmod 0770 'scripts/hyper-v'
+  chmod 0664 'scripts/hyper-v'
 if test $? -ne 0
 then ${echo} "restore of scripts/hyper-v failed"
 fi
@@ -2521,9 +2530,9 @@ X
 =cut
 X
 SHAR_EOF
-  (set 20 26 02 15 13 10 07 'scripts/msvc-shell'
+  (set 20 26 05 25 08 33 50 'scripts/msvc-shell'
    eval "${shar_touch}") && \
-  chmod 0764 'scripts/msvc-shell'
+  chmod 0664 'scripts/msvc-shell'
 if test $? -ne 0
 then ${echo} "restore of scripts/msvc-shell failed"
 fi
@@ -3186,9 +3195,9 @@ X
 =cut
 X
 SHAR_EOF
-  (set 20 25 12 31 14 16 58 'scripts/plgen'
+  (set 20 26 05 25 08 33 50 'scripts/plgen'
    eval "${shar_touch}") && \
-  chmod 0770 'scripts/plgen'
+  chmod 0664 'scripts/plgen'
 if test $? -ne 0
 then ${echo} "restore of scripts/plgen failed"
 fi
@@ -3260,9 +3269,9 @@ done
 X
 X
 SHAR_EOF
-  (set 20 25 12 31 14 16 58 'scripts/runcron'
+  (set 20 26 05 25 08 33 50 'scripts/runcron'
    eval "${shar_touch}") && \
-  chmod 0770 'scripts/runcron'
+  chmod 0664 'scripts/runcron'
 if test $? -ne 0
 then ${echo} "restore of scripts/runcron failed"
 fi
@@ -3444,9 +3453,9 @@ X
 =cut
 X
 SHAR_EOF
-  (set 20 25 12 31 14 16 58 'scripts/sixel2tmux'
+  (set 20 26 05 25 08 33 50 'scripts/sixel2tmux'
    eval "${shar_touch}") && \
-  chmod 0770 'scripts/sixel2tmux'
+  chmod 0664 'scripts/sixel2tmux'
 if test $? -ne 0
 then ${echo} "restore of scripts/sixel2tmux failed"
 fi
@@ -3486,9 +3495,9 @@ X    print $fh $out;
 close($fh);
 chmod $mode, $filename;
 SHAR_EOF
-  (set 20 25 12 31 14 16 58 'scripts/uudecode.pl'
+  (set 20 26 05 25 08 33 50 'scripts/uudecode.pl'
    eval "${shar_touch}") && \
-  chmod 0770 'scripts/uudecode.pl'
+  chmod 0664 'scripts/uudecode.pl'
 if test $? -ne 0
 then ${echo} "restore of scripts/uudecode.pl failed"
 fi
@@ -3685,9 +3694,9 @@ X
 =cut
 X
 SHAR_EOF
-  (set 20 25 12 31 14 16 58 'scripts/yank'
+  (set 20 26 05 25 08 33 50 'scripts/yank'
    eval "${shar_touch}") && \
-  chmod 0770 'scripts/yank'
+  chmod 0664 'scripts/yank'
 if test $? -ne 0
 then ${echo} "restore of scripts/yank failed"
 fi
@@ -3737,9 +3746,9 @@ ${echo} "x - extracting libstdc++-v3/python/libstdcxx/__init__.py (text)"
   sed 's/^X//' << 'SHAR_EOF' > 'libstdc++-v3/python/libstdcxx/__init__.py' &&
 X
 SHAR_EOF
-  (set 20 26 02 15 11 19 12 'libstdc++-v3/python/libstdcxx/__init__.py'
+  (set 20 26 05 27 07 32 34 'libstdc++-v3/python/libstdcxx/__init__.py'
    eval "${shar_touch}") && \
-  chmod 0760 'libstdc++-v3/python/libstdcxx/__init__.py'
+  chmod 0664 'libstdc++-v3/python/libstdcxx/__init__.py'
 if test $? -ne 0
 then ${echo} "restore of libstdc++-v3/python/libstdcxx/__init__.py failed"
 fi
@@ -3811,9 +3820,9 @@ X    if gdb_has_xmethods():
 X        from .xmethods import register_libstdcxx_xmethods
 X        register_libstdcxx_xmethods(obj)
 SHAR_EOF
-  (set 20 26 02 15 11 19 12 'libstdc++-v3/python/libstdcxx/v6/__init__.py'
+  (set 20 26 05 27 07 32 34 'libstdc++-v3/python/libstdcxx/v6/__init__.py'
    eval "${shar_touch}") && \
-  chmod 0760 'libstdc++-v3/python/libstdcxx/v6/__init__.py'
+  chmod 0664 'libstdc++-v3/python/libstdcxx/v6/__init__.py'
 if test $? -ne 0
 then ${echo} "restore of libstdc++-v3/python/libstdcxx/v6/__init__.py failed"
 fi
@@ -6819,9 +6828,9 @@ X
 X
 build_libstdcxx_dictionary()
 SHAR_EOF
-  (set 20 26 02 15 11 19 14 'libstdc++-v3/python/libstdcxx/v6/printers.py'
+  (set 20 26 05 27 07 32 35 'libstdc++-v3/python/libstdcxx/v6/printers.py'
    eval "${shar_touch}") && \
-  chmod 0760 'libstdc++-v3/python/libstdcxx/v6/printers.py'
+  chmod 0664 'libstdc++-v3/python/libstdcxx/v6/printers.py'
 if test $? -ne 0
 then ${echo} "restore of libstdc++-v3/python/libstdcxx/v6/printers.py failed"
 fi
@@ -7730,9 +7739,9 @@ X        locus, AssociativeContainerMethodsMatcher('unordered_multimap'))
 X    gdb.xmethod.register_xmethod_matcher(locus, UniquePtrMethodsMatcher())
 X    gdb.xmethod.register_xmethod_matcher(locus, SharedPtrMethodsMatcher())
 SHAR_EOF
-  (set 20 26 02 15 11 19 14 'libstdc++-v3/python/libstdcxx/v6/xmethods.py'
+  (set 20 26 05 27 07 32 35 'libstdc++-v3/python/libstdcxx/v6/xmethods.py'
    eval "${shar_touch}") && \
-  chmod 0760 'libstdc++-v3/python/libstdcxx/v6/xmethods.py'
+  chmod 0664 'libstdc++-v3/python/libstdcxx/v6/xmethods.py'
 if test $? -ne 0
 then ${echo} "restore of libstdc++-v3/python/libstdcxx/v6/xmethods.py failed"
 fi
@@ -8430,7 +8439,7 @@ else
 X  printf "$usage"
 fi
 SHAR_EOF
-  (set 20 26 02 15 11 19 15 'scripts/apt-cyg'
+  (set 20 26 05 27 07 32 36 'scripts/apt-cyg'
    eval "${shar_touch}") && \
   chmod 0775 'scripts/apt-cyg'
 if test $? -ne 0
@@ -8521,7 +8530,7 @@ X.rr rF
 X.\" ========================================================================
 X.\"
 X.IX Title "BYZANZ-HELPER 1"
-X.TH BYZANZ-HELPER 1 2025-12-31 github.com/fjardon/unix-config "FJ Unix Config Commands"
+X.TH BYZANZ-HELPER 1 2026-05-25 github.com/fjardon/unix-config "FJ Unix Config Commands"
 X.\" For nroff, turn off justification.  Always turn off hyphenation; it makes
 X.\" way too many mistakes in technical documents.
 X.if n .ad l
@@ -8567,9 +8576,9 @@ X.PP
 This program is free software; you can redistribute it and/or modify
 it under the MIT license.
 SHAR_EOF
-  (set 20 26 02 15 11 19 15 'man/byzanz-helper.1'
+  (set 20 26 05 27 07 32 36 'man/byzanz-helper.1'
    eval "${shar_touch}") && \
-  chmod 0760 'man/byzanz-helper.1'
+  chmod 0664 'man/byzanz-helper.1'
 if test $? -ne 0
 then ${echo} "restore of man/byzanz-helper.1 failed"
 fi
@@ -8577,7 +8586,7 @@ fi
   then (
        ${MD5SUM} -c >/dev/null 2>&1 || ${echo} 'man/byzanz-helper.1': 'MD5 check failed'
        ) << \SHAR_EOF
-91875c2632ae32ed577f24a67d189672  man/byzanz-helper.1
+b69c45bb9557fc995fcae89e875e4fc6  man/byzanz-helper.1
 SHAR_EOF
 
 else
@@ -8658,7 +8667,7 @@ X.rr rF
 X.\" ========================================================================
 X.\"
 X.IX Title "CODEFMT 1"
-X.TH CODEFMT 1 2025-12-31 github.com/fjardon/unix-config "FJ Unix Config Commands"
+X.TH CODEFMT 1 2026-05-25 github.com/fjardon/unix-config "FJ Unix Config Commands"
 X.\" For nroff, turn off justification.  Always turn off hyphenation; it makes
 X.\" way too many mistakes in technical documents.
 X.if n .ad l
@@ -8697,9 +8706,9 @@ X.PP
 This program is free software; you can redistribute it and/or modify
 it under the GPL license.
 SHAR_EOF
-  (set 20 26 02 15 11 19 15 'man/codefmt.1'
+  (set 20 26 05 27 07 32 36 'man/codefmt.1'
    eval "${shar_touch}") && \
-  chmod 0760 'man/codefmt.1'
+  chmod 0664 'man/codefmt.1'
 if test $? -ne 0
 then ${echo} "restore of man/codefmt.1 failed"
 fi
@@ -8707,7 +8716,7 @@ fi
   then (
        ${MD5SUM} -c >/dev/null 2>&1 || ${echo} 'man/codefmt.1': 'MD5 check failed'
        ) << \SHAR_EOF
-8f9cf1e309f9bf9a5000e3863e4ec035  man/codefmt.1
+066f349a156b9c6e76f4f8b7d91c2ff6  man/codefmt.1
 SHAR_EOF
 
 else
@@ -8780,7 +8789,7 @@ X.rr rF
 X.\" ========================================================================
 X.\"
 X.IX Title "CODEMV 1"
-X.TH CODEMV 1 2025-12-31 github.com/fjardon/unix-config "FJ Unix Config Commands"
+X.TH CODEMV 1 2026-05-25 github.com/fjardon/unix-config "FJ Unix Config Commands"
 X.\" For nroff, turn off justification.  Always turn off hyphenation; it makes
 X.\" way too many mistakes in technical documents.
 X.if n .ad l
@@ -8824,9 +8833,9 @@ X.PP
 This program is free software; you can redistribute it and/or modify
 it under the GPL license.
 SHAR_EOF
-  (set 20 26 02 15 11 19 15 'man/codemv.1'
+  (set 20 26 05 27 07 32 36 'man/codemv.1'
    eval "${shar_touch}") && \
-  chmod 0760 'man/codemv.1'
+  chmod 0664 'man/codemv.1'
 if test $? -ne 0
 then ${echo} "restore of man/codemv.1 failed"
 fi
@@ -8834,7 +8843,7 @@ fi
   then (
        ${MD5SUM} -c >/dev/null 2>&1 || ${echo} 'man/codemv.1': 'MD5 check failed'
        ) << \SHAR_EOF
-799da18c0168c333c919fc0aa2a306b6  man/codemv.1
+acd3f48110f2133ab86b771b248785cd  man/codemv.1
 SHAR_EOF
 
 else
@@ -8907,7 +8916,7 @@ X.rr rF
 X.\" ========================================================================
 X.\"
 X.IX Title "FFMPEG-HELPER 1"
-X.TH FFMPEG-HELPER 1 2025-12-31 github.com/fjardon/unix-config "FJ Unix Config Commands"
+X.TH FFMPEG-HELPER 1 2026-05-25 github.com/fjardon/unix-config "FJ Unix Config Commands"
 X.\" For nroff, turn off justification.  Always turn off hyphenation; it makes
 X.\" way too many mistakes in technical documents.
 X.if n .ad l
@@ -8953,9 +8962,9 @@ X.PP
 This program is free software; you can redistribute it and/or modify
 it under the MIT license.
 SHAR_EOF
-  (set 20 26 02 15 11 19 15 'man/ffmpeg-helper.1'
+  (set 20 26 05 27 07 32 36 'man/ffmpeg-helper.1'
    eval "${shar_touch}") && \
-  chmod 0760 'man/ffmpeg-helper.1'
+  chmod 0664 'man/ffmpeg-helper.1'
 if test $? -ne 0
 then ${echo} "restore of man/ffmpeg-helper.1 failed"
 fi
@@ -8963,7 +8972,7 @@ fi
   then (
        ${MD5SUM} -c >/dev/null 2>&1 || ${echo} 'man/ffmpeg-helper.1': 'MD5 check failed'
        ) << \SHAR_EOF
-5a5339ce32411ec19aa7b7c9f5eba61e  man/ffmpeg-helper.1
+52095be6e112f7d43d293b42c2496b48  man/ffmpeg-helper.1
 SHAR_EOF
 
 else
@@ -9036,7 +9045,7 @@ X.rr rF
 X.\" ========================================================================
 X.\"
 X.IX Title "HYPER-V 1"
-X.TH HYPER-V 1 2025-12-31 github.com/fjardon/unix-config "FJ Unix Config Commands"
+X.TH HYPER-V 1 2026-05-25 github.com/fjardon/unix-config "FJ Unix Config Commands"
 X.\" For nroff, turn off justification.  Always turn off hyphenation; it makes
 X.\" way too many mistakes in technical documents.
 X.if n .ad l
@@ -9077,9 +9086,9 @@ X.PP
 This program is free software; you can redistribute it and/or modify
 it under the MIT license.
 SHAR_EOF
-  (set 20 26 02 15 11 19 16 'man/hyper-v.1'
+  (set 20 26 05 27 07 32 36 'man/hyper-v.1'
    eval "${shar_touch}") && \
-  chmod 0760 'man/hyper-v.1'
+  chmod 0664 'man/hyper-v.1'
 if test $? -ne 0
 then ${echo} "restore of man/hyper-v.1 failed"
 fi
@@ -9087,7 +9096,7 @@ fi
   then (
        ${MD5SUM} -c >/dev/null 2>&1 || ${echo} 'man/hyper-v.1': 'MD5 check failed'
        ) << \SHAR_EOF
-6cf70a8bc3297306c699c914eb507dfc  man/hyper-v.1
+aed89f34674af23268d3102da74db5b0  man/hyper-v.1
 SHAR_EOF
 
 else
@@ -9160,7 +9169,7 @@ X.rr rF
 X.\" ========================================================================
 X.\"
 X.IX Title "MSVC-SHELL 1"
-X.TH MSVC-SHELL 1 2026-02-15 github.com/fjardon/unix-config "FJ Unix Config Commands"
+X.TH MSVC-SHELL 1 2026-05-25 github.com/fjardon/unix-config "FJ Unix Config Commands"
 X.\" For nroff, turn off justification.  Always turn off hyphenation; it makes
 X.\" way too many mistakes in technical documents.
 X.if n .ad l
@@ -9210,9 +9219,9 @@ X.PP
 This program is free software; you can redistribute it and/or modify
 it under the GPL license.
 SHAR_EOF
-  (set 20 26 02 15 13 12 03 'man/msvc-shell.1'
+  (set 20 26 05 27 07 32 37 'man/msvc-shell.1'
    eval "${shar_touch}") && \
-  chmod 0760 'man/msvc-shell.1'
+  chmod 0664 'man/msvc-shell.1'
 if test $? -ne 0
 then ${echo} "restore of man/msvc-shell.1 failed"
 fi
@@ -9220,7 +9229,7 @@ fi
   then (
        ${MD5SUM} -c >/dev/null 2>&1 || ${echo} 'man/msvc-shell.1': 'MD5 check failed'
        ) << \SHAR_EOF
-6395b89762b5bc66a522b660ff1ef126  man/msvc-shell.1
+538dba3644bd7fced3ece9c062d226b9  man/msvc-shell.1
 SHAR_EOF
 
 else
@@ -9293,7 +9302,7 @@ X.rr rF
 X.\" ========================================================================
 X.\"
 X.IX Title "PLGEN 1"
-X.TH PLGEN 1 2025-12-31 github.com/fjardon/unix-config "FJ Unix Config Commands"
+X.TH PLGEN 1 2026-05-25 github.com/fjardon/unix-config "FJ Unix Config Commands"
 X.\" For nroff, turn off justification.  Always turn off hyphenation; it makes
 X.\" way too many mistakes in technical documents.
 X.if n .ad l
@@ -9387,9 +9396,9 @@ X.PP
 This program is free software; you can redistribute it and/or modify
 it under the GPL license.
 SHAR_EOF
-  (set 20 26 02 15 11 19 16 'man/plgen.1'
+  (set 20 26 05 27 07 32 37 'man/plgen.1'
    eval "${shar_touch}") && \
-  chmod 0760 'man/plgen.1'
+  chmod 0664 'man/plgen.1'
 if test $? -ne 0
 then ${echo} "restore of man/plgen.1 failed"
 fi
@@ -9397,7 +9406,7 @@ fi
   then (
        ${MD5SUM} -c >/dev/null 2>&1 || ${echo} 'man/plgen.1': 'MD5 check failed'
        ) << \SHAR_EOF
-f80118b0cb16d6ec4654e411b383feda  man/plgen.1
+1580b80ebe043e29e8c4384dd5324fd4  man/plgen.1
 SHAR_EOF
 
 else
@@ -9470,7 +9479,7 @@ X.rr rF
 X.\" ========================================================================
 X.\"
 X.IX Title "SIXEL2TMUX 1"
-X.TH SIXEL2TMUX 1 2025-12-31 github.com/fjardon/unix-config "FJ Unix Config Commands"
+X.TH SIXEL2TMUX 1 2026-05-25 github.com/fjardon/unix-config "FJ Unix Config Commands"
 X.\" For nroff, turn off justification.  Always turn off hyphenation; it makes
 X.\" way too many mistakes in technical documents.
 X.if n .ad l
@@ -9541,9 +9550,9 @@ X.PP
 This program is free software; you can redistribute it and/or modify
 it under the MIT license.
 SHAR_EOF
-  (set 20 26 02 15 11 19 16 'man/sixel2tmux.1'
+  (set 20 26 05 27 07 32 37 'man/sixel2tmux.1'
    eval "${shar_touch}") && \
-  chmod 0760 'man/sixel2tmux.1'
+  chmod 0664 'man/sixel2tmux.1'
 if test $? -ne 0
 then ${echo} "restore of man/sixel2tmux.1 failed"
 fi
@@ -9551,7 +9560,7 @@ fi
   then (
        ${MD5SUM} -c >/dev/null 2>&1 || ${echo} 'man/sixel2tmux.1': 'MD5 check failed'
        ) << \SHAR_EOF
-44ad3e19085f55a91ff7af37dd100604  man/sixel2tmux.1
+eb5dcdec9dac3a637ed8b765d404966e  man/sixel2tmux.1
 SHAR_EOF
 
 else
@@ -9624,7 +9633,7 @@ X.rr rF
 X.\" ========================================================================
 X.\"
 X.IX Title "YANK 1"
-X.TH YANK 1 2025-12-31 github.com/fjardon/unix-config "FJ Unix Config Commands"
+X.TH YANK 1 2026-05-25 github.com/fjardon/unix-config "FJ Unix Config Commands"
 X.\" For nroff, turn off justification.  Always turn off hyphenation; it makes
 X.\" way too many mistakes in technical documents.
 X.if n .ad l
@@ -9707,9 +9716,9 @@ X.PP
 This program is free software; you can redistribute it and/or modify
 it under the MIT license.
 SHAR_EOF
-  (set 20 26 02 15 11 19 16 'man/yank.1'
+  (set 20 26 05 27 07 32 37 'man/yank.1'
    eval "${shar_touch}") && \
-  chmod 0760 'man/yank.1'
+  chmod 0664 'man/yank.1'
 if test $? -ne 0
 then ${echo} "restore of man/yank.1 failed"
 fi
@@ -9717,7 +9726,7 @@ fi
   then (
        ${MD5SUM} -c >/dev/null 2>&1 || ${echo} 'man/yank.1': 'MD5 check failed'
        ) << \SHAR_EOF
-ba4a33fcd82f5d819769c44c0efb2308  man/yank.1
+8a840239566b198dd39220e59627cd50  man/yank.1
 SHAR_EOF
 
 else
